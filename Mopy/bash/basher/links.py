@@ -381,6 +381,7 @@ def InitINILinks():
 def InitModLinks():
     """Initialize Mods tab menus."""
     #--ModList: Column Links
+    ModList.mainMenu.append(Mods_LoadOrdersList())
     if True: #--Load
         loadMenu = MenuLink(_(u'Load Order'))
         loadMenu.links.append(Mods_LoadList())
