@@ -2539,7 +2539,7 @@ class CBash_Mod_MapMarkers_Import(_Mod_Import_Link_CBash):
 #------------------------------------------------------------------------------
 from ..parsers import CBash_CellBlockInfo
 
-class CBash_Mod_CellBlockInfo_Export(_Mod_Export_Link_CBash):
+class CBash_Mod_CellBlockInfo_Export(AppendableLink, _Mod_Export_Link_CBash):
     """Export Cell Block Info to text file
     (in the form of Cell, block, subblock)."""
     askTitle = _(u'Export Cell Block Info to:')
@@ -2548,6 +2548,8 @@ class CBash_Mod_CellBlockInfo_Export(_Mod_Export_Link_CBash):
     _text = _(u'Cell Block Info...')
     _help = _(u'Export Cell Block Info to text file (in the form of Cell,'
              u' block, subblock)')
+
+    def _append(self, window): return CBashApi.Enabled
 
     def _parser(self): return CBash_CellBlockInfo()
 
