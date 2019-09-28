@@ -391,6 +391,11 @@ class GameInfo(object):
     #--------------------------------------------------------------------------
     default_eyes = {}
 
+    #--------------------------------------------------------------------------
+    # Factions Patcher
+    #--------------------------------------------------------------------------
+    factions_types = set()
+
     # Record type to name dictionary
     record_type_name = {}
 
@@ -428,11 +433,11 @@ class GameInfo(object):
     _constants_members = {
         'GlobalsTweaks', 'GmstTweaks', 'bethDataFiles', 'cellAutoKeys',
         'cellRecAttrs', 'cellRecFlags', 'condition_function_data',
-        'default_eyes', 'gmstEids', 'graphicsFidTypes', 'graphicsLongsTypes',
-        'graphicsModelAttrs', 'graphicsTypes', 'inventoryTypes', 'listTypes',
-        'namesTypes', 'pricesTypes', 'record_type_name', 'save_rec_types',
-        'soundsLongsTypes', 'soundsTypes', 'statsHeaders', 'statsTypes',
-        'xEdit_expert',
+        'default_eyes', 'gmstEids', 'factions_types', 'graphicsFidTypes',
+        'graphicsLongsTypes', 'graphicsModelAttrs', 'graphicsTypes',
+        'inventoryTypes', 'listTypes', 'namesTypes', 'pricesTypes',
+        'record_type_name', 'save_rec_types', 'soundsLongsTypes',
+        'soundsTypes', 'statsHeaders', 'statsTypes', 'xEdit_expert',
     }
 
     @classmethod
