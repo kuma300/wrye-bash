@@ -864,6 +864,11 @@ inventoryTypes = ('CREA','NPC_','CONT',)
 #------------------------------------------------------------------------------
 factions_types = {'CREA', 'NPC_',}
 
+#------------------------------------------------------------------------------
+# Relations Patcher
+#------------------------------------------------------------------------------
+relations_attrs = ('faction', 'mod', 'groupCombatReaction',)
+
 # Record type to name dictionary
 record_type_name = {
     'ALCH':_(u'Potions'),
