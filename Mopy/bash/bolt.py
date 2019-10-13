@@ -337,7 +337,8 @@ def dumpTranslator(outPath, lang, *files):
 
 def initTranslator(lang=None, path=None):
     if locale.getlocale() == (None,None):
-        locale.setlocale(locale.LC_ALL,u'')
+        # locale.setlocale(locale.LC_ALL,u'')
+        locale.setlocale(locale.LC_ALL, 'C')
     if not lang:
         try:
             getlocale = locale.getlocale()
