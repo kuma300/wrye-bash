@@ -319,7 +319,9 @@ class ConfigHelpers(object):
     def getLootApiGameType(fsName):
         if loot_api is None:
             return None
-        if fsName == 'Oblivion':
+        if fsName == 'Morrowind':
+            return loot_api.GameType.tes3
+        elif fsName == 'Oblivion':
             return loot_api.GameType.tes4
         # TODO See if LOOT adds a new GameType for Enderal
         elif fsName in ('Enderal', 'Skyrim'):
