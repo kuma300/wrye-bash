@@ -2579,23 +2579,49 @@ class MelRecord(MreRecord):
 #------------------------------------------------------------------------------
 class MreHeaderBase(MelRecord):
     """File header.  Base class for all 'TES4' like records"""
-    #--Masters array element
-    class MelMasterName(MelBase):
-        def setDefault(self,record): record.masters = []
+    class MelMasterNames(MelBase):
+        """Handles both MAST and DATA, but turns them into two separate lists.
+        This is done to make updating the master list much easier."""
+        def __init__(self):
+            self._debug = False
+            self.subType = 'MAST' # just in case something is expecting this
+
+        def getLoaders(self, loaders):
+            loaders['MAST'] = loaders['DATA'] = self
+
+        def getSlotsUsed(self):
+            return ('masters', 'master_sizes')
+
+        def setDefault(self, record):
+            record.masters = []
+            record.master_sizes = []
+
         def loadData(self, record, ins, sub_type, size_, readId):
-            # Don't use ins.readString, because it will try to use bolt.pluginEncoding
-            # for the filename.  This is one case where we want to use Automatic
-            # encoding detection
-            master_name = decode(bolt.cstrip(ins.read(size_, readId)),
-                                 avoidEncodings=('utf8', 'utf-8'))
-            master_name = GPath(master_name)
-            record.masters.append(master_name)
+            if sub_type == 'MAST':
+                # Don't use ins.readString, because it will try to use
+                # bolt.pluginEncoding for the filename. This is one case where
+                # we want to use automatic encoding detection
+                master_name = decode(bolt.cstrip(ins.read(size_, readId)),
+                                     avoidEncodings=('utf8', 'utf-8'))
+                record.masters.append(GPath(master_name))
+            else: # sub_type == 'DATA'
+                # DATA is the size for TES3, but unknown/unused for later games
+                record.master_sizes.append(ins.unpack('Q', size_, readId))
+
         def dumpData(self,record,out):
             pack1 = out.packSub0
             pack2 = out.packSub
-            for master_name in record.masters:
+            # Truncate or pad the sizes with zeroes as needed
+            # FIXME(inf) For Morrowind, this will have to query the files for
+            #  their size and then store that
+            num_masters = len(record.masters)
+            num_sizes = len(record.master_sizes)
+            record.master_sizes = record.master_sizes[:num_masters] + [0] * (
+                    num_masters - num_sizes)
+            for master_name, master_size in zip(record.masters,
+                                                record.master_sizes):
                 pack1('MAST', encode(master_name.s, firstEncoding='cp1252'))
-                pack2('DATA','Q',0)
+                pack2('DATA', 'Q', master_size)
 
     def getNextObject(self):
         """Gets next object index and increments it for next time."""
