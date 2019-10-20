@@ -151,7 +151,7 @@ def init_dirs(bashIni_, personal, localAppData, game_info):
     # Utumno: not sure how/if this applies to other games
     data_oblivion_ini = dirs['app'].join(game_info.iniFiles[0])
     game_ini_path = dirs['saveBase'].join(game_info.iniFiles[0])
-    dirs['mods'] = dirs['app'].join(u'Data')
+    dirs['mods'] = dirs['app'].join(game_info.mods_dir)
     if data_oblivion_ini.exists():
         oblivionIni = ConfigParser(allow_no_value=True)
         oblivionIni.read(data_oblivion_ini.s)
@@ -162,7 +162,7 @@ def init_dirs(bashIni_, personal, localAppData, game_info):
             dirs['saveBase'] = dirs['app']
             # Set the data folder to sLocalMasterPath
             dirs['mods'] = dirs['app'].join(get_ini_option(oblivionIni,
-                u'SLocalMasterPath') or u'Data')
+                u'SLocalMasterPath') or game_info.mods_dir)
     # these are relative to the mods path so they must be set here
     dirs['patches'] = dirs['mods'].join(u'Bash Patches')
     dirs['tag_files'] = dirs['mods'].join(u'BashTags')
@@ -171,7 +171,7 @@ def init_dirs(bashIni_, personal, localAppData, game_info):
     oblivionMods, oblivionModsSrc = getOblivionModsPath(bashIni_, game_info)
     dirs['modsBash'], modsBashSrc = getBashModDataPath(bashIni_, game_info)
     dirs['modsBash'], modsBashSrc = getLegacyPathWithSource(
-        dirs['modsBash'], dirs['app'].join(u'Data', u'Bash'),
+        dirs['modsBash'], dirs['app'].join(game_info.mods_dir, u'Bash'),
         modsBashSrc, u'Relative Path')
 
     dirs['installers'] = oblivionMods.join(u'Bash Installers')
