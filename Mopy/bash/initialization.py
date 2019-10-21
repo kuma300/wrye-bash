@@ -133,8 +133,11 @@ def init_dirs(bashIni_, personal, localAppData, game_info):
                                                game_info.masterlist_dir)
 
     #  Personal
-    personal = getPersonalPath(bashIni_, personal)
-    dirs['saveBase'] = personal.join(u'My Games', game_info.fsName)
+    if game_info.uses_personal_folders:
+        personal = getPersonalPath(bashIni_, personal)
+        dirs['saveBase'] = personal.join(u'My Games', game_info.fsName)
+    else:
+        dirs['saveBase'] = dirs['app']
 
     #  Local Application Data
     localAppData = getLocalAppDataPath(bashIni_, localAppData)
