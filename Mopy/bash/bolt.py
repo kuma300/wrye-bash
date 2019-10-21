@@ -338,6 +338,10 @@ class DefaultLowerDict(LowerDict, collections.defaultdict):
         return '{0}({1},{2})'.format(type(self).__name__, self.default_factory,
             super(collections.defaultdict, self).__repr__())
 
+class OrderedLowerDict(LowerDict, collections.OrderedDict):
+    """LowerDict that inherits from OrdererdDict."""
+    __slots__ = () # no __dict__ - that would be redundant
+
 # sio - StringIO wrapper so it uses the 'with' statement, so they can be used
 #  in the same functions that accept files as input/output as well.  Really,
 #  StringIO objects don't need to 'close' ever, since the data is unallocated
