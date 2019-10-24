@@ -520,6 +520,11 @@ class GameInfo(object):
     # (see e.g. skyrim/vanilla_files.py).
     vanilla_files = set()
 
+    # Set in game/*/patcher.py used in Mopy/bash/basher/gui_patchers.py
+    gameSpecificPatchers = {}
+    gameSpecificListPatchers = {}
+    game_specific_import_patchers = {}
+
     @classmethod
     def init(cls):
         # Setting RecordHeader class variables --------------------------------
@@ -571,5 +576,11 @@ class GameInfo(object):
         vf_module = importlib.import_module('.vanilla_files',
                                             package=package_name)
         cls.vanilla_files = vf_module.vanilla_files
+        patchers_module = importlib.import_module('.patcher',
+                                                  package=package_name)
+        cls.gameSpecificPatchers = patchers_module.gameSpecificPatchers
+        cls.gameSpecificListPatchers = patchers_module.gameSpecificListPatchers
+        cls.game_specific_import_patchers = \
+            patchers_module.game_specific_import_patchers
 
 GAME_TYPE = None
