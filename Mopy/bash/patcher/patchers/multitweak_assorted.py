@@ -1913,8 +1913,6 @@ class AssortedTweaker(MultiTweaker):
     """Tweaks assorted stuff. Sub-tweaks behave like patchers themselves."""
     scanOrder = 32
     editOrder = 32
-    name = _(u'Tweak Assorted')
-    text = _(u"Tweak various records in miscellaneous ways.")
 
     if bush.game.fsName == u'Oblivion':
         tweaks = sorted([
@@ -1982,8 +1980,6 @@ class CBash_AssortedTweaker(CBash_MultiTweaker):
     """Tweaks assorted stuff. Sub-tweaks behave like patchers themselves."""
     scanOrder = 32
     editOrder = 32
-    name = _(u'Tweak Assorted')
-    text = _(u"Tweak various records in miscellaneous ways.")
 
     tweaks = sorted([
         CBash_AssortedTweak_ArmorShows(_(u"Armor Shows Amulets"),
