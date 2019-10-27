@@ -134,8 +134,7 @@ class AListPatcher(_Abstract_Patcher):
         return self._patches_set
 
     def _srcMods(self,log):
-        """Logs the Source mods for this patcher - patcher must have `srcs`
-        attribute otherwise an AttributeError will be raised."""
+        """Logs the Source mods for this patcher."""
         log(self.__class__.srcsHeader)
         if not self.srcs:
             log(u". ~~%s~~" % _(u'None'))

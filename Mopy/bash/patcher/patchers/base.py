@@ -135,13 +135,11 @@ class PatchMerger(APatchMerger, ListPatcher): pass
 class CBash_PatchMerger(APatchMerger, CBash_ListPatcher): pass
 
 class UpdateReferences(AUpdateReferences,ListPatcher):
+    # TODO move this to a file it's imported after MreRecord.simpleTypes is set
 
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(UpdateReferences, self).initPatchFile(patchFile)
-        self.types = MreRecord.simpleTypes
-        self.classes = self.types.union(
-            {'CELL', 'WRLD', 'REFR', 'ACHR', 'ACRE'})
+    def __init__(self, p_name, p_file, p_sources):
+        super(UpdateReferences, self).__init__(p_name, p_file,
+                                               p_sources)
         self.old_new = {} #--Maps old fid to new fid
         self.old_eid = {} #--Maps old fid to old editor id
         self.new_eid = {} #--Maps new fid to new editor id
@@ -173,12 +171,12 @@ class UpdateReferences(AUpdateReferences,ListPatcher):
             progress.plus()
 
     def getReadClasses(self):
-        """Returns load factory classes needed for reading."""
-        return tuple(self.classes) if self.isActive else ()
+        return tuple(
+            MreRecord.simpleTypes | ({'CELL', 'WRLD', 'REFR', 'ACHR', 'ACRE'}))
 
     def getWriteClasses(self):
-        """Returns load factory classes needed for writing."""
-        return tuple(self.classes) if self.isActive else ()
+        return tuple(
+            MreRecord.simpleTypes | ({'CELL', 'WRLD', 'REFR', 'ACHR', 'ACRE'}))
 
     def scanModFile(self,modFile,progress):
         """Scans specified mod file to extract info. May add record to patch mod,
@@ -188,7 +186,7 @@ class UpdateReferences(AUpdateReferences,ListPatcher):
         patchCells = self.patchFile.CELL
         patchWorlds = self.patchFile.WRLD
         modFile.convertToLongFids(('CELL','WRLD','REFR','ACRE','ACHR'))
-##        for type in self.types:
+##        for type in MreRecord.simpleTypes:
 ##            for record in getattr(modFile,type).getActiveRecords():
 ##                record = record.getTypeCopy(mapper)
 ##                if record.fid in self.old_new:
@@ -274,7 +272,7 @@ class UpdateReferences(AUpdateReferences,ListPatcher):
         def swapper(oldId):
             newId = old_new.get(oldId,None)
             return newId if newId else oldId
-##        for type in self.types:
+##        for type in MreRecord.simpleTypes:
 ##            for record in getattr(self.patchFile,type).getActiveRecords():
 ##                if record.fid in self.old_new:
 ##                    record.fid = swapper(record.fid)
@@ -329,10 +327,8 @@ from ...parsers import CBash_FidReplacer
 
 class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
 
-    #--Config Phase -----------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CBash_UpdateReferences, self).initPatchFile(patchFile)
-        if not self.isActive: return
+    def __init__(self, p_name, p_file, p_sources):
+        super(CBash_UpdateReferences, self).__init__(p_name, p_file, p_sources)
         self.old_eid = {} #--Maps old fid to old editor id
         self.new_eid = {} #--Maps new fid to new editor id
         self.mod_count_old_new = {}
