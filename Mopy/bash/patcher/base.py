@@ -43,28 +43,19 @@ class _Abstract_Patcher(object):
     scanOrder = 10
     editOrder = 10
     group = u'UNDEFINED'
-    text = u"UNDEFINED."
     iiMode = False
 
     def getName(self):
         """Return patcher name passed in by the gui, needed for logs."""
         return self._patcher_name
 
-    #--Config Phase -----------------------------------------------------------
-    def __init__(self, patcher_name, patchFile):
+    def __init__(self, p_name, p_file):
         """Initialization of common values to defaults."""
         self.isActive = True
-        self.patchFile = patchFile
-        self._patcher_name = patcher_name
+        self.patchFile = p_file
         #--Gui stuff
         self.isEnabled = False #--Patcher is enabled.
-
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        """Prepare to handle specified patch mod. All functions are called
-        after this. Base implementation sets the patchFile to the actively
-        executing patch - be sure to call super."""
-        self.patchFile = patchFile
+        self._patcher_name = p_name
 
 class Patcher(_Abstract_Patcher):
     """Abstract base class for patcher elements performing a PBash patch - must
@@ -127,6 +118,13 @@ class AListPatcher(_Abstract_Patcher):
     srcsHeader = u'=== '+ _(u'Source Mods')
     _patches_set = None
 
+    def __init__(self, p_name, p_file, p_sources):
+        """In addition to super implementation this defines the self.srcs
+        AListPatcher attribute."""
+        super(AListPatcher, self).__init__(p_name, p_file)
+        self.srcs = p_sources
+        self.isActive = bool(self.srcs)
+
     @staticmethod
     def list_patches_dir(): AListPatcher._patches_set = getPatchesList()
 
@@ -134,14 +132,6 @@ class AListPatcher(_Abstract_Patcher):
     def patches_set(self): # ONLY use in patchers config phase or initData
         if self._patches_set is None: self.list_patches_dir()
         return self._patches_set
-
-    def initPatchFile(self, patchFile):
-        """Prepare to handle specified patch mod. All functions are called
-        after this. In addition to super implemenation this defines the
-        self.srcs AListPatcher attribute."""
-        super(AListPatcher, self).initPatchFile(patchFile)
-        self.srcs = self.getConfigChecked()
-        self.isActive = bool(self.srcs)
 
     def _srcMods(self,log):
         """Logs the Source mods for this patcher - patcher must have `srcs`
@@ -152,11 +142,6 @@ class AListPatcher(_Abstract_Patcher):
         else:
             for srcFile in self.srcs:
                 log(u"* " +srcFile.s)
-
-    #--Patch Phase ------------------------------------------------------------
-    def getConfigChecked(self):
-        """Returns checked config items in list order."""
-        return [item for item in self.configItems if self.configChecks[item]]
 
 class AMultiTweaker(_Abstract_Patcher):
     """Combines a number of sub-tweaks which can be individually enabled and
@@ -170,14 +155,6 @@ class AAliasesPatcher(_Abstract_Patcher):
     scanOrder = 10
     editOrder = 10
     group = _(u'General')
-
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        """Prepare to handle specified patch mod. All functions are called
-        after this."""
-        super(AAliasesPatcher, self).initPatchFile(patchFile)
-        if self.isEnabled:
-            self.patchFile.aliases = self.aliases
 
 #------------------------------------------------------------------------------
 # AMultiTweakItem(object)------------------------------------------------------

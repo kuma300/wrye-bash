@@ -28,7 +28,7 @@ from ....bolt import GPath, sio, SubProgress, CsvReader
 from ....patcher import getPatchesPath
 from ....parsers import LoadFactory, ModFile
 from ....brec import MreRecord, RecordHeader, null4
-from .... import brec, bosh, bush, load_order
+from .... import bosh, bush, load_order
 from ....cint import MGEFCode, FormID
 from ....exception import StateError
 from ....patcher.base import Patcher, CBash_Patcher
@@ -38,6 +38,7 @@ from ....patcher.patchers.base import SpecialPatcher, ListPatcher, \
 __all__ = ['AlchemicalCatalogs', 'CBash_AlchemicalCatalogs', 'CoblExhaustion',
            'MFactMarker', 'CBash_MFactMarker', 'CBash_CoblExhaustion',
            'SEWorldEnforcer', 'CBash_SEWorldEnforcer']
+_cobl_main = GPath(u'COBL Main.esm')
 
 # Util Functions --------------------------------------------------------------
 def _PrintFormID(fid):
@@ -59,15 +60,14 @@ class _AAlchemicalCatalogs(SpecialPatcher):
         [_(u"Update COBL's catalogs of alchemical ingredients and effects."),
          _(u'Will only run if Cobl Main.esm is loaded.')])
     # CONFIG DEFAULTS
-    default_isEnabled = True
+    default_isEnabled = True  # FIXME move to gui
 
 class AlchemicalCatalogs(_AAlchemicalCatalogs,Patcher):
     _read_write_records = ('INGR',)
 
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(AlchemicalCatalogs, self).initPatchFile(patchFile)
-        self.isActive = (GPath(u'COBL Main.esm') in patchFile.loadSet)
+    def __init__(self, p_name, p_file):
+        super(AlchemicalCatalogs, self).__init__(p_name, p_file)
+        self.isActive = (_cobl_main in p_file.loadSet)
         self.id_ingred = {}
 
     def getWriteClasses(self):
@@ -171,15 +171,12 @@ class AlchemicalCatalogs(_AAlchemicalCatalogs,Patcher):
         log(u'* '+_(u'Effects Cataloged') + u': %d' % len(effect_ingred))
 
 class CBash_AlchemicalCatalogs(_AAlchemicalCatalogs,CBash_Patcher):
-    srcs = [] #so as not to fail screaming when determining load mods - but
-    # with the least processing required.
 
-    #--Config Phase -----------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CBash_AlchemicalCatalogs, self).initPatchFile(patchFile)
-        self.isActive = GPath(u'Cobl Main.esm') in patchFile.loadSet
+    def __init__(self, p_name, p_file):
+        super(CBash_AlchemicalCatalogs, self).__init__(p_name, p_file)
+        self.isActive = _cobl_main in p_file.loadSet
         if not self.isActive: return
-        patchFile.indexMGEFs = True
+        p_file.indexMGEFs = True
         self.id_ingred = {}
         self.effect_ingred = defaultdict(list)
         self.SEFF = MGEFCode('SEFF')
@@ -374,13 +371,11 @@ class _ACoblExhaustion(SpecialPatcher):
 class CoblExhaustion(_ACoblExhaustion,ListPatcher):
     _read_write_records = ('SPEL',)
 
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CoblExhaustion, self).initPatchFile(patchFile)
-        self.cobl = GPath(u'Cobl Main.esm')
+    def __init__(self, p_name, p_file, p_sources):
+        super(CoblExhaustion, self).__init__(p_name, p_file, p_sources)
         self.isActive = bool(self.srcs) and (
-            self.cobl in patchFile.loadSet and bosh.modInfos.getVersionFloat(
-                self.cobl) > 1.65)
+                _cobl_main in p_file.loadSet and bosh.modInfos.getVersionFloat(
+            _cobl_main) > 1.65)
         self.id_exhaustion = {}
 
     def readFromText(self,textPath):
@@ -423,7 +418,7 @@ class CoblExhaustion(_ACoblExhaustion,ListPatcher):
         """Edits patch file as desired. Will write to log."""
         if not self.isActive: return
         count = Counter()
-        exhaustId = (self.cobl,0x05139B)
+        exhaustId = (_cobl_main, 0x05139B)
         keep = self.patchFile.getKeeper()
         for record in self.patchFile.SPEL.records:
             #--Skip this one?
@@ -457,16 +452,13 @@ class CoblExhaustion(_ACoblExhaustion,ListPatcher):
 
 class CBash_CoblExhaustion(_ACoblExhaustion, _DefaultDictLog):
 
-    #--Config Phase -----------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CBash_CoblExhaustion, self).initPatchFile(patchFile)
-        if not self.isActive: return
-        self.cobl = GPath(u'Cobl Main.esm')
-        self.isActive = (self.cobl in patchFile.loadSet and
-                         bosh.modInfos.getVersionFloat(self.cobl) > 1.65)
+    def __init__(self, p_name, p_file, p_sources):
+        super(CBash_CoblExhaustion, self).__init__(p_name, p_file, p_sources)
+        self.isActive = (_cobl_main in p_file.loadSet and
+                         bosh.modInfos.getVersionFloat(_cobl_main) > 1.65)
         self.id_exhaustion = {}
         self.SEFF = MGEFCode('SEFF')
-        self.exhaustionId = FormID(self.cobl, 0x05139B)
+        self.exhaustionId = FormID(_cobl_main, 0x05139B)
 
     def initData(self,group_patchers,progress):
         if not self.isActive: return
@@ -498,7 +490,6 @@ class CBash_CoblExhaustion(_ACoblExhaustion, _DefaultDictLog):
                 longid = FormID(aliases.get(mod,mod),int(objectIndex[2:],16))
                 id_exhaustion[longid] = int(time)
 
-    #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
         if record.IsPower:
@@ -533,7 +524,6 @@ class _AMFactMarker(SpecialPatcher):
     patcher_text = u'\n\n'.join(
         [_(u"Mark factions that player can acquire while morphing."),
          _(u"Requires Cobl 1.28 and Wrye Morph or similar.")])
-    autoRe = re.compile(u'^UNDEFINED$', re.I | re.U)
     canAutoItemCheck = False #--GUI: Whether new items are checked by default
     srcsHeader = u'=== ' + _(u'Source Mods/Files')
     autoKey = {u'MFact'}
@@ -548,13 +538,11 @@ class _AMFactMarker(SpecialPatcher):
 class MFactMarker(_AMFactMarker,ListPatcher):
     _read_write_records = ('FACT',)
 
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(MFactMarker, self).initPatchFile(patchFile)
+    def __init__(self, p_name, p_file, p_sources):
+        super(MFactMarker, self).__init__(p_name, p_file, p_sources)
         self.id_info = {} #--Morphable factions keyed by fid
-        self.isActive = bool(self.srcs) and GPath(
-            u"Cobl Main.esm") in patchFile.loadSet
-        self.mFactLong = (GPath(u"Cobl Main.esm"),0x33FB)
+        self.isActive = bool(self.srcs) and _cobl_main in p_file.loadSet
+        self.mFactLong = (_cobl_main, 0x33FB)
 
     def initData(self,progress):
         """Get names from source files."""
@@ -581,10 +569,9 @@ class MFactMarker(_AMFactMarker,ListPatcher):
         """Scan modFile."""
         if not self.isActive: return
         id_info = self.id_info
-        modName = modFile.fileInfo.name
         mapper = modFile.getLongMapper()
         patchBlock = self.patchFile.FACT
-        if modFile.fileInfo.name == GPath(u"Cobl Main.esm"):
+        if modFile.fileInfo.name == _cobl_main:
             modFile.convertToLongFids(('FACT',))
             record = modFile.FACT.getRecord(self.mFactLong)
             if record:
@@ -644,15 +631,12 @@ class MFactMarker(_AMFactMarker,ListPatcher):
 
 class CBash_MFactMarker(_AMFactMarker, _DefaultDictLog):
 
-    #--Config Phase -----------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CBash_MFactMarker, self).initPatchFile(patchFile)
-        if not self.isActive: return
-        self.cobl = GPath(u'Cobl Main.esm')
-        self.isActive = self.cobl in patchFile.loadSet and \
-                        bosh.modInfos.getVersionFloat(self.cobl) > 1.27
+    def __init__(self, p_name, p_file, p_sources):
+        super(CBash_MFactMarker, self).__init__(p_name, p_file, p_sources)
+        self.isActive = _cobl_main in p_file.loadSet and \
+                        bosh.modInfos.getVersionFloat(_cobl_main) > 1.27
         self.id_info = {} #--Morphable factions keyed by fid
-        self.mFactLong = FormID(self.cobl,0x33FB)
+        self.mFactLong = FormID(_cobl_main, 0x33FB)
         self.mFactable = set()
 
     def initData(self,group_patchers,progress):
@@ -723,8 +707,7 @@ class CBash_MFactMarker(_AMFactMarker, _DefaultDictLog):
         if not mFactable: return
         subProgress = SubProgress(progress)
         subProgress.setFull(max(len(mFactable),1))
-        coblMod = patchFile.Current.LookupModFile(self.cobl.s)
-
+        coblMod = patchFile.Current.LookupModFile(_cobl_main.s)
         record = coblMod.LookupRecord(self.mFactLong)
         if record.recType != 'FACT':
             _PrintFormID(self.mFactLong)
@@ -758,11 +741,10 @@ class _ASEWorldEnforcer(SpecialPatcher):
 class SEWorldEnforcer(_ASEWorldEnforcer,Patcher):
     _read_write_records = ('QUST',)
 
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(SEWorldEnforcer, self).initPatchFile(patchFile)
+    def __init__(self, p_name, p_file):
+        super(SEWorldEnforcer, self).__init__(p_name, p_file)
         self.cyrodiilQuests = set()
-        if GPath(u'Oblivion.esm') in patchFile.loadSet:
+        if GPath(u'Oblivion.esm') in p_file.loadSet:
             loadFactory = LoadFactory(False,MreRecord.type_class['QUST'])
             modInfo = bosh.modInfos[GPath(u'Oblivion.esm')]
             modFile = ModFile(modInfo,loadFactory)
@@ -807,25 +789,23 @@ class SEWorldEnforcer(_ASEWorldEnforcer,Patcher):
                 record.conditions.insert(0,condition)
                 keep(record.fid)
                 patched.append(record.eid)
-        log.setHeader('= ' + self._patcher_name)
+        log.setHeader(u'= ' + self._patcher_name)
         log(u'==='+_(u'Quests Patched') + u': %d' % (len(patched),))
 
 class CBash_SEWorldEnforcer(_ASEWorldEnforcer,CBash_Patcher):
     scanRequiresChecked = True
     applyRequiresChecked = False
 
-    #--Config Phase -----------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CBash_SEWorldEnforcer, self).initPatchFile(patchFile)
+    def __init__(self, p_name, p_file):
+        super(CBash_SEWorldEnforcer, self).__init__(p_name, p_file)
         self.cyrodiilQuests = set()
         self.srcs = [GPath(u'Oblivion.esm')]
-        self.isActive = self.srcs[0] in patchFile.loadSet
+        self.isActive = self.srcs[0] in p_file.loadSet
         self.mod_eids = defaultdict(list)
 
     def getTypes(self):
         return ['QUST']
 
-    #--Patch Phase ------------------------------------------------------------
     def scan(self,modFile,record,bashTags):
         """Records information needed to apply the patch."""
         for condition in record.conditions:

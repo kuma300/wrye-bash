@@ -265,7 +265,6 @@ class CBash_ListsMerger(_AListsMerger, CBash_ListPatcher):
     def getTypes(self):
         return ['LVLC','LVLI','LVSP']
 
-    #--Patch Phase ------------------------------------------------------------
     def scan(self,modFile,record,bashTags):
         """Records information needed to apply the patch."""
         recordId = record.fid
@@ -557,9 +556,8 @@ class _AContentsChecker(SpecialPatcher):
 
 class ContentsChecker(_AContentsChecker,Patcher):
 
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(ContentsChecker, self).initPatchFile(patchFile)
+    def __init__(self, p_name, p_file):
+        super(ContentsChecker, self).__init__(p_name, p_file)
         self.fid_to_type = {}
         self.id_eid = {}
 
@@ -670,9 +668,8 @@ class CBash_ContentsChecker(_AContentsChecker,CBash_Patcher):
     srcs = []  # so as not to fail screaming when determining load mods - but
     # with the least processing required.
 
-    #--Config Phase -----------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CBash_ContentsChecker, self).initPatchFile(patchFile)
+    def __init__(self, p_name, p_file):
+        super(CBash_ContentsChecker, self).__init__(p_name, p_file)
         self.isActive = True
         self.listTypes = {'LVSP', 'LVLC', 'LVLI'}
         self.containerTypes = {'CONT', 'CREA', 'NPC_'}
@@ -683,7 +680,6 @@ class CBash_ContentsChecker(_AContentsChecker,CBash_Patcher):
         """Returns the group types that this patcher checks"""
         return ['CONT','CREA','NPC_','LVLI','LVLC','LVSP']
 
-    #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired."""
         rec_type = record._Type

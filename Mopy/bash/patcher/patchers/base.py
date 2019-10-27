@@ -39,28 +39,17 @@ class ListPatcher(AListPatcher,Patcher): pass
 
 class CBash_ListPatcher(AListPatcher,CBash_Patcher):
 
-    def initPatchFile(self, patchFile):
-        super(CBash_ListPatcher, self).initPatchFile(patchFile)
+    def __init__(self, p_name, p_file, p_sources):
+        super(CBash_ListPatcher, self).__init__(p_name, p_file,
+                                                p_sources)
         # used in all subclasses except CBash_RacePatcher,
         # CBash_PatchMerger, CBash_UpdateReferences
         self.mod_count = Counter()
 
-    #--Patch Phase ------------------------------------------------------------
-    def getConfigChecked(self):
-        """Returns checked config items in list order."""
-        if self.allowUnloaded:
-            return [item for item in self.configItems if
-                    self.configChecks[item]]
-        else:
-            return [item for item in self.configItems if
-                    self.configChecks[item] and (
-                        item in self.patchFile.allSet or
-                        not bosh.ModInfos.rightFileType(item.s))]
-
 class MultiTweakItem(AMultiTweakItem):
     # Notice the differences from Patcher in scanModFile and buildPatch
     # TODO: scanModFile() have VERY similar code - use getReadClasses here ?
-    #--Patch Phase ------------------------------------------------------------
+
     def getReadClasses(self):
         """Returns load factory classes needed for reading."""
         return self.__class__.tweak_read_classes
@@ -116,19 +105,18 @@ class MultiTweaker(AMultiTweaker,Patcher):
             tweak.buildPatch(log,progress,self.patchFile)
 
 class CBash_MultiTweaker(AMultiTweaker,CBash_Patcher):
-    #--Config Phase -----------------------------------------------------------
+
+    def __init__(self, p_name, p_file):
+        super(CBash_MultiTweaker, self).__init__(p_name, p_file)
+        for tweak in self.tweaks:
+            tweak.patchFile = p_file
+
     def initData(self,group_patchers,progress):
         """Compiles material, i.e. reads source text, esp's, etc. as necessary."""
         if not self.isActive: return
         for tweak in self.enabledTweaks:
             for type_ in tweak.getTypes():
                 group_patchers.setdefault(type_,[]).append(tweak)
-
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(CBash_MultiTweaker, self).initPatchFile(patchFile)
-        for tweak in self.tweaks:
-            tweak.patchFile = patchFile
 
     def buildPatchLog(self,log):
         """Will write to log."""
@@ -380,7 +368,6 @@ class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
                 'ACRES','REFRS','DIAL','INFOS','QUST','IDLE',
                 'PACK','LSCR','LVSP','ANIO','WATR']
 
-    #--Patch Phase ------------------------------------------------------------
     def mod_apply(self, modFile):
         """Changes the mod in place without copying any records."""
         counts = modFile.UpdateReferences(self.old_new)

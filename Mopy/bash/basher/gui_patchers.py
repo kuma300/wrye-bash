@@ -43,7 +43,7 @@ class _PatcherPanel(object):
     style = wx.TAB_TRAVERSAL
     # CONFIG DEFAULTS
     default_isEnabled = False # is the patcher enabled on a new bashed patch ?
-    patcher_type = type
+    patcher_type = None # type: patcher.base._Abstract_Patcher
     _patcher_txt = u'UNDEFINED'
     patcher_name = u'UNDEFINED'
 
@@ -162,6 +162,11 @@ class _PatcherPanel(object):
         get_font = self.gConfigPanel.GetFont()
         cntrl.SetItemFont(index, balt.Font.Style(get_font, bold=True))
 
+    def get_patcher_instance(self, patch_file):
+        """Instantiate and return an instance of self.__class__.patcher_type,
+        initialized with the config options from the Gui"""
+        return self.patcher_type(self.patcher_name, patch_file)
+
 #------------------------------------------------------------------------------
 class _AliasesPatcherPanel(_PatcherPanel):
     # CONFIG DEFAULTS
@@ -225,6 +230,12 @@ class _AliasesPatcherPanel(_PatcherPanel):
             log(u'* __%s__ >> %s' % (mod.s, alias.s))
             clip.write(u'  %s >> %s\n' % (mod.s, alias.s))
 
+    def get_patcher_instance(self, patch_file):
+        """Set patch_file aliases dict"""
+        if self.isEnabled:
+            patch_file.aliases = self.aliases
+        return self.patcher_type(self.patcher_name, patch_file)
+
 #------------------------------------------------------------------------------
 class _ListPatcherPanel(_PatcherPanel):
     """Patcher panel with option to select source elements."""
@@ -233,8 +244,6 @@ class _ListPatcherPanel(_PatcherPanel):
     forceItemCheck = False #--Force configChecked to True for all items
     canAutoItemCheck = True #--GUI: Whether new items are checked by default
     show_empty_sublist_checkbox = False
-    #--Compiled re used by getAutoItems
-    autoRe = re.compile(u'^UNDEFINED$', re.I | re.U)
     # ADDITIONAL CONFIG DEFAULTS FOR LIST PATCHER
     default_autoIsChecked = True
     default_remove_empty_sublists = bush.game.fsName == u'Oblivion'
@@ -473,11 +482,10 @@ class _ListPatcherPanel(_PatcherPanel):
         return autoItems
 
     def _get_auto_mods(self):
-        autoRe = self.__class__.autoRe
         mods_prior_to_patch = load_order.cached_lower_loading_espms(
             patch_files.executing_patch)
-        return [mod for mod in mods_prior_to_patch if autoRe.match(mod.s) or (
-            self.__class__.autoKey & bosh.modInfos[mod].getBashTags())]
+        return [mod for mod in mods_prior_to_patch if
+                self.__class__.autoKey & bosh.modInfos[mod].getBashTags()]
 
     def _import_config(self, default=False):
         super(_ListPatcherPanel, self)._import_config(default)
@@ -491,6 +499,16 @@ class _ListPatcherPanel(_PatcherPanel):
                 pass
                 # bolt.deprint(_(u'item %s not in saved configs [%s]') % (
                 #     item, u', '.join(map(repr, self.configChecks))))
+
+    def get_patcher_instance(self, patch_file):
+        patcher_sources = [x for x in self.configItems if self.configChecks[x]]
+        # that is for CBash List patchers - TODO(ut): how exactly used?
+        if hasattr(self.patcher_type, 'allowUnloaded') and \
+                not self.patcher_type.allowUnloaded:
+            patcher_sources = [s for s in patcher_sources if
+                s in patch_file.allSet or not bosh.ModInfos.rightFileType(s.s)]
+        return self.patcher_type(self.patcher_name, patch_file,
+                                 patcher_sources)
 
 class _ChoiceMenuMixin(object):
     #--List of possible choices for each config item. Item 0 is default.
@@ -811,10 +829,6 @@ class _DoublePatcherPanel(_TweakPatcherPanel, _ListPatcherPanel):
 #------------------------------------------------------------------------------
 class _ImporterPatcherPanel(_ListPatcherPanel):
 
-    #--Config Phase -----------------------------------------------------------
-    autoRe = re.compile(u'^UNDEFINED$', re.I | re.U) # overridden by
-    # NamesPatcher, NpcFacePatcher, and not used by ImportInventory,
-    # ImportRelations, ImportFactions
     def saveConfig(self, configs):
         """Save config to configs dictionary."""
         config = super(_ImporterPatcherPanel, self).saveConfig(configs)
@@ -1133,6 +1147,13 @@ class _ANpcFacePatcher(_ImporterPatcherPanel):
                      u'with TNR and similar mods.')
     autoKey = {u'NpcFaces', u'NpcFacesForceFullImport', u'Npc.HairOnly',
                u'Npc.EyesOnly'}
+
+    def _get_auto_mods(self, autoRe=re.compile(u'^TNR .*.esp$', re.I | re.U)):
+        """Pick TNR esp if present in addition to appropriately tagged mods."""
+        mods_prior_to_patch = load_order.cached_lower_loading_espms(
+            patch_files.executing_patch)
+        return [mod for mod in mods_prior_to_patch if autoRe.match(mod.s) or (
+            self.__class__.autoKey & bosh.modInfos[mod].getBashTags())]
 
 class NpcFacePatcher(_ANpcFacePatcher):
     patcher_type = importers.NpcFacePatcher
