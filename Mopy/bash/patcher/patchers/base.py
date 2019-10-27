@@ -40,8 +40,7 @@ class ListPatcher(AListPatcher,Patcher): pass
 class CBash_ListPatcher(AListPatcher,CBash_Patcher):
 
     def __init__(self, p_name, p_file, p_sources):
-        super(CBash_ListPatcher, self).__init__(p_name, p_file,
-                                                p_sources)
+        super(CBash_ListPatcher, self).__init__(p_name, p_file, p_sources)
         # used in all subclasses except CBash_RacePatcher,
         # CBash_PatchMerger, CBash_UpdateReferences
         self.mod_count = Counter()
