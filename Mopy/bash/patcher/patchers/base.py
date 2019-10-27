@@ -344,6 +344,13 @@ class UpdateReferences(AUpdateReferences,ListPatcher):
 from ...parsers import CBash_FidReplacer
 
 class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
+    _read_write_records = (
+        'MOD', 'FACT', 'RACE', 'MGEF', 'SCPT', 'LTEX', 'ENCH', 'SPEL', 'BSGN',
+        'ACTI', 'APPA', 'ARMO', 'BOOK', 'CLOT', 'CONT', 'DOOR', 'INGR', 'LIGH',
+        'MISC', 'FLOR', 'FURN', 'WEAP', 'AMMO', 'NPC_', 'CREA', 'LVLC', 'SLGM',
+        'KEYM', 'ALCH', 'SGST', 'LVLI', 'WTHR', 'CLMT', 'REGN', 'CELLS',
+        'WRLD', 'ACHRS', 'ACRES', 'REFRS', 'DIAL', 'INFOS', 'QUST', 'IDLE',
+        'PACK', 'LSCR', 'LVSP', 'ANIO', 'WATR')
 
     def __init__(self, p_name, p_file, p_sources):
         super(CBash_UpdateReferences, self).__init__(p_name, p_file, p_sources)
@@ -371,16 +378,6 @@ class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
         # resets isActive !!
         for type_ in self.getTypes():
             group_patchers.setdefault(type_,[]).append(self)
-
-    def getTypes(self):
-        return ['MOD','FACT','RACE','MGEF','SCPT','LTEX','ENCH',
-                'SPEL','BSGN','ACTI','APPA','ARMO','BOOK',
-                'CLOT','CONT','DOOR','INGR','LIGH','MISC',
-                'FLOR','FURN','WEAP','AMMO','NPC_','CREA',
-                'LVLC','SLGM','KEYM','ALCH','SGST','LVLI',
-                'WTHR','CLMT','REGN','CELLS','WRLD','ACHRS',
-                'ACRES','REFRS','DIAL','INFOS','QUST','IDLE',
-                'PACK','LSCR','LVSP','ANIO','WATR']
 
     def mod_apply(self, modFile):
         """Changes the mod in place without copying any records."""
