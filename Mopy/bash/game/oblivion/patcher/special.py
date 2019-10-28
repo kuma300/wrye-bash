@@ -31,9 +31,8 @@ from ....brec import MreRecord, RecordHeader, null4
 from .... import bosh, bush, load_order
 from ....cint import MGEFCode, FormID
 from ....exception import StateError
-from ....patcher.base import Patcher, CBash_Patcher
-from ....patcher.patchers.base import SpecialPatcher, ListPatcher, \
-    CBash_ListPatcher
+from ....patcher.base import Patcher, CBash_Patcher, _Abstract_Patcher
+from ....patcher.patchers.base import ListPatcher, CBash_ListPatcher
 
 __all__ = ['AlchemicalCatalogs', 'CBash_AlchemicalCatalogs', 'CoblExhaustion',
            'MFactMarker', 'CBash_MFactMarker', 'CBash_CoblExhaustion',
@@ -53,14 +52,30 @@ def _PrintFormID(fid):
         fid = repr(fid)
     print fid.encode('utf-8')
 
-class _AAlchemicalCatalogs(SpecialPatcher):
+class _ExSpecial(_Abstract_Patcher):
+    """Those used to be subclasses of SpecialPatcher that did not make much
+    sense as they did not use scan_more."""
+    group = _(u'Special')
+    scanOrder = 40
+    editOrder = 40
+
+    @classmethod
+    def gui_cls_vars(cls):
+        """Class variables for gui patcher classes created dynamically."""
+        return {'patcher_type': cls, '_patcher_txt': cls.patcher_text,
+                'patcher_name': cls.patcher_name}
+
+class _AAlchemicalCatalogs(_ExSpecial):
     """Updates COBL alchemical catalogs."""
     patcher_name = _(u'Cobl Catalogs')
     patcher_text = u'\n\n'.join(
         [_(u"Update COBL's catalogs of alchemical ingredients and effects."),
          _(u'Will only run if Cobl Main.esm is loaded.')])
-    # CONFIG DEFAULTS
-    default_isEnabled = True  # FIXME move to gui
+
+    @classmethod
+    def gui_cls_vars(cls):
+        cls_vars = super(_AAlchemicalCatalogs, cls).gui_cls_vars()
+        return (lambda d: d.update(cls_vars) or d)({'default_isEnabled': True})
 
 class AlchemicalCatalogs(_AAlchemicalCatalogs,Patcher):
     _read_write_records = ('INGR',)
@@ -339,6 +354,14 @@ class CBash_AlchemicalCatalogs(_AAlchemicalCatalogs,CBash_Patcher):
         log(u'* '+_(u'Effects Cataloged') + u': %d' % len(effect_ingred))
 
 #------------------------------------------------------------------------------
+class _ExSpecialList(_ExSpecial):
+
+    @classmethod
+    def gui_cls_vars(cls):
+        cls_vars = super(_ExSpecialList, cls).gui_cls_vars()
+        more = {'canAutoItemCheck': False, 'autoKey': cls.autoKey}
+        return (lambda d: d.update(cls_vars) or d)(more)
+
 class _DefaultDictLog(CBash_ListPatcher):
     """Patchers that log [mod -> record count] """
 
@@ -349,7 +372,7 @@ class _DefaultDictLog(CBash_ListPatcher):
         self._pLog(log, self.mod_count)
         self.mod_count = Counter()
 
-class _ACoblExhaustion(SpecialPatcher):
+class _ACoblExhaustion(_ExSpecialList):
     """Modifies most Greater power to work with Cobl's power exhaustion
     feature."""
     # TODO: readFromText differ only in (PBash -> CBash):
@@ -359,7 +382,6 @@ class _ACoblExhaustion(SpecialPatcher):
     patcher_text = u'\n\n'.join(
         [_(u"Modify greater powers to use Cobl's Power Exhaustion feature."),
          _(u'Will only run if Cobl Main v1.66 (or higher) is active.')])
-    canAutoItemCheck = False #--GUI: Whether new items are checked by default
     autoKey = {u'Exhaust'}
 
     def _pLog(self, log, count):
@@ -518,13 +540,12 @@ class CBash_CoblExhaustion(_ACoblExhaustion, _DefaultDictLog):
                 record._RecordID = override._RecordID
 
 #------------------------------------------------------------------------------
-class _AMFactMarker(SpecialPatcher):
+class _AMFactMarker(_ExSpecialList):
     """Mark factions that player can acquire while morphing."""
     patcher_name = _(u'Morph Factions')
     patcher_text = u'\n\n'.join(
         [_(u"Mark factions that player can acquire while morphing."),
          _(u"Requires Cobl 1.28 and Wrye Morph or similar.")])
-    canAutoItemCheck = False #--GUI: Whether new items are checked by default
     srcsHeader = u'=== ' + _(u'Source Mods/Files')
     autoKey = {u'MFact'}
 
@@ -729,14 +750,17 @@ class CBash_MFactMarker(_AMFactMarker, _DefaultDictLog):
         mFactable.clear()
 
 #------------------------------------------------------------------------------
-class _ASEWorldEnforcer(SpecialPatcher):
+class _ASEWorldEnforcer(_ExSpecial):
     """Suspends Cyrodiil quests while in Shivering Isles."""
     patcher_name = _(u'SEWorld Tests')
     patcher_text = _(u"Suspends Cyrodiil quests while in Shivering Isles. "
                      u"I.e. re-instates GetPlayerInSEWorld tests as "
                      u"necessary.")
-    # CONFIG DEFAULTS
-    default_isEnabled = True
+
+    @classmethod
+    def gui_cls_vars(cls):
+        cls_vars = super(_ASEWorldEnforcer, cls).gui_cls_vars()
+        return (lambda d: d.update(cls_vars) or d)({'default_isEnabled': True})
 
 class SEWorldEnforcer(_ASEWorldEnforcer,Patcher):
     _read_write_records = ('QUST',)
