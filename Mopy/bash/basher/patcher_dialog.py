@@ -38,9 +38,8 @@ from ..exception import BoltError, CancelError, FileEditError, \
 from ..gui import CancelButton, DeselectAllButton, HLayout, Label, \
     LayoutOptions, OkButton, OpenButton, RevertButton, RevertToSavedButton, \
     SaveAsButton, SelectAllButton, Stretch, VLayout
-from ..patcher import configIsCBash, exportConfig
+from ..patcher import configIsCBash, exportConfig, list_patches_dir
 from ..patcher.patch_files import PatchFile, CBash_PatchFile
-from ..patcher.base import AListPatcher
 
 # Final lists of gui patcher classes instances, initialized in
 # gui_patchers.InitPatchers() based on game. These must be copied as needed.
@@ -67,7 +66,7 @@ class PatchDialog(balt.Dialog):
         super(PatchDialog, self).__init__(parent, title=title, size=size)
         self.SetSizeHints(400,300)
         #--Data
-        AListPatcher.list_patches_dir()
+        list_patches_dir() # refresh cached dir
         groupOrder = dict([(group,index) for index,group in
             enumerate((_(u'General'),_(u'Importers'),_(u'Tweakers'),_(u'Special')))])
         patchConfigs = bosh.modInfos.table.getItem(patchInfo.name,'bash.patch.configs',{})
