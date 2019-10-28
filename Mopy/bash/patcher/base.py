@@ -53,8 +53,6 @@ class _Abstract_Patcher(object):
         """Initialization of common values to defaults."""
         self.isActive = True
         self.patchFile = p_file
-        #--Gui stuff
-        self.isEnabled = False #--Patcher is enabled.
         self._patcher_name = p_name
 
 class Patcher(_Abstract_Patcher):
@@ -254,16 +252,13 @@ class APatchMerger(AListPatcher):
     editOrder = 10
     group = _(u'General')
 
-    #--Patch Phase ------------------------------------------------------------
-    def initPatchFile(self, patchFile):
-        super(APatchMerger, self).initPatchFile(patchFile)
+    def __init__(self, p_name, p_file, p_sources):
+        super(APatchMerger, self).__init__(p_name, p_file, p_sources)
         #--WARNING: Since other patchers may rely on the following update
         # during their initPatchFile section, it's important that PatchMerger
         # runs first or near first.
         if not self.isActive: return
-        if self.isEnabled: #--Since other mods may rely on this
-            patchFile.set_mergeable_mods( # self.srcs set in initPatchFile
-                self.srcs)
+        p_file.set_mergeable_mods(self.srcs)
 
 class AUpdateReferences(AListPatcher):
     """Imports Form Id replacers into the Bashed Patch."""

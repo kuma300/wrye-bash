@@ -27,7 +27,7 @@ from itertools import chain
 from operator import attrgetter
 # Internal
 from .base import ImportPatcher, CBash_ImportPatcher
-from ..base import AImportPatcher
+from ..base import AImportPatcher, AListPatcher
 from ... import bosh # for modInfos
 from ... import bush, load_order
 from ...bolt import GPath, MemorySet
@@ -1548,19 +1548,26 @@ class CBash_ImportScripts(_RecTypeModLogging):
                 record._RecordID = override._RecordID
 
 #------------------------------------------------------------------------------
-
-class ImportInventory(ImportPatcher):
-    logMsg = u'\n=== ' + _(u'Inventories Changed') + u': %d'
+class _AImportInventory(AListPatcher):  # next clas that has ___init__
     iiMode = True
 
     def __init__(self, p_name, p_file, p_sources):
-        super(ImportInventory, self).__init__(p_name, p_file, p_sources)
+        super(_AImportInventory, self).__init__(p_name, p_file, p_sources)
         self.id_deltas = {}
-        self.srcs = [x for x in self.srcs if
-                     x in bosh.modInfos and x in p_file.allSet]
+        #should be redundant since this patcher doesn't allow unloaded
+        #self.srcs = [x for x in self.srcs if (x in modInfos and x in
+        # patchFile.allMods)]
         self.inventOnlyMods = set(x for x in self.srcs if (
                 x in p_file.mergeSet and {u'InventOnly', u'IIM'} &
                 bosh.modInfos[x].getBashTags()))
+
+class ImportInventory(_AImportInventory, ImportPatcher):
+    logMsg = u'\n=== ' + _(u'Inventories Changed') + u': %d'
+
+    def __init__(self, p_name, p_file, p_sources):
+        p_sources = [x for x in p_sources if
+                     x in bosh.modInfos and x in p_file.allSet]
+        super(ImportInventory, self).__init__(p_name, p_file, p_sources)
         self.isActive = bool(self.srcs)
         self.masters = set(chain.from_iterable(
             bosh.modInfos[srcMod].get_masters() for srcMod in self.srcs))
@@ -1670,20 +1677,10 @@ class ImportInventory(ImportPatcher):
 
     def _plog(self, log, mod_count): self._plog1(log, mod_count)
 
-class CBash_ImportInventory(_RecTypeModLogging):
-    iiMode = True
+class CBash_ImportInventory(_AImportInventory, _RecTypeModLogging):
     listSrcs=False
     logModRecs = u'%(type)s ' + _(u'Inventories Changed') + u': %(count)d'
-
-    def __init__(self, p_name, p_file, p_sources):
-        super(CBash_ImportInventory, self).__init__(p_name, p_file, p_sources)
-        self.id_deltas = {}
-        #should be redundant since this patcher doesn't allow unloaded
-        #self.srcs = [x for x in self.srcs if (x in modInfos and x in
-        # patchFile.allMods)]
-        self.inventOnlyMods = set(x for x in self.srcs if (
-                x in p_file.mergeSet and {u'InventOnly', u'IIM'} &
-                bosh.modInfos[x].getBashTags()))
+    allowUnloaded = False # FIXME CORRECT? comments seem to say so
 
     def getTypes(self):
         """Returns the group types that this patcher checks"""
