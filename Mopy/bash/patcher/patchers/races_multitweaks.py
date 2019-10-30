@@ -1090,6 +1090,11 @@ class _CBashOnlyRacePatchers(SpecialPatcher, AListPatcher):
     scanRequiresChecked = True
     applyRequiresChecked = False
 
+    def initData(self,group_patchers,progress):
+        if not self.isActive: return
+        for record_type in self.getTypes(): # FIXME naming
+            group_patchers[record_type].append(self)
+
 class CBash_RacePatcher_Relations(_CBashOnlyRacePatchers):
     """Merges changes to race relations."""
     autoKey = {u'R.Relations'}
@@ -1099,11 +1104,6 @@ class CBash_RacePatcher_Relations(_CBashOnlyRacePatchers):
                                                           p_sources)
         self.racesPatched = set()
         self.fid_faction_mod = {}
-
-    def initData(self,group_patchers,progress):
-        if not self.isActive: return
-        for type in self.getTypes():
-            group_patchers.setdefault(type,[]).append(self)
 
     def getTypes(self):
         return ['RACE']
@@ -1179,11 +1179,6 @@ class CBash_RacePatcher_Imports(_CBashOnlyRacePatchers):
         self.racesPatched = set()
         self.fid_attr_value = defaultdict(dict)
 
-    def initData(self,group_patchers,progress):
-        if not self.isActive: return
-        for type in self.getTypes():
-            group_patchers.setdefault(type,[]).append(self)
-
     def getTypes(self):
         return ['RACE']
     #--Patch Phase ------------------------------------------------------------
@@ -1233,11 +1228,6 @@ class CBash_RacePatcher_Spells(_CBashOnlyRacePatchers):
                                                        p_sources)
         self.racesPatched = set()
         self.id_spells = {}
-
-    def initData(self,group_patchers,progress):
-        if not self.isActive: return
-        for type in self.getTypes():
-            group_patchers.setdefault(type,[]).append(self)
 
     def getTypes(self):
         return ['RACE']
@@ -1304,11 +1294,6 @@ class CBash_RacePatcher_Eyes(_CBashOnlyRacePatchers):
         self.eye_meshes = {}
         self.finishedOnce = False
         self.vanilla_eyes = _find_vanilla_eyes()
-
-    def initData(self,group_patchers,progress):
-        if not self.isActive: return
-        for type in self.getTypes():
-            group_patchers.setdefault(type,[]).append(self)
 
     def getTypes(self):
         return ['EYES','HAIR','RACE']
@@ -1624,8 +1609,8 @@ class CBash_RacePatcher(CBash_MultiTweaker, CBash_ListPatcher):
                          self.tweakers_cls] # p_name is not really used here
 
     def initData(self,group_patchers,progress):
-        for tweak in self.tweakers:
-            tweak.initData(group_patchers,progress)
+        for tweaker in self.tweakers:
+            tweaker.initData(group_patchers,progress)
         super(CBash_RacePatcher, self).initData(group_patchers, progress)
 
     def buildPatchLog(self,log):

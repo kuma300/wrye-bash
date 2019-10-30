@@ -97,7 +97,7 @@ class CBash_Patcher(_Abstract_Patcher):
         necessary."""
         if not self.isActive: return
         for type_ in self.getTypes():
-            group_patchers.setdefault(type_,[]).append(self)
+            group_patchers[type_].append(self)
         if self.allowUnloaded:
             loadMods = set([mod for mod in self.srcs if bosh.ModInfos.rightFileType(
                 mod) and mod not in self.patchFile.allMods])

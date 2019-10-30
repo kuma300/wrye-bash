@@ -362,7 +362,7 @@ class CBash_PatchFile(_PFile, ObModFile):
     #--Instance
     def __init__(self, patch_name):
         """Initialization."""
-        self.group_patchers = {}
+        self.group_patchers = defaultdict(list)
         self.indexMGEFs = False
         self.mgef_school = bush.game.mgef_school.copy()
         self.mgef_name = bush.game.mgef_name.copy()

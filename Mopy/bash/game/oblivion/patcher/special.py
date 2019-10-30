@@ -477,7 +477,7 @@ class CBash_CoblExhaustion(_ACoblExhaustion, _DefaultDictLog):
     def initData(self,group_patchers,progress):
         if not self.isActive: return
         for type in self.getTypes():
-            group_patchers.setdefault(type,[]).append(self)
+            group_patchers[type].append(self)
         progress.setFull(len(self.srcs))
         for srcFile in self.srcs:
             try: self.readFromText(getPatchesPath(srcFile))
@@ -646,7 +646,7 @@ class CBash_MFactMarker(_AMFactMarker, _DefaultDictLog):
     def initData(self,group_patchers,progress):
         if not self.isActive: return
         for type in self.getTypes():
-            group_patchers.setdefault(type,[]).append(self)
+            group_patchers[type].append(self)
         progress.setFull(len(self.srcs))
         for srcFile in self.srcs:
             try: self.readFromText(getPatchesPath(srcFile))

@@ -973,7 +973,7 @@ class CBash_NamesTweaker(_ANamesTweaker,CBash_MultiTweaker):
         if not self.isActive: return
         for tweak in self.enabled_tweaks:
             for type_ in tweak.getTypes():
-                group_patchers.setdefault(type_,[]).append(tweak)
+                group_patchers[type_].append(tweak)
             tweak.format = tweak.choiceValues[tweak.chosen][0]
             if isinstance(tweak, CBash_NamesTweak_Body):
                 tweak.showStat = u'%02d' in tweak.format
