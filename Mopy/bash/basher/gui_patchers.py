@@ -1054,10 +1054,12 @@ class _ACellImporter(_ImporterPatcherPanel):
 class CellImporter(_ACellImporter):
     patcher_type = importers.CellImporter
     autoKey = bush.game.cellAutoKeys
+    patcher_type.autoKey = autoKey ##: autoKey hack - needed in Pbash??
 class CBash_CellImporter(_ACellImporter):
     autoKey = {u'C.Climate', u'C.Light', u'C.Water', u'C.Owner', u'C.Name',
                u'C.RecordFlags', u'C.Music'}  #,u'C.Maps'
     patcher_type = importers.CBash_CellImporter
+    patcher_type.autoKey = autoKey ##: autoKey hack
 
 # -----------------------------------------------------------------------------
 class _AImportFactions(_ImporterPatcherPanel):
