@@ -187,6 +187,7 @@ class AlchemicalCatalogs(_AAlchemicalCatalogs,Patcher):
         log(u'* '+_(u'Effects Cataloged') + u': %d' % len(effect_ingred))
 
 class CBash_AlchemicalCatalogs(_AAlchemicalCatalogs,CBash_Patcher):
+    allowUnloaded = False # avoid the srcs check in CBash_Patcher.initData
 
     def __init__(self, p_name, p_file):
         super(CBash_AlchemicalCatalogs, self).__init__(p_name, p_file)
@@ -727,15 +728,16 @@ class _ASEWorldEnforcer(_ExSpecial):
         cls_vars = super(_ASEWorldEnforcer, cls).gui_cls_vars()
         return (lambda d: d.update(cls_vars) or d)({'default_isEnabled': True})
 
+_ob_path = GPath(u'Oblivion.esm')
 class SEWorldEnforcer(_ASEWorldEnforcer,Patcher):
     _read_write_records = ('QUST',)
 
     def __init__(self, p_name, p_file):
         super(SEWorldEnforcer, self).__init__(p_name, p_file)
         self.cyrodiilQuests = set()
-        if GPath(u'Oblivion.esm') in p_file.loadSet:
+        if _ob_path in p_file.loadSet:
             loadFactory = LoadFactory(False,MreRecord.type_class['QUST'])
-            modInfo = bosh.modInfos[GPath(u'Oblivion.esm')]
+            modInfo = bosh.modInfos[_ob_path]
             modFile = ModFile(modInfo,loadFactory)
             modFile.load(True)
             mapper = modFile.getLongMapper()
@@ -748,7 +750,7 @@ class SEWorldEnforcer(_ASEWorldEnforcer,Patcher):
 
     def scanModFile(self,modFile,progress):
         if not self.isActive: return
-        if modFile.fileInfo.name == GPath(u'Oblivion.esm'): return
+        if modFile.fileInfo.name == _ob_path: return
         cyrodiilQuests = self.cyrodiilQuests
         mapper = modFile.getLongMapper()
         patchBlock = self.patchFile.QUST
@@ -782,14 +784,15 @@ class SEWorldEnforcer(_ASEWorldEnforcer,Patcher):
         log(u'==='+_(u'Quests Patched') + u': %d' % (len(patched),))
 
 class CBash_SEWorldEnforcer(_ASEWorldEnforcer,CBash_Patcher):
+    # needed as scanRequiresChecked is True, will also add Oblivion to scanSet
+    srcs = [_ob_path]
     scanRequiresChecked = True
     applyRequiresChecked = False
 
     def __init__(self, p_name, p_file):
         super(CBash_SEWorldEnforcer, self).__init__(p_name, p_file)
         self.cyrodiilQuests = set()
-        self.srcs = [GPath(u'Oblivion.esm')]
-        self.isActive = self.srcs[0] in p_file.loadSet
+        self.isActive = _ob_path in p_file.loadSet
         self.mod_eids = defaultdict(list)
 
     def getTypes(self):
@@ -804,8 +807,7 @@ class CBash_SEWorldEnforcer(_ASEWorldEnforcer,CBash_Patcher):
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired."""
-        if modFile.GName in self.srcs: return
-
+        if modFile.GName == _ob_path: return
         recordId = record.fid
         if recordId in self.cyrodiilQuests:
             for condition in record.conditions:

@@ -665,12 +665,10 @@ class ContentsChecker(_AContentsChecker,Patcher):
                                                    removedId[1]))
 
 class CBash_ContentsChecker(_AContentsChecker,CBash_Patcher):
-    srcs = []  # so as not to fail screaming when determining load mods - but
-    # with the least processing required.
+    allowUnloaded = False # avoid the srcs check in CBash_Patcher.initData
 
     def __init__(self, p_name, p_file):
         super(CBash_ContentsChecker, self).__init__(p_name, p_file)
-        self.isActive = True
         self.listTypes = {'LVSP', 'LVLC', 'LVLI'}
         self.containerTypes = {'CONT', 'CREA', 'NPC_'}
         self.mod_type_id_badEntries = {}

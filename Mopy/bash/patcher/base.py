@@ -30,7 +30,6 @@ from this module outside of the patcher package."""
 # unhelpful) docs from overriding methods to save some (100s) lines. We must
 # also document which methods MUST be overridden by raising AbstractError. For
 # instance Patcher.buildPatch() apparently is NOT always overridden
-
 from .. import load_order, bosh, bolt
 
 #------------------------------------------------------------------------------

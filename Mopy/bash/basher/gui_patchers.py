@@ -974,13 +974,6 @@ class AliasesPatcher(_AliasesPatcherPanel): patcher_type = base.AliasesPatcher
 class CBash_AliasesPatcher(_AliasesPatcherPanel):
     patcher_type = base.CBash_AliasesPatcher
 
-    def getConfig(self,configs):
-        """Get config from configs dictionary and/or set to default."""
-        config = super(CBash_AliasesPatcher,self).getConfig(configs)
-        self.srcs = [] #so as not to fail screaming when determining load
-        # mods - but with the least processing required. ##: NOT HERE ! FIXME
-        return config
-
 class _APatchMerger(_MergerPanel):
     """Merges specified patches into Bashed Patch."""
     patcher_name = _(u'Merge Patches')

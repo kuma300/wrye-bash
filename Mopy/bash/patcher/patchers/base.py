@@ -145,7 +145,8 @@ class CBash_MultiTweaker(AMultiTweaker,CBash_Patcher):
 # Patchers: 10 ----------------------------------------------------------------
 class AliasesPatcher(AAliasesPatcher,Patcher): pass
 
-class CBash_AliasesPatcher(AAliasesPatcher,CBash_Patcher): pass
+class CBash_AliasesPatcher(AAliasesPatcher,CBash_Patcher):
+    allowUnloaded = False # avoid the srcs check in CBash_Patcher.initData
 
 class PatchMerger(APatchMerger, ListPatcher): pass
 
