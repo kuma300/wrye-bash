@@ -133,7 +133,7 @@ class MAONPCSkeletonPatcher(AMAONPCSkeletonPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_MAONPCSkeletonPatcher(AMAONPCSkeletonPatcher, _NpcCTweak):
-    name = _(u"MAO Skeleton Setter")
+    tweak_name = _(u"MAO Skeleton Setter")
 
     def apply(self, modFile, record, bashTags,
               __player_fid=_NpcCTweak.playerFid):
@@ -238,7 +238,7 @@ class VORB_NPCSkeletonPatcher(AVORB_NPCSkeletonPatcher,BasalNPCTweaker):
         self._patchLog(log, count)
 
 class CBash_VORB_NPCSkeletonPatcher(AVORB_NPCSkeletonPatcher, _NpcCTweak):
-    name = _(u"VORB Skeleton Setter")
+    tweak_name = _(u"VORB Skeleton Setter")
 
     def __init__(self):
         super(CBash_VORB_NPCSkeletonPatcher, self).__init__()
@@ -335,7 +335,7 @@ class VanillaNPCSkeletonPatcher(AVanillaNPCSkeletonPatcher,BasalNPCTweaker):
 class CBash_VanillaNPCSkeletonPatcher(AVanillaNPCSkeletonPatcher, _NpcCTweak):
     scanOrder = 31 #Run before MAO
     editOrder = 31
-    name = _(u"Vanilla Beast Skeleton")
+    tweak_name = _(u"Vanilla Beast Skeleton")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -386,7 +386,7 @@ class RedguardNPCPatcher(ARedguardNPCPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_RedguardNPCPatcher(ARedguardNPCPatcher, _NpcCTweak):
-    name = _(u"Redguard FGTS Patcher")
+    tweak_name = _(u"Redguard FGTS Patcher")
     redguardId = FormID(GPath(u'Oblivion.esm'),0x00000D43)
 
     def apply(self,modFile,record,bashTags):
@@ -436,7 +436,7 @@ class NoBloodCreaturesPatcher(ANoBloodCreaturesPatcher,BasalCreatureTweaker):
         self._patchLog(log, count)
 
 class CBash_NoBloodCreaturesPatcher(ANoBloodCreaturesPatcher, _CreaCTweak):
-    name = _(u"No Bloody Creatures")
+    tweak_name = _(u"No Bloody Creatures")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -502,7 +502,7 @@ class AsIntendedImpsPatcher(AAsIntendedImpsPatcher,BasalCreatureTweaker):
         self._patchLog(log,count)
 
 class CBash_AsIntendedImpsPatcher(AAsIntendedImpsPatcher, _CreaCTweak):
-    name = _(u"As Intended: Imps")
+    tweak_name = _(u"As Intended: Imps")
     spell = FormID(GPath(u'Oblivion.esm'), 0x02B53F)
 
     def apply(self,modFile,record,bashTags):
@@ -574,7 +574,7 @@ class AsIntendedBoarsPatcher(AAsIntendedBoarsPatcher,BasalCreatureTweaker):
         self._patchLog(log,count)
 
 class CBash_AsIntendedBoarsPatcher(AAsIntendedBoarsPatcher, _CreaCTweak):
-    name = _(u"As Intended: Boars")
+    tweak_name = _(u"As Intended: Boars")
     spell = FormID(GPath(u'Oblivion.esm'), 0x02B54E)
 
     def apply(self,modFile,record,bashTags):
@@ -625,7 +625,7 @@ class SWALKNPCAnimationPatcher(ASWALKNPCAnimationPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_SWALKNPCAnimationPatcher(ASWALKNPCAnimationPatcher, _NpcCTweak):
-    name = _(u"Sexy Walk for female NPCs")
+    tweak_name = _(u"Sexy Walk for female NPCs")
 
     def apply(self,modFile,record,bashTags,
               __player_fid=_NpcCTweak.playerFid):
@@ -666,7 +666,7 @@ class RWALKNPCAnimationPatcher(ARWALKNPCAnimationPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_RWALKNPCAnimationPatcher(ARWALKNPCAnimationPatcher, _NpcCTweak):
-    name = _(u"Real Walk for female NPCs")
+    tweak_name = _(u"Real Walk for female NPCs")
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags,
@@ -729,7 +729,7 @@ class QuietFeetPatcher(AQuietFeetPatcher,BasalCreatureTweaker):
         self._patchLog(log,count)
 
 class CBash_QuietFeetPatcher(AQuietFeetPatcher, _CreaCTweak):
-    name = _(u"Quiet Feet")
+    tweak_name = _(u"Quiet Feet")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -797,7 +797,7 @@ class IrresponsibleCreaturesPatcher(AIrresponsibleCreaturesPatcher,
 
 class CBash_IrresponsibleCreaturesPatcher(AIrresponsibleCreaturesPatcher,
                                           _CreaCTweak):
-    name = _(u"Irresponsible Creatures")
+    tweak_name = _(u"Irresponsible Creatures")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """

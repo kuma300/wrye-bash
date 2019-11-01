@@ -47,7 +47,9 @@ class _AMultiTweakItem_Names(MultiTweakItem):
 
 # Patchers: 30 ----------------------------------------------------------------
 class ANamesTweak_BodyTags(AMultiTweakItem):
-    #--Config Phase -----------------------------------------------------------
+    tweak_name = _(u'Body Part Codes')
+    # FIXME tweak_read_classes?
+
     def __init__(self):
         super(ANamesTweak_BodyTags, self).__init__(
             _(u"Body Part Codes"),
@@ -174,6 +176,7 @@ class ANamesTweak_Potions(AMultiTweakItem):
     reOldLabel = re.compile(u'^(-|X) ',re.U)
     reOldEnd = re.compile(u' -$',re.U)
     tweak_read_classes = 'ALCH',
+    tweak_name = _(u"Potions")
 
     def __init__(self):
         super(ANamesTweak_Potions, self).__init__(_(u"Potions"),
@@ -284,7 +287,8 @@ reSpell = re.compile(u'^(\([ACDIMR]\d\)|\w{3,6}:) ',re.U) # compile once
 
 class ANamesTweak_Scrolls(AMultiTweakItem):
     reOldLabel = reSpell
-    #--Config Phase -----------------------------------------------------------
+    tweak_name = _(u"Notes and Scrolls")
+
     def __init__(self):
         super(ANamesTweak_Scrolls,self).__init__(_(u"Notes and Scrolls"),
             _(u'Mark notes and scrolls to sort separately from books'),

@@ -106,7 +106,7 @@ class RaceTweaker_BiggerOrcsAndNords(ARaceTweaker_BiggerOrcsAndNords,
 class CBash_RaceTweaker_BiggerOrcsAndNords(ARaceTweaker_BiggerOrcsAndNords,
                                            CBash_MultiTweakItem):
     """Changes all Orcs and Nords to be bigger."""
-    name = _(u"Bigger Nords and Orcs")
+    tweak_name = _(u"Bigger Nords and Orcs")
 
     def __init__(self):
         super(CBash_RaceTweaker_BiggerOrcsAndNords, self).__init__()
@@ -204,7 +204,7 @@ class RaceTweaker_MergeSimilarRaceHairs(ARaceTweaker_MergeSimilarRaceHairs,
 
 class CBash_RaceTweaker_MergeSimilarRaceHairs(
     ARaceTweaker_MergeSimilarRaceHairs, CBash_MultiTweakItem):
-    name = _(u"Merge Hairs from similar races")
+    tweak_name = _(u"Merge Hairs from similar races")
 
     def finishPatch(self,patchFile,progress):
         """Edits the bashed patch file directly."""
@@ -330,7 +330,7 @@ class RaceTweaker_MergeSimilarRaceEyes(ARaceTweaker_MergeSimilarRaceEyes,
 class CBash_RaceTweaker_MergeSimilarRaceEyes(ARaceTweaker_MergeSimilarRaceEyes,
                                              CBash_MultiTweakItem):
     """Merges similar race's eyes."""
-    name = _(u"Merge Eyes from similar races")
+    tweak_name = _(u"Merge Eyes from similar races")
 
     def finishPatch(self,patchFile,progress):
         """Edits the bashed patch file directly."""
@@ -418,7 +418,7 @@ class RaceTweaker_AllHairs(ARaceTweaker_AllHairs,MultiTweakItem):
             count[srcMod] = count.get(srcMod,0) + 1
 
 class CBash_RaceTweaker_AllHairs(ARaceTweaker_AllHairs,CBash_MultiTweakItem):
-    name = _(u"Races Have All Hairs")
+    tweak_name = _(u"Races Have All Hairs")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -464,7 +464,7 @@ class RaceTweaker_AllEyes(ARaceTweaker_AllEyes,MultiTweakItem):
             count[srcMod] = count.get(srcMod,0) + 1
 
 class CBash_RaceTweaker_AllEyes(ARaceTweaker_AllEyes,CBash_MultiTweakItem):
-    name = _(u"Races Have All Eyes")
+    tweak_name = _(u"Races Have All Eyes")
 
     def __init__(self):
         super(CBash_RaceTweaker_AllEyes, self).__init__(
@@ -517,7 +517,7 @@ class RaceTweaker_PlayableEyes(ARaceTweaker_PlayableEyes,MultiTweakItem):
 class CBash_RaceTweaker_PlayableEyes(ARaceTweaker_PlayableEyes,
                                      CBash_MultiTweakItem):
     """Sets all eyes to be playable."""
-    name = _(u"Playable Eyes")
+    tweak_name = _(u"Playable Eyes")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -565,7 +565,7 @@ class RaceTweaker_PlayableHairs(ARaceTweaker_PlayableHairs,MultiTweakItem):
 class CBash_RaceTweaker_PlayableHairs(ARaceTweaker_PlayableHairs,
                                       CBash_MultiTweakItem):
     """Sets all hairs to be playable."""
-    name = _(u"Playable Hairs")
+    tweak_name = _(u"Playable Hairs")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -613,7 +613,7 @@ class RaceTweaker_SexlessHairs(ARaceTweaker_SexlessHairs,MultiTweakItem):
 
 class CBash_RaceTweaker_SexlessHairs(ARaceTweaker_SexlessHairs,
                                      CBash_MultiTweakItem):
-    name = _(u"Sexless Hairs")
+    tweak_name = _(u"Sexless Hairs")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """

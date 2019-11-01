@@ -90,7 +90,7 @@ class ClothesTweak_MaxWeight(ClothesTweak):
 
 class CBash_ClothesTweak_MaxWeight(CBash_ClothesTweak):
     """Enforce a max weight for specified clothes."""
-    name = _(u'Reweigh Clothes')
+    tweak_name = _(u'Reweigh Clothes')
 
     def __init__(self, label, tweak_tip, key, *choices):
         super(CBash_ClothesTweak_MaxWeight, self).__init__(label, tweak_tip,

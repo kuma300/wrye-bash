@@ -202,6 +202,7 @@ class AAliasesPatcher(_Abstract_Patcher):
 class AMultiTweakItem(object):
     """A tweak item, optionally with configuration choices."""
     tweak_read_classes = ()
+    tweak_name = u'OVERRIDE'
 
     def __init__(self, label, tweak_tip, key, *choices, **kwargs):
         # TODO: docs for attributes !
