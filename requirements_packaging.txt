@@ -1,0 +1,5 @@
+# Requirements to run the packaging scripts
+# Both packages exist in Python 3, but untested
+pygit2
+py2exe
+

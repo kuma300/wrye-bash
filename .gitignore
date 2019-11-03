@@ -45,3 +45,9 @@ Mopy/bash/l10n/*NEW.txt
 Mopy/loot_api.*
 Mopy/loot_api_python.pdb
 Mopy/README.md
+
+# Virtual Evnironments
+.venv
+activate.bat
+Activate.ps1
+activate
