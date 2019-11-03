@@ -2677,7 +2677,7 @@ class ItemLink(Link):
         Link.Frame.Bind(wx.EVT_MENU_HIGHLIGHT_ALL, ItemLink.ShowHelp)
         menuItem = wx.MenuItem(menu, self._id, self._text, self.menu_help,
                                self.__class__.kind)
-        menu.AppendItem(menuItem)
+        menu.Append(menuItem)
         return menuItem
 
     def iselected_infos(self):
@@ -2722,7 +2722,7 @@ class MenuLink(Link):
         super(MenuLink, self).AppendToMenu(menu, window, selection)
         Link.Frame.Bind(wx.EVT_MENU_OPEN, MenuLink.OnMenuOpen)
         subMenu = wx.Menu()
-        menu.AppendMenu(self._id, self._text, subMenu)
+        menu.Append(self._id, self._text, subMenu)
         if not self._enable():
             menu.Enable(self._id, False)
         else: # do not append sub links unless submenu enabled
