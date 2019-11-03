@@ -234,10 +234,10 @@ class LowerDict(dict):
 
     @staticmethod # because this doesn't make sense as a global function.
     def _process_args(mapping=(), **kwargs):
-        if hasattr(mapping, 'iteritems'):
-            mapping = getattr(mapping, 'iteritems')()
+        if hasattr(mapping, 'items'):
+            mapping = getattr(mapping, 'items')()
         return ((_ci_str(k), v) for k, v in
-                chain(mapping, getattr(kwargs, 'iteritems')()))
+                chain(mapping, getattr(kwargs, 'items')()))
 
     def __init__(self, mapping=(), **kwargs):
         # dicts take a mapping or iterable as their optional first argument
