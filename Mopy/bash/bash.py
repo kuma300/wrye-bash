@@ -566,8 +566,8 @@ def _rightWxVersion():
 
 def _rightPythonVersion():
     sysVersion = sys.version_info[:3]
-    if sysVersion < (2, 7) or sysVersion >= (3,):
-        balt.showError(None, _(u"Only Python 2.7 and newer is supported "
+    if sysVersion < (3, 8) or sysVersion >= (4,):
+        balt.showError(None, _(u"Only Python 3.8 and newer is supported "
             u"(%s.%s.%s detected). If you know what you're doing install the "
             u"WB python version and edit this warning out. "
             u"Wrye Bash will exit.") % sysVersion,
