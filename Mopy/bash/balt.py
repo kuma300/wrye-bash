@@ -1462,7 +1462,7 @@ class Picture(wx.Window):
     def OnSize(self,event=None):
         x, y = self.GetSize()
         if x <= 0 or y <= 0: return
-        self.buffer = wx.EmptyBitmap(x,y)
+        self.buffer = wx.Bitmap(x,y)
         dc = wx.MemoryDC()
         dc.SelectObject(self.buffer)
         # Draw
@@ -1588,7 +1588,7 @@ class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
     class DropFileOrList(wx.DropTarget):
 
         def __init__(self, window, dndFiles, dndList):
-            wx.PyDropTarget.__init__(self)
+            wx.DropTarget.__init__(self)
             self.window = window
 
             self.data_object = wx.DataObjectComposite()
@@ -1751,7 +1751,7 @@ class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
     def InsertListCtrlItem(self, index, value, item):
         """Insert an item to the list control giving it an internal id."""
         i = self.__id(item)
-        some_long = self.InsertStringItem(index, value) # index ?
+        some_long = self.InsertItem(index, value) # index ?
         gItem = self.GetItem(index) # that's what Tank did
         gItem.SetData(i)  # Associate our id with that row.
         self.SetItem(gItem) # this is needed too - yak
@@ -1953,7 +1953,7 @@ class UIList(wx.Panel):
             if insert and colDex == 0:
                 self.__gList.InsertListCtrlItem(itemDex, labelTxt, item)
             else:
-                self.__gList.SetStringItem(itemDex, colDex, labelTxt)
+                self.__gList.SetItem(itemDex, colDex, labelTxt)
         self.__setUI(item, itemDex)
 
     class _ListItemFormat(object):
