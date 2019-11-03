@@ -54,11 +54,9 @@ def _early_setup(debug):
     # ensure we are in the correct directory so relative paths will work
     # properly
     if is_standalone:
-        pathToProg = os.path.dirname(
-            unicode(sys.executable, bolt.Path.sys_fs_enc))
+        pathToProg = os.path.dirname(sys.executable)
     else:
-        pathToProg = os.path.dirname(
-            unicode(sys.argv[0], bolt.Path.sys_fs_enc))
+        pathToProg = os.path.dirname(sys.argv[0])
     if pathToProg:
         os.chdir(pathToProg)
     bolt.deprintOn = debug
