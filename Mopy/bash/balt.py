@@ -1342,14 +1342,13 @@ class ListEditor(Dialog):
 #------------------------------------------------------------------------------
 NoteBookDraggedEvent, EVT_NOTEBOOK_DRAGGED = wx.lib.newevent.NewEvent()
 
-class TabDragMixin(object):
+class TabDragMixin:
     """Mixin for the wx.Notebook class.  Enables draggable Tabs.
        Events:
          EVT_NB_TAB_DRAGGED: Called after a tab has been dragged
            event.oldIdex = old tab position (of tab that was moved
            event.newIdex = new tab position (of tab that was moved
     """
-    __slots__=('__dragX','__dragging','__justSwapped')
 
     def __init__(self):
         self.__dragX = 0
