@@ -47,7 +47,7 @@ import wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from wx.lib.embeddedimage import PyEmbeddedImage
 import wx.lib.newevent
-import wx.wizard as wiz
+import wx.adv as wiz
 #--wx webview, may not be present on all systems
 try:
     # raise ImportError
