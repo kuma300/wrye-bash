@@ -3253,7 +3253,7 @@ class DnDStatusBar(wx.StatusBar):
         if event: event.Skip()
 
 #------------------------------------------------------------------------------
-class WryeBashSplashScreen(wx.SplashScreen):
+class WryeBashSplashScreen(wx.adv.SplashScreen):
     """This Creates the Splash Screen widget. (The first image you see when
     starting the Application.)"""
     def __init__(self, parent=None):
