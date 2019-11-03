@@ -130,7 +130,7 @@ def setup_locale(cli_lang, _wx):
             trans = gettext.NullTranslations()
     # Everything has gone smoothly, install the translation and remember what
     # we ended up with as the final locale
-    trans.install(unicode=True)
+    trans.install(unicode=True) # TODO(ut) check for py3 unicode argument is still there?
     bass.active_locale = target_name
     del _temp_app
     return target_locale
