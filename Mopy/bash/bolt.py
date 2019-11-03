@@ -2232,8 +2232,8 @@ class WryeText(object):
             #--Headers
             elif maHead:
                 lead,text = maHead.group(1,2)
-                text = re.sub(u' *=*#?$','',text.strip())
-                anchor = unicode(urllib.quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
+                text = re.sub(u' *=*#?$',u'',text.strip())
+                anchor = urllib.quote(reWd.sub(u'',text).encode('utf8'))
                 level = len(lead)
                 if anchorHeaders:
                     if re.match(u'' r'\d', anchor):
