@@ -917,7 +917,7 @@ class HtmlCtrl(object):
         self._text_ctrl = RoTextCtrl(ctrl, autotooltip=False)
         items = [self._text_ctrl]
         def _make_button(bitmap_id, callback):
-            return bitmapButton(parent, wx.ArtProvider_GetBitmap(
+            return bitmapButton(parent, wx.ArtProvider.GetBitmap(
                 bitmap_id, wx.ART_HELP_BROWSER, (16, 16)), onBBClick=callback)
         self._prev_button = _make_button(wx.ART_GO_BACK, self.go_back)
         self._next_button = _make_button(wx.ART_GO_FORWARD, self.go_forward)
