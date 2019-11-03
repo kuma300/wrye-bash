@@ -3156,7 +3156,9 @@ class DnDStatusBar(wx.StatusBar):
         if gButton:
             self.buttons.append(gButton)
             # DnD events (only on windows, CaptureMouse works badly in wxGTK)
-            if wx.Platform == '__WXMSW__':
+            # TODO(lojack): Fix mouse capture.  Doesn't work well with buttons
+            # anymore
+            if False: ## if wx.Platform == '__WXMSW__':
                 gButton.Bind(wx.EVT_LEFT_DOWN, self.OnDragStart)
                 gButton.Bind(wx.EVT_LEFT_UP, self.OnDragEnd)
                 gButton.Bind(wx.EVT_MOUSE_CAPTURE_LOST, self.OnDragEndForced)
