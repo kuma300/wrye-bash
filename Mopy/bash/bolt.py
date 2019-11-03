@@ -545,7 +545,7 @@ class Path(object):
 
     @staticmethod
     def baseTempDir():
-        return GPath(unicode(tempfile.gettempdir(), Path.sys_fs_enc))
+        return GPath(tempfile.gettempdir())
 
     @property
     def backup(self):
