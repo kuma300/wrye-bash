@@ -1372,11 +1372,11 @@ class TabDragMixin(object):
 
     def __OnDragEndForced(self, event):
         self.__dragging = wx.NOT_FOUND
-        self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
 
     def __OnDragEnd(self, event):
         if self.__dragging != wx.NOT_FOUND:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+            self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
             self.__dragging = wx.NOT_FOUND
             try:
                 self.ReleaseMouse()
@@ -1391,7 +1391,7 @@ class TabDragMixin(object):
         if self.__dragging != wx.NOT_FOUND:
             pos = event.GetPosition()
             if abs(pos[0] - self.__dragX) > 5:
-                self.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+                self.SetCursor(wx.Cursor(wx.CURSOR_HAND))
             tabId = self.HitTest(pos)
             if tabId == wx.NOT_FOUND or tabId[0] in (wx.NOT_FOUND,self.__dragging[0]):
                 self.__justSwapped = wx.NOT_FOUND
@@ -3191,7 +3191,7 @@ class DnDStatusBar(wx.StatusBar):
             # window.  If we're not, that means something else forced the
             # loss of mouse capture.
             self.dragging = wx.NOT_FOUND
-            self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+            self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
         event.Skip()
 
     def OnDragEnd(self, event):
@@ -3209,7 +3209,7 @@ class DnDStatusBar(wx.StatusBar):
             released = self._getButtonIndex(event)
             if released != self.dragging: released = wx.NOT_FOUND
             self.dragging = wx.NOT_FOUND
-            self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+            self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
             if self.moved:
                 self.moved = False
                 return
@@ -3223,7 +3223,7 @@ class DnDStatusBar(wx.StatusBar):
     def OnDrag(self, event):
         if self.dragging != wx.NOT_FOUND:
             if abs(event.GetPosition()[0] - self.dragStart) > 4:
-                self.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+                self.SetCursor(wx.Cursor(wx.CURSOR_HAND))
             over = self._getButtonIndex(event)
             if over >= len(self.buttons): over -= 1
             if over not in (wx.NOT_FOUND, self.dragging):
