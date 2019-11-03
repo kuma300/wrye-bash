@@ -3786,7 +3786,8 @@ class BashFrame(BaltFrame):
             balt.showWarning(self, message, _(u'Too many mod files.'))
 
     def BindRefresh(self, bind=True, __event=wx.EVT_ACTIVATE):
-        self.Bind(__event, self.RefreshData) if bind else self.Unbind(__event)
+        if self:
+            self.Bind(__event, self.RefreshData) if bind else self.Unbind(__event)
 
     def Restart(self, *args):
         """Restart Bash - edit bass.sys_argv with specified args then let
