@@ -1772,7 +1772,7 @@ class ListCtrl(wx.ListCtrl, ListCtrlAutoWidthMixin):
 
     def FindIndexOf(self, item):
         """Return index of specified item."""
-        return self.FindItemData(-1, self._item_itemId[item])
+        return self.FindItem(-1, self._item_itemId[item])
 
     def FindItemAt(self, index):
         """Return item for specified list index."""
