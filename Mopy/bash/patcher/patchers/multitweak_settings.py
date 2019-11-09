@@ -223,7 +223,6 @@ class GmstTweaker(MultiTweaker, _AGmstTweaker):
     _read_write_records = ('GMST', 'GLOB')
 
     def scanModFile(self,modFile,progress):
-        if not self.isActive: return
         mapper = modFile.getLongMapper()
         for blockType in self._read_write_records:
             if blockType not in modFile.tops: continue

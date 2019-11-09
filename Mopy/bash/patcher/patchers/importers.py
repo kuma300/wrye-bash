@@ -126,7 +126,6 @@ class _SimpleImporter(ImportPatcher):
             GraphicsPatcher, KFFZPatcher, DeathItemPatcher, ImportScripts,
             SoundPatcher, DestructiblePatcher.
         """
-        if not self.isActive: return
         id_data = self.id_data
         mapper = modFile.getLongMapper()
         if self.longTypes:
@@ -145,7 +144,6 @@ class _SimpleImporter(ImportPatcher):
 
     def scanModFile2(self, modFile, progress):
         """Scan mod file against source data."""
-        if not self.isActive: return
         id_data = self.id_data
         mapper = modFile.getLongMapper()
         if self.longTypes:
@@ -1020,7 +1018,6 @@ class NPCAIPackagePatcher(ImportPatcher):
 
     def scanModFile(self, modFile, progress): # scanModFile2: loop, LongTypes..
         """Add record from modFile."""
-        if not self.isActive: return
         merged_deleted = self.id_merged_deleted
         mapper = modFile.getLongMapper()
         for rec_type in self.target_rec_types:
@@ -1204,7 +1201,6 @@ class ImportFactions(_SimpleImporter):
 
     def scanModFile(self, modFile, progress): # scanModFile2
         """Scan modFile."""
-        if not self.isActive: return
         id_factions = self.id_data
         mapper = modFile.getLongMapper()
         for type in self.activeTypes: # here differs from _scanModFile
@@ -1371,7 +1367,6 @@ class ImportRelations(_SimpleImporter):
 
     def scanModFile(self, modFile, progress): # scanModFile2
         """Scan modFile."""
-        if not self.isActive: return
         id_relations= self.id_data
         mapper = modFile.getLongMapper()
         for type in ('FACT',):
@@ -1857,7 +1852,6 @@ class ImportActorsSpells(ImportPatcher):
 
     def scanModFile(self, modFile, progress): # scanModFile2
         """Add record from modFile."""
-        if not self.isActive: return
         merged_deleted = self.id_merged_deleted
         mapper = modFile.getLongMapper()
         for type in self.target_rec_types:
@@ -1989,7 +1983,6 @@ class NamesPatcher(_ANamesPatcher, ImportPatcher):
 
     def scanModFile(self, modFile, progress): # scanModFile0?
         """Scan modFile."""
-        if not self.isActive: return
         id_full = self.id_full
         mapper = modFile.getLongMapper()
         for active_type in self.activeTypes:
@@ -2371,7 +2364,6 @@ class StatsPatcher(_AStatsPatcher, ImportPatcher):
 
     def scanModFile(self, modFile, progress): # scanModFile4: ?
         """Add affected items to patchFile."""
-        if not self.isActive: return
         fid_attr_value = self.fid_attr_value
         mapper = modFile.getLongMapper()
         for group in self.activeTypes:
