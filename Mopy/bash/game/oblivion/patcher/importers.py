@@ -48,7 +48,7 @@ class RoadImporter(ImportPatcher, _ARoadImporter):
         loadFactory = LoadFactory(False,MreRecord.type_class['CELL'],
                                         MreRecord.type_class['WRLD'],
                                         MreRecord.type_class['ROAD'])
-        progress.setFull(len(self.srcs))
+        # progress.setFull(len(self.srcs))
         for srcMod in self.srcs:
             if srcMod not in bosh.modInfos: continue
             srcInfo = bosh.modInfos[srcMod]
@@ -118,7 +118,6 @@ class CBash_RoadImporter(CBash_ImportPatcher, _ARoadImporter):
         """Prepare to handle specified patch mod. All functions are called
         after this."""
         super(CBash_RoadImporter, self).__init__(p_file, p_name, p_sources)
-        if not self.isActive: return
         self.id_ROAD = {}
 
     def scan(self,modFile,record,bashTags):
