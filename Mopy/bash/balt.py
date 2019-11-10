@@ -902,6 +902,17 @@ except ImportError:
     _wx_lib_iewin = None
     deprint(
         _(u'Comtypes is missing, features utilizing HTML will be disabled'))
+except UnicodeDecodeError:
+    # Comtypes will fail to generate it's dynamic code if the current
+    # directory contains non-ASCII characters.
+    # Note, this only seems to affect the first time import.  As long as
+    # comtypes' dynamic code has been generated *once* on the machine, it
+    # seems to import fine.
+    _wx_lib_iewin = None
+    deprint(
+        _('Comtypes failed to import due to Unicode issues.') + '\n' +
+        _('Note: This is usually due to Wrye Bash installed to a location with non-ASCII characters.')
+        )
 
 class HtmlCtrl(object):
 
