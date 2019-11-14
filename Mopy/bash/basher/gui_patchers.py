@@ -508,6 +508,7 @@ class _ListPatcherPanel(_PatcherPanel):
         patcher_sources = [x for x in self.configItems if self.configChecks[x]]
         return patcher_sources
 
+#------------------------------------------------------------------------------
 class _ChoiceMenuMixin(object):
     #--List of possible choices for each config item. Item 0 is default.
     _right_click_list = 'gList'
@@ -538,7 +539,6 @@ class _ChoiceMenuMixin(object):
 
     def ShowChoiceMenu(self, event): raise exception.AbstractError
 
-#------------------------------------------------------------------------------
 class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     """Patcher panel with list of checkable, configurable tweaks."""
     tweak_label = _(u'Tweaks')
