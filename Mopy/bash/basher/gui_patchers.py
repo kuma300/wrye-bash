@@ -593,7 +593,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         self.gTweakList.Clear()
         isFirstLoad = self._GetIsFirstLoad()
         patcherBold = False
-        for index,tweak in enumerate(self.tweaks):
+        for index,tweak in enumerate(self._all_tweaks):
             label = tweak.getListLabel()
             if tweak.choiceLabels and tweak.choiceLabels[tweak.chosen].startswith(u'Custom'):
                 label = self._label(label, tweak.choiceValues[tweak.chosen][0])
@@ -609,7 +609,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     def TweakOnListCheck(self,event=None):
         """One of list items was checked. Update all check states."""
         ensureEnabled = False
-        for index, tweak in enumerate(self.tweaks):
+        for index, tweak in enumerate(self._all_tweaks):
             checked = self.gTweakList.IsChecked(index)
             tweak.isEnabled = checked
             if checked:
@@ -632,12 +632,9 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
             if mouseItem != self.mouse_dex:
                 # Show tip text when changing item
                 self.mouse_dex = mouseItem
-                tip = 0 <= mouseItem < len(self.tweaks) and self.tweaks[
-                    mouseItem].tweak_tip
-                if tip:
-                    self.gTipText.label_text = tip
-                else:
-                    self.gTipText.label_text = u''
+                tip = 0 <= mouseItem < len(self._all_tweaks) and \
+                      self._all_tweaks[mouseItem].tweak_tip
+                self.gTipText.label_text = tip or u''
             event.Skip()
         else:
             super(_TweakPatcherPanel, self).OnMouse(event)
@@ -647,9 +644,8 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         #--Tweak Index
         tweakIndex = self.gTweakList.HitTest(event.GetPosition())
         #--Tweaks
-        tweaks = self.tweaks
-        if tweakIndex >= len(tweaks): return
-        tweak = tweaks[tweakIndex]
+        if tweakIndex >= len(self._all_tweaks): return
+        tweak = self._all_tweaks[tweakIndex]
         choiceLabels = tweak.choiceLabels
         if len(choiceLabels) <= 1: return
         self.gTweakList.SetSelection(tweakIndex)
@@ -677,8 +673,8 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
 
     def tweak_choice(self, index, tweakIndex):
         """Handle choice menu selection."""
-        self.tweaks[tweakIndex].chosen = index
-        self.gTweakList.SetString(tweakIndex,self.tweaks[tweakIndex].getListLabel())
+        self._all_tweaks[tweakIndex].chosen = index
+        self.gTweakList.SetString(tweakIndex, self._all_tweaks[tweakIndex].getListLabel())
         self.gTweakList.Check(tweakIndex, True) # wx.EVT_CHECKLISTBOX is NOT
         self.TweakOnListCheck() # fired so this line is needed (?)
 
@@ -691,7 +687,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
 
     def tweak_custom_choice(self, index, tweakIndex):
         """Handle choice menu selection."""
-        tweak = self.tweaks[tweakIndex]
+        tweak = self._all_tweaks[tweakIndex]
         value = []
         for i, v in enumerate(tweak.choiceValues[index]):
             if isinstance(v,float):
@@ -734,7 +730,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     def TweakSelectAll(self):
         """'Select All' Button was pressed, update all configChecks states."""
         try:
-            for index, item in enumerate(self.tweaks):
+            for index, item in enumerate(self._all_tweaks):
                 self.gTweakList.Check(index,True)
             self.TweakOnListCheck()
         except AttributeError:
@@ -759,24 +755,21 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     def getConfig(self, configs):
         """Get config from configs dictionary and/or set to default."""
         config = super(_TweakPatcherPanel, self).getConfig(configs)
-        self.tweaks = copy.deepcopy(self.__class__.tweaks)
-        for tweak in self.tweaks:
+        self._all_tweaks = self.patcher_type.tweak_instances()
+        for tweak in self._all_tweaks:
             tweak.init_tweak_config(config)
         return config
 
     def saveConfig(self, configs):
         """Save config to configs dictionary."""
         config = super(_TweakPatcherPanel, self).saveConfig(configs)
-        for tweak in self.tweaks:
+        for tweak in self._all_tweaks:
             tweak.save_tweak_config(config)
-        self.enabledTweaks = [tweak for tweak in self.tweaks if
-                              tweak.isEnabled]
-        self.isActive = len(self.enabledTweaks) > 0 ##: NOT HERE !!!!
         return config
 
     def _log_config(self, conf, config, clip, log):
         self.getConfig(config) # will set self.tweaks and load their config
-        for tweak in self.tweaks:
+        for tweak in self._all_tweaks:
             if tweak.key in conf:
                 enabled, value = conf.get(tweak.key, (False, u''))
                 label = tweak.getListLabel().replace(u'[[', u'[').replace(
@@ -790,13 +783,17 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
 
     def _import_config(self, default=False):
         super(_TweakPatcherPanel, self)._import_config(default)
-        for index, tweakie in enumerate(self.tweaks):
+        for index, tweakie in enumerate(self._all_tweaks):
             try:
                 self.gTweakList.Check(index, tweakie.isEnabled)
                 self.gTweakList.SetString(index, tweakie.getListLabel())
             except KeyError: pass # no such key don't spam the log
             except: bolt.deprint(_(u'Error importing Bashed patch '
                 u'configuration. Item %s skipped.') % tweakie, traceback=True)
+
+    def get_patcher_instance(self, patch_file):
+        enabledTweaks = [t for t in self._all_tweaks if t.isEnabled]
+        return self.patcher_type(self.patcher_name, patch_file, enabledTweaks)
 
 #------------------------------------------------------------------------------
 class _DoublePatcherPanel(_TweakPatcherPanel, _ListPatcherPanel):
@@ -955,26 +952,8 @@ class _MergerPanel(_ListPatcherPanel):
                 mod].getBashTags())]
 
 class _GmstTweakerPanel(_TweakPatcherPanel):
-
-    #--Config Phase -----------------------------------------------------------
     # CONFIG DEFAULTS
     default_isEnabled = True
-    def getConfig(self,configs):
-        """Get config from configs dictionary and/or set to default."""
-        config = super(_GmstTweakerPanel, self).getConfig(configs)
-        # Load game specific tweaks
-        tweaksAppend = self.tweaks.append # self.tweaks defined in super, empty
-        for cls,tweaks in self.__class__.class_tweaks:
-            for tweak in tweaks:
-                if isinstance(tweak,tuple):
-                    tweaksAppend(cls(*tweak))
-                elif isinstance(tweak,list):
-                    args = tweak[0]
-                    kwdargs = tweak[1]
-                    tweaksAppend(cls(*args,**kwdargs))
-        self.tweaks.sort(key=lambda a: a.tweak_name.lower())
-        for tweak in self.tweaks:
-            tweak.init_tweak_config(config)
 
 #------------------------------------------------------------------------------
 # GUI Patcher classes

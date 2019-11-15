@@ -96,24 +96,42 @@ class CBash_MultiTweakItem(AMultiTweakItem):
 
 class MultiTweaker(AMultiTweaker,Patcher):
 
+    def getReadClasses(self):
+        """Returns load factory classes needed for reading."""
+        if not self.isActive: return tuple()
+        classTuples = [tweak.getReadClasses() for tweak in self.enabled_tweaks]
+        return sum(classTuples,tuple())
+
+    def getWriteClasses(self):
+        """Returns load factory classes needed for writing."""
+        if not self.isActive: return tuple()
+        classTuples = [tweak.getWriteClasses() for tweak in self.enabled_tweaks]
+        return sum(classTuples,tuple())
+
+    def scanModFile(self,modFile,progress):
+        if not self.isActive: return
+        for tweak in self.enabled_tweaks:
+            tweak.scanModFile(modFile,progress,self.patchFile)
+
     def buildPatch(self,log,progress):
         """Applies individual tweaks."""
         if not self.isActive: return
         log.setHeader(u'= ' + self._patcher_name, True)
-        for tweak in self.enabledTweaks:
+        for tweak in self.enabled_tweaks:
             tweak.buildPatch(log,progress,self.patchFile)
 
 class CBash_MultiTweaker(AMultiTweaker,CBash_Patcher):
 
-    def __init__(self, p_name, p_file):
-        super(CBash_MultiTweaker, self).__init__(p_name, p_file)
-        for tweak in self.tweaks:
+    def __init__(self, p_name, p_file, enabled_tweaks):
+        super(CBash_MultiTweaker, self).__init__(p_name, p_file,
+                                                 enabled_tweaks)
+        for tweak in self.enabled_tweaks:
             tweak.patchFile = p_file
 
     def initData(self,group_patchers,progress):
         """Compiles material, i.e. reads source text, esp's, etc. as necessary."""
         if not self.isActive: return
-        for tweak in self.enabledTweaks:
+        for tweak in self.enabled_tweaks:
             for type_ in tweak.getTypes():
                 group_patchers.setdefault(type_,[]).append(tweak)
 
@@ -121,7 +139,7 @@ class CBash_MultiTweaker(AMultiTweaker,CBash_Patcher):
         """Will write to log."""
         if not self.isActive: return
         log.setHeader(u'= ' + self._patcher_name, True)
-        for tweak in self.enabledTweaks:
+        for tweak in self.enabled_tweaks:
             tweak.buildPatchLog(log)
 
 # Patchers: 10 ----------------------------------------------------------------
