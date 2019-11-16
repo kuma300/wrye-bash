@@ -27,16 +27,18 @@ from collections import Counter, defaultdict
 from itertools import chain
 from operator import itemgetter, attrgetter
 # Internal
-from .base import Patcher, CBash_Patcher, SpecialPatcher, ListPatcher, \
-    CBash_ListPatcher, AListPatcher
+from .base import Patcher, CBash_Patcher, ListPatcher, CBash_ListPatcher, \
+    AListPatcher
+from ..base import Abstract_Patcher
 from ... import bosh, bush, load_order  # for modInfos
 from ...bolt import GPath, SubProgress
 from ...cint import FormID
 
 bush.assert_game_set(__name__)
 # Patchers: 40 ----------------------------------------------------------------
-class _AListsMerger(SpecialPatcher, AListPatcher):
+class _AListsMerger(AListPatcher):
     """Merged leveled lists mod file."""
+    group = _(u'Special')
     scanOrder = 45
     editOrder = 45
     iiMode = True
@@ -545,9 +547,10 @@ class FidListsMerger(_AListsMerger,ListPatcher):
                 log(u'  * ' + self.annotate_plugin(mod))
 
 #------------------------------------------------------------------------------
-class _AContentsChecker(SpecialPatcher):
+class _AContentsChecker(Abstract_Patcher):
     """Checks contents of leveled lists, inventories and containers for
     correct content types."""
+    group = _(u'Special')
     scanOrder = 50
     editOrder = 50
     contType_entryTypes = bush.game.cc_valid_types
