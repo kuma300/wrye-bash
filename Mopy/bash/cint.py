@@ -10628,7 +10628,7 @@ class ObBaseRecord(object):
         _CDeleteRecord(self._RecordID)
 
     def GetRecordUpdatedReferences(self):
-        return _CGetRecordUpdatedReferences(0, self._RecordID)
+        return _CGetRecordUpdatedReferences(None, self._RecordID)
 
     def UpdateReferences(self, Old_NewFormIDs):
         Old_NewFormIDs = FormID.FilterValidDict(Old_NewFormIDs, self, True, True, AsShort=True)
@@ -10642,7 +10642,7 @@ class ObBaseRecord(object):
 
     def History(self):
         cRecordIDs = (c_record_p * 257)() #just allocate enough for the max number + size
-        numRecords = _CGetRecordHistory(self._RecordID, byref(cRecordIDs))
+        numRecords = _CGetRecordHistory(self._RecordID, cRecordIDs)
         return [self.__class__(cRecordIDs[x]) for x in range(numRecords)]
 
     def IsWinning(self, GetExtendedConflicts=False):
