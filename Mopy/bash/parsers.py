@@ -26,11 +26,11 @@
 and the Mod_Import/Export Mods menu."""
 from __future__ import division
 import ctypes
+import re
 from _ctypes import POINTER
 from ctypes import cast, c_ulong
 from operator import attrgetter, itemgetter
 from collections import defaultdict, Counter
-import re
 # Internal
 from . import bolt
 from . import bush # for game
@@ -45,8 +45,7 @@ from .brec import MreRecord, MelObject, _coerce, genFid, ModReader, ModWriter, \
 from .cint import ObCollection, FormID, aggregateTypes, validTypes, \
     MGEFCode, ActorValue, ValidateList, pickupables, ExtractExportList, \
     ValidateDict, IUNICODE, getattr_deep, setattr_deep
-from .exception import ArgumentError, CancelError, MasterMapError, ModError, \
-    StateError
+from .exception import MasterMapError, ModError, StateError
 from .record_groups import MobDials, MobICells, MobWorlds, MobObjects, MobBase
 
 class ActorFactions(object):
@@ -135,7 +134,7 @@ class ActorFactions(object):
 
     def readFromText(self,textPath):
         """Imports faction data from specified text file."""
-        type_id_factions = self.type_id_factions
+        group_fid_factions = self.type_id_factions
         aliases = self.aliases
         with CsvReader(textPath) as ins:
             for fields in ins:
@@ -146,7 +145,7 @@ class ActorFactions(object):
                 aid = (aliases.get(amod,amod),int(aobj[2:],16))
                 fid = (aliases.get(fmod,fmod),int(fobj[2:],16))
                 rank = int(rank)
-                id_factions = type_id_factions[type_]
+                id_factions = group_fid_factions[type_]
                 factions = id_factions.get(aid)
                 factiondict = dict(factions or [])
                 factiondict.update({fid:rank})
@@ -259,10 +258,10 @@ class CBash_ActorFactions(object):
                 if len(fields) < 8 or fields[3][:2] != u'0x': continue
                 group,aed,amod,aobj,fed,fmod,fobj,rank = fields[:9]
                 group = _coerce(group,unicode)
-                amod = GPath(_coerce(amod,unicode))
-                fmod = GPath(_coerce(fmod,unicode))
-                aid = FormID(aliases.get(amod,amod),_coerce(aobj[2:],int,16))
-                fid = FormID(aliases.get(fmod,fmod),_coerce(fobj[2:],int,16))
+                amod = GPath(amod)
+                fmod = GPath(fmod)
+                aid = FormID(aliases.get(amod,amod),int(aobj[2:],16))
+                fid = FormID(aliases.get(fmod,fmod),int(fobj[2:],16))
                 rank = _coerce(rank, int)
                 fid_factions = group_fid_factions[group]
                 factions = fid_factions.get(aid)
@@ -3954,10 +3953,10 @@ class ModFile(object):
                 RecordHeader('GRUP', 0, topType, 0, 0), self.loadFactory)
             self.tops[topType].setChanged()
             return self.tops[topType]
-        elif topType == '__repr__':
-            raise AttributeError
+        # elif topType == '__repr__': Huh??
+        #     raise AttributeError
         else:
-            raise ArgumentError(u'Invalid top group type: '+topType)
+            raise AttributeError(u'Invalid top group type: '+topType)
 
     def load(self, do_unpack=False, progress=None, loadStrings=True):
         """Load file."""
