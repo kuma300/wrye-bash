@@ -188,8 +188,9 @@ class ListsMerger(_AListsMerger, ListPatcher):
             levLists = self.type_list[type]
             for record in sorted(levLists.values(),key=attrgetter('eid')):
                 if not record.mergeOverLast: continue
-                fid = keep(record.fid)
-                patchBlock.setRecord(levLists[fid])
+                rec_fid = record.fid
+                keep(rec_fid)
+                patchBlock.setRecord(levLists[rec_fid])
                 log(u'* '+record.eid)
                 for mod in record.mergeSources:
                     log(u'  * ' + self.getItemLabel(mod))
@@ -554,8 +555,9 @@ class FidListsMerger(_AListsMerger,ListPatcher):
         levLists = self.type_list[type]
         for record in sorted(levLists.values(),key=attrgetter('eid')):
             if not record.mergeOverLast: continue
-            fid = keep(record.fid)
-            patchBlock.setRecord(levLists[fid])
+            rec_fid = record.fid
+            keep(rec_fid)
+            patchBlock.setRecord(levLists[rec_fid])
             log(u'* '+record.eid)
             for mod in record.mergeSources:
                 log(u'  * ' + self.getItemLabel(mod))
