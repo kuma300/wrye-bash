@@ -10764,7 +10764,7 @@ class ObBaseRecord(object):
         retValue = _CGetField(self._RecordID, 4, 0, 0, 0, 0, 0, 0, 0)
         return IUNICODE(_unicode(retValue)) if retValue else None
     def set_eid(self, nValue):
-        nValue = 0 if nValue is None or not len(nValue) else _encode(nValue)
+        nValue = None if nValue is None or not len(nValue) else _encode(nValue)
         _CGetField.restype = POINTER(c_ulong)
         _CSetIDFields(self._RecordID, _CGetField(self._RecordID, 2, 0, 0, 0, 0, 0, 0, 0).contents.value, nValue)
     eid = property(get_eid, set_eid)
