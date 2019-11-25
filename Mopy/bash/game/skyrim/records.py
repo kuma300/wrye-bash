@@ -1685,14 +1685,14 @@ class MreBook(MelRecord):
         MelModel(),
         MelString('ICON','iconPath'),
         MelString('MICO','smallIconPath'),
-        MelLString('DESC','description'),
+        MelLString('DESC','bookText'),
         MelDestructible(),
         MelOptFid('YNAM', 'pickupSound'),
         MelOptFid('ZNAM', 'dropSound'),
         MelKeywords(),
         MelBookData(),
         MelFid('INAM','inventoryArt'),
-        MelLString('CNAM','text'),
+        MelLString('CNAM','description'),
     )
     __slots__ = melSet.getSlotsUsed() + ['modb']
 
@@ -1792,11 +1792,9 @@ class MreCell(MelRecord):
         (6,'handChanged'),
         (7,'showSky'),
         ))
-
     CellDataFlags2 = Flags(0L,Flags.getNames(
         (0,'useSkyLighting'),
         ))
-
     CellInheritedFlags = Flags(0L,Flags.getNames(
             (0, 'ambientColor'),
             (1, 'directionalColor'),
@@ -1810,14 +1808,13 @@ class MreCell(MelRecord):
             (9, 'fogMax'),
             (10, 'lightFadeDistances'),
         ))
-
     # 'Force Hide Land' flags
-    CellFHLFlags = Flags(0L,Flags.getNames(
-            (0, 'quad1'),
-            (1, 'quad2'),
-            (2, 'quad3'),
-            (3, 'quad4'),
-        ))
+    CellFHLFlags = Flags(0L, Flags.getNames(
+        (0, 'quad1'),
+        (1, 'quad2'),
+        (2, 'quad3'),
+        (3, 'quad4'),
+    ))
 
     class MelCellXcll(MelOptStruct):
         """Handle older truncated XCLL for CELL subrecord."""
@@ -3688,7 +3685,7 @@ class MreMgef(MelRecord):
         MelString('EDID','eid'),
         MelVmad(),
         MelLString('FULL','full'),
-        MelFid('MDOB','harvestIngredient'),
+        MelFid('MDOB','menuDisplayObject'),
         MelKeywords(),
         MelPartialCounter(MelStruct(
             'DATA', 'IfI2iH2sIf4I4fIi4Ii3IfIfI4s4s4I2f',
@@ -3909,14 +3906,14 @@ class MreNpc(MelRecord):
     """Non-Player Character."""
     classType = 'NPC_'
 
-    NpcFlags2 = Flags(0L,Flags.getNames(
+    _TemplateFlags = Flags(0L, Flags.getNames(
             (0, 'useTraits'),
             (1, 'useStats'),
             (2, 'useFactions'),
             (3, 'useSpellList'),
             (4, 'useAIData'),
             (5, 'useAIPackages'),
-            (6, 'useModelAnimation?'),
+            (6, 'useModelAnimation'),
             (7, 'useBaseData'),
             (8, 'useInventory'),
             (9, 'useScript'),
@@ -3924,8 +3921,7 @@ class MreNpc(MelRecord):
             (11, 'useAttackData'),
             (12, 'useKeywords'),
         ))
-
-    NpcFlags1 = Flags(0L,Flags.getNames(
+    NpcFlags1 = Flags(0L, Flags.getNames(
             (0, 'female'),
             (1, 'essential'),
             (2, 'isCharGenFacePreset'),
@@ -3934,7 +3930,7 @@ class MreNpc(MelRecord):
             (5, 'unique'),
             (6, 'doesNotAffectStealth'),
             (7, 'pcLevelMult'),
-            (8, 'useTemplate?'),
+            (8, 'useTemplate'),
             (9, 'unknown9'),
             (10, 'unknown10'),
             (11, 'protected'),
@@ -3947,14 +3943,14 @@ class MreNpc(MelRecord):
             (18, 'bleedoutOverride'),
             (19, 'oppositeGenderAnims'),
             (20, 'simpleActor'),
-            (21, 'loopedscript?'),
+            (21, 'loopedScript'),
             (22, 'unknown22'),
             (23, 'unknown23'),
             (24, 'unknown24'),
             (25, 'unknown25'),
             (26, 'unknown26'),
             (27, 'unknown27'),
-            (28, 'loopedaudio?'),
+            (28, 'loopedAudio'),
             (29, 'isGhost'),
             (30, 'unknown30'),
             (31, 'invulnerable'),
@@ -3967,9 +3963,9 @@ class MreNpc(MelRecord):
         MelStruct('ACBS','I2Hh3Hh3H',
                   (NpcFlags1,'flags',0L),'magickaOffset',
                   'staminaOffset','level','calcMin',
-                  'calcMax','speedMultiplier','dispotionBase',
-                  (NpcFlags2,'npcFlags2',0L),'healthOffset','bleedoutOverride',
-                  ),
+                  'calcMax','speedMultiplier','dispositionBase',
+                  (_TemplateFlags, 'templateFlags', 0L), 'healthOffset',
+                  'bleedoutOverride',),
         MelStructs('SNAM','IB3s','factions',(FID, 'faction'), 'rank', 'snamUnused'),
         MelOptFid('INAM', 'deathItem'),
         MelOptFid('VTCK', 'voice'),
@@ -3979,7 +3975,7 @@ class MreNpc(MelRecord):
         MelCounter(MelStruct('SPCT', '<I', 'spell_count'), counts='spells'),
         MelFids('SPLO', 'spells'),
         MelDestructible(),
-        MelOptFid('WNAM', 'wormArmor'),
+        MelOptFid('WNAM', 'wornArmor'),
         MelOptFid('ANAM', 'farawaymodel'),
         MelOptFid('ATKR', 'attackRace'),
         MelGroups('attacks',
@@ -4000,12 +3996,12 @@ class MreNpc(MelRecord):
             MelCoed(),
         ),
         MelStruct('AIDT', 'BBBBBBBBIII', 'aggression', 'confidence',
-                  'engergy', 'responsibility', 'mood', 'assistance',
+                  'energyLevel', 'responsibility', 'mood', 'assistance',
                   'aggroRadiusBehavior',
                   'aidtUnknown', 'warn', 'warnAttack', 'attack'),
-        MelFids('PKID', 'packages',),
+        MelFids('PKID', 'aiPackages',),
         MelKeywords(),
-        MelFid('CNAM', 'class'),
+        MelFid('CNAM', 'iclass'),
         MelLString('FULL','full'),
         MelLString('SHRT', 'shortName'),
         MelBase('DATA', 'marker'),
@@ -4024,7 +4020,7 @@ class MreNpc(MelRecord):
         # TODO(inf) Left everything starting from here alone because it uses
         #  little-endian - why?
         MelOptStruct('HCLF', '<I', (FID, 'hair_color')),
-        MelOptStruct('ZNAM', '<I', (FID, 'combat_style')),
+        MelOptStruct('ZNAM', '<I', (FID, 'combatStyle')),
         MelOptStruct('GNAM', '<I', (FID, 'gifts')),
         MelBase('NAM5', 'nam5_p'),
         MelStruct('NAM6', '<f', 'height'),
@@ -5316,7 +5312,7 @@ class MreSpel(MelRecord,MreHasEffects):
         MelFid('ETYP', 'equipmentType'),
         MelLString('DESC','description'),
         MelStruct('SPIT','IIIfIIffI','cost',(SpelTypeFlags,'dataFlags',0L),
-                  'scrollType','chargeTime','castType','targetType',
+                  'spellType','chargeTime','castType','targetType',
                   'castDuration','range',(FID,'halfCostPerk'),),
         MelEffects(),
     )
