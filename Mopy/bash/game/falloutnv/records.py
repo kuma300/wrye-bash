@@ -22,6 +22,7 @@
 #
 # =============================================================================
 """This module contains the falloutnv record classes."""
+from __future__ import division
 import struct
 # Set MelModel in brec, in this case it's identical to the fallout 3 one
 from ..fallout3.records import MelOwnership, MelDestructible, MelBipedFlags, \
@@ -1929,7 +1930,7 @@ class MelPnamNam0Handler(MelStructA):
             recordAppend = record.__getattribute__(self.attr).append
             selfAttrs = self.attrs
             itemSize = struct.calcsize(oldFormat)
-            for x in xrange(size_/itemSize):
+            for x in xrange(size_//itemSize):
                 target = selfDefault()
                 recordAppend(target)
                 target.__slots__ = selfAttrs

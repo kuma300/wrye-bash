@@ -24,6 +24,7 @@
 """This module contains the fallout3 record classes. You must import from it
 __once__ only in game.fallout3.Fallout3GameInfo#init. No other game.records
 file must be imported till then."""
+from __future__ import division
 import struct
 from operator import attrgetter
 from ... import bush, brec
@@ -3678,7 +3679,7 @@ class MelPnamNam0Handler(MelStructA):
             recordAppend = record.__getattribute__(self.attr).append
             selfAttrs = self.attrs
             itemSize = struct.calcsize(oldFormat)
-            for x in xrange(size_/itemSize):
+            for x in xrange(size_//itemSize):
                 target = selfDefault()
                 recordAppend(target)
                 target.__slots__ = selfAttrs

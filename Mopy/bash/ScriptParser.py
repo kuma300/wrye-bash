@@ -60,6 +60,7 @@
 #  TokensToRPN
 #  ExecuteRPN
 #==================================================
+from __future__ import division
 from string import digits, whitespace
 import types
 #--------------------------------------------------
