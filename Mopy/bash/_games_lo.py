@@ -36,10 +36,10 @@ import re
 import time
 from collections import defaultdict
 # Local
-import bass
-import bolt
-import env
-import exception
+from . import bass
+from . import bolt
+from . import env
+from . import exception
 
 def _write_plugins_txt_(path, lord, active, _star):
     try:

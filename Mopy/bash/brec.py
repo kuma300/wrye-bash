@@ -33,10 +33,10 @@ import struct
 import zlib
 from operator import attrgetter
 
-import bolt
-import exception
-from bass import null1
-from bolt import decode, encode, sio, GPath, struct_pack, struct_unpack
+from . import bolt
+from . import exception
+from .bass import null1
+from .bolt import decode, encode, sio, GPath, struct_pack, struct_unpack
 
 # Util Functions --------------------------------------------------------------
 #--Type coercion
@@ -1777,9 +1777,9 @@ class MreGmstBase(MelRecord):
         """Returns <Oblivion/Skyrim/etc>.esm fid in long format for specified
            eid."""
         cls = self.__class__
-        import bosh # Late import to avoid circular imports
+        from . import bosh # Late import to avoid circular imports
         if not cls.Ids:
-            import bush
+            from . import bush
             fname = bush.game.pklfile
             try:
                 with open(fname) as pkl_file:

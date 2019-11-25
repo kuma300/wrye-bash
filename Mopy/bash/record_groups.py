@@ -26,11 +26,10 @@
 # Python imports
 from operator import itemgetter
 # Wrye Bash imports
-from brec import ModReader, RecordHeader
-from bolt import sio, struct_pack, struct_unpack
-import bosh # for modInfos
-import bush # for fallout3/nv fsName
-from exception import AbstractError, ArgumentError, ModError
+from .brec import ModReader, RecordHeader
+from .bolt import sio, struct_pack, struct_unpack
+from . import bush # for fallout3/nv fsName
+from .exception import AbstractError, ArgumentError, ModError
 
 # Tes3 Group/Top Types --------------------------------------------------------
 groupTypes = [
@@ -258,6 +257,7 @@ class MobObjects(MobBase):
 
     def setRecord(self,record):
         """Adds record to record list and indexed."""
+        from . import bosh
         if self.records and not self.id_records:
             self.indexRecords()
         record_id = record.fid
@@ -274,6 +274,7 @@ class MobObjects(MobBase):
 
     def keepRecords(self,keepIds):
         """Keeps records with fid in set keepIds. Discards the rest."""
+        from . import bosh
         self.records = [record for record in self.records if (record.fid == (
             record.isKeyedByEid and bosh.modInfos.masterName,
             0) and record.eid in keepIds) or record.fid in keepIds]
