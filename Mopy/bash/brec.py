@@ -1346,7 +1346,7 @@ class MreSubrecord:
 class MreRecord(object):
     """Generic Record. flags1 are game specific see comments."""
     subtype_attr = {'EDID':'eid','FULL':'full','MODL':'model'}
-    flags1_ = bolt.Flags(0L, bolt.Flags.getNames(
+    flags1_ = bolt.Flags(0, bolt.Flags.getNames(
         # {Sky}, {FNV} 0x00000000 ACTI: Collision Geometry (default)
         ( 0,'esm'), # {0x00000001}
         # {Sky}, {FNV} 0x00000004 ARMO: Not playable
@@ -1874,7 +1874,7 @@ class MreLeveledListBase(MelRecord):
           chanceNone
           flags
     """
-    _flags = bolt.Flags(0L,bolt.Flags.getNames(
+    _flags = bolt.Flags(0,bolt.Flags.getNames(
         (0, 'calcFromAllLevels'),
         (1, 'calcForEachItem'),
         (2, 'useAllSpells'),
