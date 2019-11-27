@@ -59,7 +59,7 @@ import utils
 LOGGER = logging.getLogger(__name__)
 
 SCRIPTS_PATH = os.path.dirname(os.path.abspath(__file__))
-LOGFILE = os.path.join(SCRIPTS_PATH, "build.log")
+LOGFILE = os.path.join(SCRIPTS_PATH, u"build.log")
 WBSA_PATH = os.path.join(SCRIPTS_PATH, u"build", u"standalone")
 DIST_PATH = os.path.join(SCRIPTS_PATH, u"dist")
 ROOT_PATH = os.path.abspath(os.path.join(SCRIPTS_PATH, u".."))
@@ -80,7 +80,7 @@ else:
 def setup_parser(parser):
     version_group = parser.add_mutually_exclusive_group()
     nightly_version = "{}.{}".format(
-        bass.AppVersion.split('.')[0], datetime.datetime.utcnow().strftime("%Y%m%d%H%M")
+        bass.AppVersion.split(".")[0], datetime.datetime.utcnow().strftime("%Y%m%d%H%M")
     )
     version_group.add_argument(
         "-n",
@@ -153,7 +153,7 @@ def get_version_info(version):
             timestamp[4:8],
             timestamp[8:12]
         )
-    LOGGER.debug("Using file version: {}".format(file_version))
+    LOGGER.debug(u"Using file version: {}".format(file_version))
     return file_version
 
 
@@ -186,49 +186,49 @@ def cpy(src, dst):
 
 
 def pack_7z(archive, *args):
-    cmd_7z = [EXE_7z, "a", "-m0=lzma2", "-mx9", archive, "Mopy/"] + list(args)
+    cmd_7z = [EXE_7z, u"a", u"-m0=lzma2", u"-mx9", archive, u"Mopy/"] + list(args)
     utils.run_subprocess(cmd_7z, LOGGER, cwd=ROOT_PATH)
 
 
 def get_nsis_root(cmd_arg):
     """ Finds and returns the nsis root folder. """
     if cmd_arg is not None:
-        LOGGER.debug("User provided NSIS path at {}".format(cmd_arg))
+        LOGGER.debug(u"User provided NSIS path at {}".format(cmd_arg))
         return cmd_arg
     try:
         nsis_path = winreg.QueryValue(winreg.HKEY_LOCAL_MACHINE, r"Software\NSIS")
-        LOGGER.debug("Found system NSIS path at {}".format(nsis_path))
+        LOGGER.debug(u"Found system NSIS path at {}".format(nsis_path))
         return nsis_path
     except WindowsError:
         pass
     if not os.path.isdir(NSIS_PATH):
-        LOGGER.debug("Local NSIS not found at {}".format(NSIS_PATH))
+        LOGGER.debug(u"Local NSIS not found at {}".format(NSIS_PATH))
         local_build_path = os.path.dirname(NSIS_PATH)
         nsis_url = (
-            "https://sourceforge.net/projects/nsis/files/"
-            "NSIS%203/{0}/nsis-{0}.zip/download".format(NSIS_VERSION)
+            u"https://sourceforge.net/projects/nsis/files/"
+            u"NSIS%203/{0}/nsis-{0}.zip/download".format(NSIS_VERSION)
         )
         dl_dir = tempfile.mkdtemp()
-        nsis_zip = os.path.join(dl_dir, "nsis.zip")
-        LOGGER.info("Downloading NSIS {}...".format(NSIS_VERSION))
-        LOGGER.debug("Download url: {}".format(nsis_url))
-        LOGGER.debug("Download NSIS to {}".format(nsis_zip))
+        nsis_zip = os.path.join(dl_dir, u"nsis.zip")
+        LOGGER.info(u"Downloading NSIS {}...".format(NSIS_VERSION))
+        LOGGER.debug(u"Download url: {}".format(nsis_url))
+        LOGGER.debug(u"Download NSIS to {}".format(nsis_zip))
         utils.download_file(nsis_url, nsis_zip)
         with zipfile.ZipFile(nsis_zip) as fzip:
             fzip.extractall(local_build_path)
         os.remove(nsis_zip)
         os.rename(
-            os.path.join(local_build_path, "nsis-{}".format(NSIS_VERSION)),
+            os.path.join(local_build_path, u"nsis-{}".format(NSIS_VERSION)),
             NSIS_PATH,
         )
-        inetc_url = "https://nsis.sourceforge.io/mediawiki/images/c/c9/Inetc.zip"
-        inetc_zip = os.path.join(dl_dir, "inetc.zip")
-        LOGGER.info("Downloading inetc plugin...")
-        LOGGER.debug("Download url: {}".format(inetc_url))
-        LOGGER.debug("Download inetc plugin to {}".format(inetc_zip))
+        inetc_url = u"https://nsis.sourceforge.io/mediawiki/images/c/c9/Inetc.zip"
+        inetc_zip = os.path.join(dl_dir, u"inetc.zip")
+        LOGGER.info(u"Downloading inetc plugin...")
+        LOGGER.debug(u"Download url: {}".format(inetc_url))
+        LOGGER.debug(u"Download inetc plugin to {}".format(inetc_zip))
         utils.download_file(inetc_url, inetc_zip)
         with zipfile.ZipFile(inetc_zip) as fzip:
-            fzip.extract("Plugins/x86-unicode/INetC.dll", NSIS_PATH)
+            fzip.extract(u"Plugins/x86-unicode/INetC.dll", NSIS_PATH)
         os.remove(inetc_zip)
     return NSIS_PATH
 
@@ -256,7 +256,7 @@ def pack_manual(version):
 @contextmanager
 def build_executable(version, file_version):
     """ Builds the executable. """
-    LOGGER.info("Building executable...")
+    LOGGER.info(u"Building executable...")
     loot_orig = os.path.join(loot_api.__path__[0], u"loot.dll")
     loot_target = os.path.join(MOPY_PATH, u"loot.dll")
     build_folder = os.path.join(MOPY_PATH, u"build")
@@ -268,7 +268,7 @@ def build_executable(version, file_version):
     cpy(setup_orig, setup_target)
     # Call the setup script
     utils.run_subprocess(
-        [sys.executable, setup_target, "py2exe", "--version", file_version],
+        [sys.executable, setup_target, u"py2exe", u"--version", file_version],
         LOGGER,
         cwd=MOPY_PATH
     )
@@ -294,17 +294,17 @@ def pack_standalone(version):
         DIST_PATH, u"Wrye Bash {} - Standalone Executable.7z".format(version)
     )
     ignores = (
-        "*.py",
-        "*.pyw",
-        "*.pyd",
-        "*.bat",
-        "*.template",
-        "Mopy/bash/basher",
-        "Mopy/bash/bosh",
-        "Mopy/bash/game",
-        "Mopy/bash/patcher"
+        u"*.py",
+        u"*.pyw",
+        u"*.pyd",
+        u"*.bat",
+        u"*.template",
+        u"Mopy/bash/basher",
+        u"Mopy/bash/bosh",
+        u"Mopy/bash/game",
+        u"Mopy/bash/patcher"
     )
-    pack_7z(archive, *["-xr!" + a for a in ignores])
+    pack_7z(archive, *[u"-xr!" + a for a in ignores])
 
 
 def pack_installer(nsis_path, version, file_version):
@@ -312,25 +312,25 @@ def pack_installer(nsis_path, version, file_version):
     script_path = os.path.join(SCRIPTS_PATH, u"build", u"installer", u"main.nsi")
     if not os.path.exists(script_path):
         raise IOError(
-            "Could not find nsis script '{}', aborting "
-            "installer creation.".format(script_path)
+            u"Could not find nsis script '{}', aborting "
+            u"installer creation.".format(script_path)
         )
     nsis_root = get_nsis_root(nsis_path)
-    nsis_path = os.path.join(nsis_root, "makensis.exe")
+    nsis_path = os.path.join(nsis_root, u"makensis.exe")
     if not os.path.isfile(nsis_path):
-        raise IOError("Could not find 'makensis.exe', aborting installer creation.")
-    inetc_path = os.path.join(nsis_root, "Plugins", "x86-unicode", "inetc.dll")
+        raise IOError(u"Could not find 'makensis.exe', aborting installer creation.")
+    inetc_path = os.path.join(nsis_root, u"Plugins", u"x86-unicode", u"inetc.dll")
     if not os.path.isfile(inetc_path):
-        raise IOError("Could not find NSIS Inetc plugin, aborting installer creation.")
+        raise IOError(u"Could not find NSIS Inetc plugin, aborting installer creation.")
     # Build the installer
     utils.run_subprocess(
         [
             nsis_path,
-            "/NOCD",
-            "/DWB_NAME=Wrye Bash {}".format(version),
-            "/DWB_OUTPUT={}".format(DIST_PATH),
-            "/DWB_FILEVERSION={}".format(file_version),
-            "/DWB_CLEAN_MOPY={}".format(MOPY_PATH),
+            u"/NOCD",
+            u"/DWB_NAME=Wrye Bash {}".format(version),
+            u"/DWB_OUTPUT={}".format(DIST_PATH),
+            u"/DWB_FILEVERSION={}".format(file_version),
+            u"/DWB_CLEAN_MOPY={}".format(MOPY_PATH),
             script_path,
         ],
         LOGGER,
@@ -339,15 +339,15 @@ def pack_installer(nsis_path, version, file_version):
 
 @contextmanager
 def update_file_version(version, commit=False):
-    fname = "bass.py"
-    orig_path = os.path.join(MOPY_PATH, "bash", fname)
+    fname = u"bass.py"
+    orig_path = os.path.join(MOPY_PATH, u"bash", fname)
     tmpdir = tempfile.mkdtemp()
     bck_path = os.path.join(tmpdir, fname)
     cpy(orig_path, bck_path)
     with open(orig_path, "r+") as fopen:
         content = fopen.read().replace(
-            '\nAppVersion = u"{}"'.format(bass.AppVersion),
-            '\nAppVersion = u"{}"'.format(version),
+            u'\nAppVersion = u"{}"'.format(bass.AppVersion),
+            u'\nAppVersion = u"{}"'.format(version),
         )
         fopen.seek(0)
         fopen.truncate(0)
@@ -363,7 +363,7 @@ def update_file_version(version, commit=False):
             repo.index.add(rel_path)
             tree = repo.index.write_tree()
             repo.create_commit(
-                'HEAD',
+                u'HEAD',
                 user,
                 user,
                 version,
@@ -384,7 +384,7 @@ def handle_apps_folder():
     apps_present = os.path.isdir(APPS_PATH)
     tmpdir = apps_present and tempfile.mkdtemp()
     if apps_present:
-        LOGGER.debug("Moving Apps folder to {}".format(tmpdir))
+        LOGGER.debug(u"Moving Apps folder to {}".format(tmpdir))
         shutil.move(APPS_PATH, tmpdir)
     os.makedirs(APPS_PATH)
     try:
@@ -419,9 +419,9 @@ def check_timestamp(build_version):
         if nightly_version == previous_version:
             # PY3: raw_input -> input
             answer = raw_input(
-                "Current timestamp is equal to the previous build. Continue? [y/N]\n> "
+                u"Current timestamp is equal to the previous build. Continue? [y/N]\n> "
             )
-            if not answer or answer.lower().startswith("n"):
+            if not answer or answer.lower().startswith(u"n"):
                 return False
     return True
 
@@ -430,23 +430,23 @@ def main(args):
     utils.setup_log(LOGGER, verbosity=args.verbosity, logfile=LOGFILE)
     # check nightly timestamp is different than previous
     if not check_timestamp(args.version):
-        raise OSError("Aborting build due to equal nightly timestamps.")
+        raise OSError(u"Aborting build due to equal nightly timestamps.")
     with handle_apps_folder(), update_file_version(args.version, args.commit):
         # Get repository files
         version_info = get_version_info(args.version)
         # create distributable directory
         utils.mkdir(DIST_PATH, exists_ok=True)
         if args.manual:
-            LOGGER.info("Creating python source distributable...")
+            LOGGER.info(u"Creating python source distributable...")
             pack_manual(args.version)
         if not args.standalone and not args.installer:
             return
         with build_executable(args.version, version_info):
             if args.standalone:
-                LOGGER.info("Creating standalone distributable...")
+                LOGGER.info(u"Creating standalone distributable...")
                 pack_standalone(args.version)
             if args.installer:
-                LOGGER.info("Creating installer distributable...")
+                LOGGER.info(u"Creating installer distributable...")
                 pack_installer(args.nsis, args.version, version_info)
 
 
@@ -471,12 +471,12 @@ def hold_files(*files):
 def clean_repo():
     repo = pygit2.Repository(ROOT_PATH)
     if any(v != pygit2.GIT_STATUS_IGNORED for v in repo.status().values()):
-        print("Your repository is dirty (you have uncommitted changes).")
+        print(u"Your repository is dirty (you have uncommitted changes).")
     branch_name = repo.head.shorthand
-    if not branch_name.startswith(("rel-", "release-", "nightly")):
+    if not branch_name.startswith((u"rel-", u"release-", u"nightly")):
         print(
-            "You are building off branch '{}', which does not "
-            "appear to be a release branch".format(branch_name)
+            u"You are building off branch '{}', which does not "
+            u"appear to be a release branch".format(branch_name)
         )
     with hold_files(NSIS_PATH):
         # stash everything away
@@ -488,12 +488,12 @@ def clean_repo():
         mod_stashed = False
         unt_stashed = False
         with utils.suppress(KeyError):
-            repo.stash(sig, message="Modified")
+            repo.stash(sig, message=u"Modified")
             mod_stashed = True
         with utils.suppress(KeyError):
             repo.stash(
                 sig,
-                message="Untracked + Ignored",
+                message=u"Untracked + Ignored",
                 include_untracked=True,
                 include_ignored=True,
             )
@@ -511,15 +511,15 @@ def clean_repo():
             repo.stash_pop(index=0)
 
 
-if __name__ == "__main__":
+if __name__ == u"__main__":
     argparser = argparse.ArgumentParser(description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     utils.setup_common_parser(argparser)
     setup_parser(argparser)
     parsed_args = argparser.parse_args()
-    print("Building on Python {}".format(sys.version))
+    print(u"Building on Python {}".format(sys.version))
     if sys.version_info[0:3] < (2, 7, 12):
-        raise OSError("You must run at least Python 2.7.12 to package Wrye Bash.")
+        raise OSError(u"You must run at least Python 2.7.12 to package Wrye Bash.")
     rm(LOGFILE)
     rm(DIST_PATH)
     with clean_repo():

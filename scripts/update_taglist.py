@@ -44,10 +44,10 @@ import utils
 
 LOGGER = logging.getLogger(__name__)
 
-MASTERLIST_VERSION = "0.14"
+MASTERLIST_VERSION = u"0.14"
 
 SCRIPTS_PATH = os.path.dirname(os.path.abspath(__file__))
-LOGFILE = os.path.join(SCRIPTS_PATH, "taglist.log")
+LOGFILE = os.path.join(SCRIPTS_PATH, u"taglist.log")
 MOPY_PATH = os.path.abspath(os.path.join(SCRIPTS_PATH, u"..", u"Mopy"))
 sys.path.append(MOPY_PATH)
 
@@ -76,12 +76,12 @@ def mock_game_install(master_file_name):
 
 
 def download_masterlist(repository, version, dl_path):
-    url = "https://raw.githubusercontent.com/loot/{}/v{}/masterlist.yaml".format(
+    url = u"https://raw.githubusercontent.com/loot/{}/v{}/masterlist.yaml".format(
         repository, version
     )
-    LOGGER.info("Downloading {} masterlist...".format(repository))
-    LOGGER.debug("Download url: {}".format(url))
-    LOGGER.debug("Downloading {} masterlist to {}".format(repository, dl_path))
+    LOGGER.info(u"Downloading {} masterlist...".format(repository))
+    LOGGER.debug(u"Download url: {}".format(url))
+    LOGGER.debug(u"Downloading {} masterlist to {}".format(repository, dl_path))
     utils.download_file(url, dl_path)
 
 
@@ -93,12 +93,12 @@ def main(args):
         )
     )
     game_data = [
-        (u"Oblivion", "Oblivion.esm", "oblivion", loot_api.GameType.tes4),
-        (u"Skyrim", "Skyrim.esm", "skyrim", loot_api.GameType.tes5),
-        (u"SkyrimSE", "Skyrim.esm", "skyrimse", loot_api.GameType.tes5se),
-        (u"Fallout3", "Fallout3.esm", "fallout3", loot_api.GameType.fo3),
-        (u"FalloutNV", "FalloutNV.esm", "falloutnv", loot_api.GameType.fonv),
-        (u"Fallout4", "Fallout4.esm", "fallout4", loot_api.GameType.fo4),
+        (u"Oblivion", u"Oblivion.esm", u"oblivion", loot_api.GameType.tes4),
+        (u"Skyrim", u"Skyrim.esm", u"skyrim", loot_api.GameType.tes5),
+        (u"SkyrimSE", u"Skyrim.esm", u"skyrimse", loot_api.GameType.tes5se),
+        (u"Fallout3", u"Fallout3.esm", u"fallout3", loot_api.GameType.fo3),
+        (u"FalloutNV", u"FalloutNV.esm", u"falloutnv", loot_api.GameType.fonv),
+        (u"Fallout4", u"Fallout4.esm", u"fallout4", loot_api.GameType.fo4),
     ]
     for game_name, master_name, repository, game_type in game_data:
         game_install_path = mock_game_install(master_name)
@@ -121,7 +121,7 @@ def main(args):
         shutil.rmtree(game_install_path)
 
 
-if __name__ == "__main__":
+if __name__ == u"__main__":
     argparser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )

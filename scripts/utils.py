@@ -79,8 +79,8 @@ def setup_common_parser(parser):
 
 def convert_bytes(size_bytes):
     if size_bytes == 0:
-        return "0B"
-    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        return u"0B"
+    size_name = (u"B", u"KB", u"MB", u"GB", u"TB", u"PB", u"EB", u"ZB", u"YB")
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)
     s = round(size_bytes / p, 2)
@@ -91,7 +91,7 @@ def download_file(url, fpath):
     file_name = os.path.basename(fpath)
     response = urlopen(url)
     meta = response.info()
-    file_size = int(meta.getheaders("Content-Length")[0])
+    file_size = int(meta.getheaders(u"Content-Length")[0])
     converted_size = convert_bytes(file_size)
     file_size_dl = 0
     block_sz = 8192
@@ -103,7 +103,7 @@ def download_file(url, fpath):
             file_size_dl += len(buff)
             dl_file.write(buff)
             percentage = file_size_dl * 100.0 / file_size
-            status = "{0:>20}  -----  [{3:6.2f}%] {1:>10}/{2}".format(
+            status = u"{0:>20}  -----  [{3:6.2f}%] {1:>10}/{2}".format(
                 file_name, convert_bytes(file_size_dl), converted_size, percentage
             )
             status = status + chr(8) * (len(status) + 1)
@@ -119,14 +119,14 @@ def run_subprocess(command, logger, **kwargs):
         universal_newlines=True,
         **kwargs
     )
-    logger.debug("Running command: {}".format(" ".join(command)))
+    logger.debug(u"Running command: {}".format(" ".join(command)))
     stdout, _ = sp.communicate()
     if sp.returncode != 0:
         logger.error(stdout)
         raise subprocess.CalledProcessError(sp.returncode, " ".join(command))
-    logger.debug("--- COMMAND OUTPUT START ---")
+    logger.debug(u"--- COMMAND OUTPUT START ---")
     logger.debug(stdout)
-    logger.debug("---  COMMAND OUTPUT END  ---")
+    logger.debug(u"---  COMMAND OUTPUT END  ---")
 
 
 def relpath(path):

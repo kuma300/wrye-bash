@@ -18,9 +18,9 @@ import win32com
 
 
 def real_sys_prefix():
-    if hasattr(sys, "real_prefix"):  # running in virtualenv
+    if hasattr(sys, u"real_prefix"):  # running in virtualenv
         return sys.real_prefix
-    elif hasattr(sys, "base_prefix"):  # running in venv
+    elif hasattr(sys, u"base_prefix"):  # running in venv
         return sys.base_prefix
     else:
         return sys.prefix
@@ -64,21 +64,21 @@ sys.argv = [sys.argv[0]] + unknown
 
 # ModuleFinder can't handle runtime changes to __path__, but win32com uses them
 for p in win32com.__path__[1:]:
-    modulefinder.AddPackagePath("win32com", p)
+    modulefinder.AddPackagePath(u"win32com", p)
 
 # Read in the manifest file
 with open(MANIFEST_FILE, "r") as man:
     manifest = man.read()
 
 target = {
-    "name": "Wrye Bash",
-    "description": "Wrye Bash",
+    "name": u"Wrye Bash",
+    "description": u"Wrye Bash",
     "version": args.version,
     "icon_resources": [(1, ICON_FILE)],
-    "author": "Wrye Bash development team",
-    "url": "https://www.nexusmods.com/oblivion/mods/22368",
-    "download_url": "https://www.nexusmods.com/oblivion/mods/22368",
-    "script": "Wrye Bash Launcher.pyw",
+    "author": u"Wrye Bash development team",
+    "url": u"https://www.nexusmods.com/oblivion/mods/22368",
+    "download_url": u"https://www.nexusmods.com/oblivion/mods/22368",
+    "script": u"Wrye Bash Launcher.pyw",
     "other_resources": [(24, 1, manifest)],
 }
 
