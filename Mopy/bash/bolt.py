@@ -26,7 +26,7 @@
 #--Standard
 from __future__ import division
 import StringIO
-import cPickle
+import cPickle as pickle  # PY3
 import chardet
 import codecs
 import collections
@@ -38,6 +38,7 @@ import os
 import re
 import shutil
 import stat
+import string
 import struct
 import subprocess
 import sys
@@ -49,6 +50,12 @@ from functools import partial
 from itertools import chain
 # Internal
 from . import exception
+
+# PY3
+try:
+    from urllib.parse import quote
+except ImportError:
+    from urllib import quote
 
 # structure aliases, mainly introduced to reduce uses of 'pack' and 'unpack'
 struct_pack = struct.pack
@@ -1317,7 +1324,7 @@ class PickleDict(object):
                 try:
                     with path.open('rb') as ins:
                         try:
-                            firstPickle = cPickle.load(ins)
+                            firstPickle = pickle.load(ins)
                         except ValueError:
                             cor = path
                             cor_name = GPath(path.s + u' (%s)' % timestamp() +
@@ -1326,8 +1333,8 @@ class PickleDict(object):
                                 path, cor_name.tail), traceback=True)
                             continue # file corrupt - try next file
                         if firstPickle == 'VDATA2':
-                            self.vdata.update(cPickle.load(ins))
-                            self.data.update(cPickle.load(ins))
+                            self.vdata.update(pickle.load(ins))
+                            self.data.update(pickle.load(ins))
                         else:
                             raise PickleDict.Mold(path)
                     return 1 + (path == self.backup)
@@ -1347,7 +1354,7 @@ class PickleDict(object):
         self.vdata['boltPaths'] = True # needed so pre 307 versions don't blow
         with self.path.temp.open('wb') as out:
             for data in ('VDATA2',self.vdata,self.data):
-                cPickle.dump(data,out,-1)
+                pickle.dump(data,out,-1)
         self.path.untemp(doBackup=True)
         return True
 
@@ -2021,7 +2028,6 @@ class WryeText(object):
     @staticmethod
     def genHtml(ins,out=None,*cssDirs):
         """Reads a wtxt input stream and writes an html output stream."""
-        import string, urllib
         # Path or Stream? -----------------------------------------------
         if isinstance(ins,(Path,str,unicode)):
             srcPath = GPath(ins)
@@ -2069,7 +2075,7 @@ class WryeText(object):
             # urllib will automatically take any unicode characters and escape them, so to
             # convert back to unicode for purposes of storing the string, everything will
             # be in cp1252, due to the escapings.
-            anchor = unicode(urllib.quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
+            anchor = unicode(quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
             count = 0
             if re.match(u'' r'\d', anchor):
                 anchor = u'_' + anchor
@@ -2113,7 +2119,7 @@ class WryeText(object):
             address = text = match.group(1).strip()
             if u'|' in text:
                 (address,text) = [chunk.strip() for chunk in text.split(u'|',1)]
-                if address == u'#': address += unicode(urllib.quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
+                if address == u'#': address += unicode(quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
             if address.startswith(u'!'):
                 newWindow = u' target="_blank"'
                 if address == text:
@@ -2234,7 +2240,7 @@ class WryeText(object):
             elif maHead:
                 lead,text = maHead.group(1,2)
                 text = re.sub(u' *=*#?$','',text.strip())
-                anchor = unicode(urllib.quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
+                anchor = unicode(quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
                 level = len(lead)
                 if anchorHeaders:
                     if re.match(u'' r'\d', anchor):
