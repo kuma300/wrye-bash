@@ -23,7 +23,6 @@
 # =============================================================================
 
 import wx
-import string
 from types import IntType, LongType
 from . import bEnableWizard, tabInfo, BashFrame
 from .constants import colorInfo, settingDefaults, installercons
@@ -270,7 +269,7 @@ class ImportFaceDialog(balt.Dialog):
             self.data = dict((u'%08X %s' % (key,face.pcName),face) for key,face in faces.items())
         else:
             self.data = faces
-        self.list_items = sorted(self.data.keys(),key=string.lower)
+        self.list_items = sorted(self.data.keys(),key=unicode.lower)
         #--GUI
         super(ImportFaceDialog, self).__init__(parent, title=title)
         self.SetSizeHints(550,300)
