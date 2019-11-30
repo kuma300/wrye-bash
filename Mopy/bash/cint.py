@@ -41,6 +41,7 @@ from __future__ import division, print_function
 from ctypes import *
 import math
 import os
+from functools import reduce
 from os.path import exists, join
 try:
     #See if cint is being used by Wrye Bash
