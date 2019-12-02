@@ -48,8 +48,9 @@ class AClothesTweak(AMultiTweakItem):
         # u'robes':   (1<<2) + (1<<3),
         # u'rings':   (1<<6) + (1<<7),
 
-    def __init__(self, label, tweak_tip, key, *choices):
-        super(AClothesTweak,self).__init__(label, tweak_tip, key, *choices)
+    def __init__(self, tweak_name, tweak_tip, key, *choices):
+        super(AClothesTweak, self).__init__(tweak_name, tweak_tip, key,
+                                            *choices)
         typeKey = key[:key.find(u'.')]
         self.orTypeFlags = typeKey == u'rings'
         self.typeFlags = self.__class__.clothes_flags[typeKey]

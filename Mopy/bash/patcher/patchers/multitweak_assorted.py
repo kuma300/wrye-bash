@@ -154,6 +154,8 @@ class CBash_AssortedTweak_ClothingShows(CBash_MultiTweakItem):
 class AAssortedTweak_BowReach(AMultiTweakItem):
     """Fix bows to have reach = 1.0."""
     tweak_read_classes = 'WEAP',
+    tweak_name = _(u"Bow Reach Fix")
+    tweak_tip = _(u'Fix bows with zero reach. (Zero reach causes CTDs.)')
 
     def __init__(self):
         super(AAssortedTweak_BowReach, self).__init__(_(u"Bow Reach Fix"),
@@ -187,7 +189,6 @@ class AssortedTweak_BowReach(AAssortedTweak_BowReach,MultiTweakItem):
 
 class CBash_AssortedTweak_BowReach(AAssortedTweak_BowReach,
                                    CBash_MultiTweakItem):
-    tweak_name = _(u'Bow Reach Fix')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired."""
@@ -203,6 +204,9 @@ class CBash_AssortedTweak_BowReach(AAssortedTweak_BowReach,
 class AAssortedTweak_SkyrimStyleWeapons(AMultiTweakItem):
     """Sets all one handed weapons as blades, two handed weapons as blunt."""
     tweak_read_classes = 'WEAP',
+    tweak_name = _(u"Skyrim-style Weapons")
+    tweak_tip = _(
+        u'Sets all one handed weapons as blades, two handed weapons as blunt.')
 
     def __init__(self):
         super(AAssortedTweak_SkyrimStyleWeapons, self).__init__(
@@ -239,7 +243,6 @@ class AssortedTweak_SkyrimStyleWeapons(AAssortedTweak_SkyrimStyleWeapons,
 
 class CBash_AssortedTweak_SkyrimStyleWeapons(AAssortedTweak_SkyrimStyleWeapons,
                                              CBash_MultiTweakItem):
-    tweak_name = _(u'Skyrim-style Weapons')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired."""
@@ -258,6 +261,9 @@ class CBash_AssortedTweak_SkyrimStyleWeapons(AAssortedTweak_SkyrimStyleWeapons,
 class AAssortedTweak_ConsistentRings(AMultiTweakItem):
     """Sets rings to all work on same finger."""
     tweak_read_classes = 'CLOT',
+    tweak_name = _(u'Right Hand Rings')
+    tweak_tip = _(u'Fixes rings to unequip consistently by making them '
+                  u'prefer the right hand.')
 
     def __init__(self):
         super(AAssortedTweak_ConsistentRings, self).__init__(
@@ -292,7 +298,6 @@ class AssortedTweak_ConsistentRings(AAssortedTweak_ConsistentRings,
 
 class CBash_AssortedTweak_ConsistentRings(AAssortedTweak_ConsistentRings,
                                           CBash_MultiTweakItem):
-    tweak_name = _(u'Right Hand Rings')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -313,6 +318,8 @@ rePlayableSkips = re.compile(
 class AAssortedTweak_ClothingPlayable(AMultiTweakItem):
     """Sets all clothes to playable"""
     tweak_read_classes = 'CLOT',
+    tweak_name = _(u'All Clothing Playable')
+    tweak_tip = _(u'Sets all clothing to be playable.')
 
     def __init__(self):
         super(AAssortedTweak_ClothingPlayable, self).__init__(
@@ -362,7 +369,6 @@ class CBash_AssortedTweak_ClothingPlayable(AAssortedTweak_ClothingPlayable,
                                            CBash_MultiTweakItem):
     scanOrder = 29 #Run before the show clothing tweaks
     editOrder = 29
-    tweak_name = _(u'Playable Clothes')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -388,6 +394,8 @@ class CBash_AssortedTweak_ClothingPlayable(AAssortedTweak_ClothingPlayable,
 class AAssortedTweak_ArmorPlayable(AMultiTweakItem):
     """Sets all armors to be playable"""
     tweak_read_classes = 'ARMO',
+    tweak_name = _(u'All Armor Playable')
+    tweak_tip = _(u'Sets all armor to be playable.')
 
     def __init__(self):
         super(AAssortedTweak_ArmorPlayable, self).__init__(
@@ -436,7 +444,6 @@ class CBash_AssortedTweak_ArmorPlayable(AAssortedTweak_ArmorPlayable,
                                         CBash_MultiTweakItem):
     scanOrder = 29 #Run before the show armor tweaks
     editOrder = 29
-    tweak_name = _(u'Playable Armor')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -471,6 +478,8 @@ class AAssortedTweak_DarnBooks(AMultiTweakItem):
     reBold = re.compile(u'' r'(__|\*\*|~~)')
     reAlign = re.compile(u'' r'^(<<|\^\^|>>)', re.M)
     tweak_read_classes = 'BOOK',
+    tweak_name = _(u'DarNified Books')
+    tweak_tip = _(u'Books will be reformatted for DarN UI.')
 
     def __init__(self):
         super(AAssortedTweak_DarnBooks, self).__init__(_(u"DarNified Books"),
@@ -555,7 +564,6 @@ class AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,MultiTweakItem):
 
 class CBash_AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,
                                     CBash_MultiTweakItem):
-    tweak_name = _(u'Books DarNified')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired."""
@@ -617,6 +625,8 @@ class CBash_AssortedTweak_DarnBooks(AAssortedTweak_DarnBooks,
 #------------------------------------------------------------------------------
 class AAssortedTweak_FogFix(AMultiTweakItem):
     """Fix fog in cell to be non-zero."""
+    tweak_name = _(u'Nvidia Fog Fix')
+    tweak_tip = _(u'Fix fog related Nvidia black screen problems.')
 
     def __init__(self):
         super(AAssortedTweak_FogFix, self).__init__(_(u"Nvidia Fog Fix"),
@@ -653,7 +663,6 @@ class AssortedTweak_FogFix(AAssortedTweak_FogFix,MultiTweakItem):
         self._patchLog(log, count)
 
 class CBash_AssortedTweak_FogFix(AAssortedTweak_FogFix,CBash_MultiTweakItem):
-    tweak_name = _(u'Nvidia Fog Fix')
     tweak_read_classes = 'CELLS',  # or 'CELL', but we want this patcher to
     # run in the same group as the CellImporter, so we'll have to skip
     # worldspaces.  It shouldn't be a problem in those CELLs.
@@ -675,6 +684,9 @@ class CBash_AssortedTweak_FogFix(AAssortedTweak_FogFix,CBash_MultiTweakItem):
 class AAssortedTweak_NoLightFlicker(AMultiTweakItem):
     """Remove light flickering for low end machines."""
     tweak_read_classes = 'LIGH',
+    tweak_name = _(u'No Light Flicker')
+    tweak_tip = _(
+        u'Remove flickering from lights. For use on low-end machines.')
 
     def __init__(self):
         super(AAssortedTweak_NoLightFlicker, self).__init__(
@@ -718,7 +730,6 @@ class AssortedTweak_NoLightFlicker(AAssortedTweak_NoLightFlicker,
 
 class CBash_AssortedTweak_NoLightFlicker(AAssortedTweak_NoLightFlicker,
                                          CBash_MultiTweakItem):
-    tweak_name = _(u'No Light Flicker')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -735,7 +746,6 @@ class CBash_AssortedTweak_NoLightFlicker(AAssortedTweak_NoLightFlicker,
                 record._RecordID = override._RecordID
 
 #------------------------------------------------------------------------------
-
 class AMultiTweakItem_Weight(AMultiTweakItem):
 
     @property
@@ -755,6 +765,8 @@ class CBash_MultiTweakItem_Weight(CBash_MultiTweakItem,
 class AAssortedTweak_PotionWeight(AMultiTweakItem_Weight):
     """Reweighs standard potions down to 0.1."""
     tweak_read_classes = 'ALCH',
+    tweak_name = _(u'Reweigh: Potions (Maximum)')
+    tweak_tip = _(u'Potion weight will be capped.')
 
     def __init__(self):
         super(AAssortedTweak_PotionWeight, self).__init__(
@@ -798,7 +810,6 @@ class AssortedTweak_PotionWeight(AAssortedTweak_PotionWeight,MultiTweakItem):
 
 class CBash_AssortedTweak_PotionWeight(AAssortedTweak_PotionWeight,
                                        CBash_MultiTweakItem_Weight):
-    tweak_name = _(u"Reweigh: Potions (Maximum)")
 
     def __init__(self):
         super(CBash_AssortedTweak_PotionWeight, self).__init__()
@@ -827,6 +838,8 @@ class CBash_AssortedTweak_PotionWeight(AAssortedTweak_PotionWeight,
 class AAssortedTweak_IngredientWeight(AMultiTweakItem_Weight):
     """Reweighs standard ingredients down to 0.1."""
     tweak_read_classes = 'INGR',
+    tweak_name = _(u'Reweigh: Ingredients')
+    tweak_tip = _(u'Ingredient weight will be capped.')
 
     def __init__(self):
         super(AAssortedTweak_IngredientWeight, self).__init__(
@@ -871,7 +884,6 @@ class AssortedTweak_IngredientWeight(AAssortedTweak_IngredientWeight,
 
 class CBash_AssortedTweak_IngredientWeight(AAssortedTweak_IngredientWeight,
                                            CBash_MultiTweakItem_Weight):
-    tweak_name = _(u'Reweigh: Ingredients')
 
     def __init__(self):
         super(CBash_AssortedTweak_IngredientWeight, self).__init__()
@@ -895,6 +907,8 @@ class CBash_AssortedTweak_IngredientWeight(AAssortedTweak_IngredientWeight,
 class AAssortedTweak_PotionWeightMinimum(AMultiTweakItem_Weight):
     """Reweighs any potions up to 4."""
     tweak_read_classes = 'ALCH',
+    tweak_name = _(u'Reweigh: Potions (Minimum)')
+    tweak_tip = _(u'Potion weight will be floored.')
 
     def __init__(self):
         super(AAssortedTweak_PotionWeightMinimum, self).__init__(
@@ -940,7 +954,6 @@ class CBash_AssortedTweak_PotionWeightMinimum(
     AAssortedTweak_PotionWeightMinimum, CBash_MultiTweakItem_Weight):
     scanOrder = 33 #Have it run after the max weight for consistent results
     editOrder = 33
-    tweak_name = _(u'Reweigh: Potions (Minimum)')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -957,6 +970,8 @@ class CBash_AssortedTweak_PotionWeightMinimum(
 class AAssortedTweak_StaffWeight(AMultiTweakItem_Weight):
     """Reweighs staffs."""
     tweak_read_classes = 'WEAP',
+    tweak_name = _(u'Reweigh: Staffs/Staves')
+    tweak_tip =  _(u'Staff weight will be capped.')
 
     def __init__(self):
         super(AAssortedTweak_StaffWeight, self).__init__(
@@ -1004,7 +1019,6 @@ class AssortedTweak_StaffWeight(AAssortedTweak_StaffWeight,MultiTweakItem):
 
 class CBash_AssortedTweak_StaffWeight(AAssortedTweak_StaffWeight,
                                       CBash_MultiTweakItem_Weight):
-    tweak_name = _(u'Reweigh: Staffs/Staves')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1020,6 +1034,8 @@ class CBash_AssortedTweak_StaffWeight(AAssortedTweak_StaffWeight,
 #------------------------------------------------------------------------------
 class AAssortedTweak_ArrowWeight(AMultiTweakItem_Weight):
     tweak_read_classes = 'AMMO',
+    tweak_name = _(u'Reweigh: Arrows')
+    tweak_tip = _(u'Arrow weights will be capped.')
 
     def __init__(self):
         super(AAssortedTweak_ArrowWeight, self).__init__(_(u"Reweigh: Arrows"),
@@ -1062,7 +1078,6 @@ class AssortedTweak_ArrowWeight(AAssortedTweak_ArrowWeight,MultiTweakItem):
 
 class CBash_AssortedTweak_ArrowWeight(AAssortedTweak_ArrowWeight,
                                       CBash_MultiTweakItem_Weight):
-    tweak_name = _(u'Reweigh: Arrows')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1080,6 +1095,8 @@ class AAssortedTweak_ScriptEffectSilencer(AMultiTweakItem):
     """Silences the script magic effect and gives it an extremely high
     speed."""
     tweak_read_classes = 'MGEF',
+    tweak_name = _(u'Magic: Script Effect Silencer')
+    tweak_tip = _(u'Script Effect will be silenced and have no graphics.')
 
     def __init__(self):
         super(AAssortedTweak_ScriptEffectSilencer, self).__init__(
@@ -1134,7 +1151,6 @@ class AssortedTweak_ScriptEffectSilencer(AAssortedTweak_ScriptEffectSilencer,
 
 class CBash_AssortedTweak_ScriptEffectSilencer(
     AAssortedTweak_ScriptEffectSilencer, CBash_MultiTweakItem):
-    tweak_name = _(u'Magic: Script Effect Silencer')
 
     def __init__(self):
         super(CBash_AssortedTweak_ScriptEffectSilencer, self).__init__()
@@ -1165,6 +1181,9 @@ class CBash_AssortedTweak_ScriptEffectSilencer(
 class AAssortedTweak_HarvestChance(AMultiTweakItem):
     """Adjust Harvest Chances."""
     tweak_read_classes = 'FLOR',
+    tweak_name = _(u'Harvest Chance')
+    tweak_tip = _(u'Harvest chances on all plants will be set to the chosen '
+                  u'percentage.')
 
     def __init__(self):
         super(AAssortedTweak_HarvestChance, self).__init__(
@@ -1216,7 +1235,6 @@ class AssortedTweak_HarvestChance(AAssortedTweak_HarvestChance,MultiTweakItem):
 
 class CBash_AssortedTweak_HarvestChance(AAssortedTweak_HarvestChance,
                                         CBash_MultiTweakItem):
-    tweak_name = _(u'Harvest Chance')
 
     def __init__(self):
         super(CBash_AssortedTweak_HarvestChance, self).__init__()
@@ -1239,6 +1257,8 @@ class CBash_AssortedTweak_HarvestChance(AAssortedTweak_HarvestChance,
 class AAssortedTweak_WindSpeed(AMultiTweakItem):
     """Disables Weather winds."""
     tweak_read_classes = 'WTHR',
+    tweak_name = _(u'Disable Wind')
+    tweak_tip = _(u'Disables the wind on all weathers.')
 
     def __init__(self):
         super(AAssortedTweak_WindSpeed, self).__init__(_(u"Disable Wind"),
@@ -1273,7 +1293,6 @@ class AssortedTweak_WindSpeed(AAssortedTweak_WindSpeed,MultiTweakItem):
 
 class CBash_AssortedTweak_WindSpeed(AAssortedTweak_WindSpeed,
                                     CBash_MultiTweakItem):
-    tweak_name = _(u'Disable Wind')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1289,6 +1308,9 @@ class CBash_AssortedTweak_WindSpeed(AAssortedTweak_WindSpeed,
 class AAssortedTweak_UniformGroundcover(AMultiTweakItem):
     """Eliminates random variation in groundcover."""
     tweak_read_classes = 'GRAS',
+    tweak_name = _(u'Uniform Groundcover')
+    tweak_tip = _(u'Eliminates random variation in groundcover (grasses, '
+                  u'shrubs, etc.).')
 
     def __init__(self):
         super(AAssortedTweak_UniformGroundcover, self).__init__(
@@ -1326,7 +1348,6 @@ class AssortedTweak_UniformGroundcover(AAssortedTweak_UniformGroundcover,
 
 class CBash_AssortedTweak_UniformGroundcover(AAssortedTweak_UniformGroundcover,
                                              CBash_MultiTweakItem):
-    tweak_name = _(u'Uniform Groundcover')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1342,6 +1363,13 @@ class CBash_AssortedTweak_UniformGroundcover(AAssortedTweak_UniformGroundcover,
 class AAssortedTweak_SetCastWhenUsedEnchantmentCosts(AMultiTweakItem):
     """Sets Cast When Used Enchantment number of uses."""
     tweak_read_classes = 'ENCH',
+    tweak_name = _(
+        u'Number of uses for pre-enchanted weapons and Staffs/Staves')
+    tweak_tip = _(
+        u'The charge amount and cast cost will be edited so that all '
+        u'enchanted weapons and Staffs/Staves have the amount of uses '
+        u'specified. Cost will be rounded up to 1 (unless set to unlimited) '
+        u'so number of uses may not exactly match for all weapons.')
 
     def __init__(self):
         super(AAssortedTweak_SetCastWhenUsedEnchantmentCosts, self).__init__(
@@ -1401,7 +1429,7 @@ class AssortedTweak_SetCastWhenUsedEnchantmentCosts(
 
 class CBash_AssortedTweak_SetCastWhenUsedEnchantmentCosts(
     AAssortedTweak_SetCastWhenUsedEnchantmentCosts, CBash_MultiTweakItem):
-    tweak_name = _(u'Set Enchantment Number of Uses')
+    tweak_name = _(u'Set Enchantment Number of Uses') # TODO unused
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1424,6 +1452,10 @@ class CBash_AssortedTweak_SetCastWhenUsedEnchantmentCosts(
 class AAssortedTweak_DefaultIcons(AMultiTweakItem):
     """Sets a default icon for any records that don't have any icon
     assigned."""
+    tweak_name = _(u'Default Icons')
+    tweak_tip = _(u"Sets a default icon for any records that don't have any "
+                  u"icon assigned")
+
     def __init__(self):
         super(AAssortedTweak_DefaultIcons,self).__init__(_(u"Default Icons"),
             _(u"Sets a default icon for any records that don't have any icon"
@@ -1601,7 +1633,6 @@ class CBash_AssortedTweak_DefaultIcons(AAssortedTweak_DefaultIcons,
                                        CBash_MultiTweakItem):
     """Sets a default icon for any records that don't have any icon
     assigned."""
-    tweak_name = _(u'Default Icons')
     type_defaultIcon = {
                 'ALCH': u"Clutter\\Potions\\IconPotion01.dds",
                 'AMMO': u"Weapons\\IronArrow.dds",
@@ -1728,6 +1759,10 @@ class CBash_AssortedTweak_DefaultIcons(AAssortedTweak_DefaultIcons,
 class AAssortedTweak_SetSoundAttenuationLevels(AMultiTweakItem):
     """Sets Sound Attenuation Levels for all records except Nirnroots."""
     tweak_read_classes = 'SOUN',
+    tweak_name = _(u'Set Sound Attenuation Levels')
+    tweak_tip = _(
+        u'The sound attenuation levels will be set to tweak%*current level, '
+        u'thereby increasing (or decreasing) the sound volume.')
 
     def __init__(self):
         super(AAssortedTweak_SetSoundAttenuationLevels,self).__init__(
@@ -1772,7 +1807,6 @@ class AssortedTweak_SetSoundAttenuationLevels(
 
 class CBash_AssortedTweak_SetSoundAttenuationLevels(
     AAssortedTweak_SetSoundAttenuationLevels, CBash_MultiTweakItem):
-    tweak_name = _(u'Set Sound Attenuation Levels')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1792,6 +1826,11 @@ class CBash_AssortedTweak_SetSoundAttenuationLevels(
 class AAssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(AMultiTweakItem):
     """Sets Sound Attenuation Levels for Nirnroots."""
     tweak_read_classes = 'SOUN',
+    tweak_name = _(u'Set Sound Attenuation Levels: Nirnroots Only')
+    tweak_tip = _(
+        u'The sound attenuation levels will be set to tweak%*current '
+        u'level, thereby increasing (or decreasing) the sound '
+        u'volume. This one only affects Nirnroots.')
 
     def __init__(self):
         super(AAssortedTweak_SetSoundAttenuationLevels_NirnrootOnly,
@@ -1839,7 +1878,6 @@ class AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
 class CBash_AssortedTweak_SetSoundAttenuationLevels_NirnrootOnly(
     AAssortedTweak_SetSoundAttenuationLevels_NirnrootOnly,
     CBash_MultiTweakItem):
-    tweak_name = _(u'Set Sound Attenuation Levels: Nirnroots Only')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1860,6 +1898,9 @@ class AAssortedTweak_FactioncrimeGoldMultiplier(AMultiTweakItem):
     """Fix factions with unset crimeGoldMultiplier to have a
     crimeGoldMultiplier of 1.0."""
     tweak_read_classes = 'FACT',
+    tweak_name = _(u'Faction crime Gold Multiplier Fix')
+    tweak_tip = _(u'Fix factions with unset crimeGoldMultiplier to have a '
+                  u'crimeGoldMultiplier of 1.0.')
 
     def __init__(self):
         super(AAssortedTweak_FactioncrimeGoldMultiplier,self).__init__(
@@ -1895,7 +1936,6 @@ class AssortedTweak_FactioncrimeGoldMultiplier(
 
 class CBash_AssortedTweak_FactioncrimeGoldMultiplier(
     AAssortedTweak_FactioncrimeGoldMultiplier, CBash_MultiTweakItem):
-    tweak_name = _(u'Faction crime Gold Multiplier Fix')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired."""
@@ -1911,6 +1951,8 @@ class CBash_AssortedTweak_FactioncrimeGoldMultiplier(
 class AAssortedTweak_LightFadeValueFix(AMultiTweakItem):
     """Remove light flickering for low end machines."""
     tweak_read_classes = 'LIGH',
+    tweak_name = _(u'No Light Fade Value Fix')
+    tweak_tip = _(u"Sets Light's Fade values to default of 1.0 if not set.")
 
     def __init__(self):
         super(AAssortedTweak_LightFadeValueFix, self).__init__(
@@ -1945,7 +1987,6 @@ class AssortedTweak_LightFadeValueFix(AAssortedTweak_LightFadeValueFix,
 
 class CBash_AssortedTweak_LightFadeValueFix(AAssortedTweak_LightFadeValueFix,
                                             CBash_MultiTweakItem):
-    tweak_name = _(u'No Light Fade Value Fix')
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -1961,6 +2002,8 @@ class CBash_AssortedTweak_LightFadeValueFix(AAssortedTweak_LightFadeValueFix,
 class AAssortedTweak_TextlessLSCRs(AMultiTweakItem):
     """Removes the description from loading screens."""
     tweak_read_classes = 'LSCR',
+    tweak_name = _(u'No Description Loading Screens')
+    tweak_tip = _(u'Removes the description from loading screens.')
 
     def __init__(self):
         super(AAssortedTweak_TextlessLSCRs, self).__init__(
@@ -1994,7 +2037,6 @@ class AssortedTweak_TextlessLSCRs(AAssortedTweak_TextlessLSCRs,MultiTweakItem):
 
 class CBash_AssortedTweak_TextlessLSCRs(AAssortedTweak_TextlessLSCRs,
                                         CBash_MultiTweakItem):
-    tweak_name = _(u"No Description Loading Screens")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """

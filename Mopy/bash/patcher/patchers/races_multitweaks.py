@@ -46,6 +46,9 @@ from ...parsers import LoadFactory, ModFile
 # Patchers: 40 ----------------------------------------------------------------
 class ARaceTweaker_BiggerOrcsAndNords(AMultiTweakItem):
     tweak_read_classes = 'RACE',
+    tweak_name = _(u'Bigger Nords and Orcs')
+    tweak_tip = _(u'Adjusts the Orc and Nord race records to be '
+                  u'taller/heavier - to be more lore friendly.')
 
     def __init__(self):
         super(ARaceTweaker_BiggerOrcsAndNords, self).__init__(
@@ -106,7 +109,6 @@ class RaceTweaker_BiggerOrcsAndNords(ARaceTweaker_BiggerOrcsAndNords,
 class CBash_RaceTweaker_BiggerOrcsAndNords(ARaceTweaker_BiggerOrcsAndNords,
                                            CBash_MultiTweakItem):
     """Changes all Orcs and Nords to be bigger."""
-    tweak_name = _(u"Bigger Nords and Orcs")
 
     def __init__(self):
         super(CBash_RaceTweaker_BiggerOrcsAndNords, self).__init__()
@@ -137,6 +139,10 @@ class ARaceTweaker_MergeSimilarRaceHairs(AMultiTweakItem):
     """Merges similar race's hairs (kinda specifically designed for SOVVM's
     bearded races)."""
     tweak_read_classes = 'RACE',
+    tweak_name = _(u'Merge Hairs from similar races')
+    tweak_tip = _(
+        u'Merges hair lists from similar races (f.e. give RBP khajit '
+        u'hair to all the other varieties of khajits in Elsweyr)')
 
     def __init__(self):
         super(ARaceTweaker_MergeSimilarRaceHairs, self).__init__(
@@ -204,7 +210,6 @@ class RaceTweaker_MergeSimilarRaceHairs(ARaceTweaker_MergeSimilarRaceHairs,
 
 class CBash_RaceTweaker_MergeSimilarRaceHairs(
     ARaceTweaker_MergeSimilarRaceHairs, CBash_MultiTweakItem):
-    tweak_name = _(u"Merge Hairs from similar races")
 
     def finishPatch(self,patchFile,progress):
         """Edits the bashed patch file directly."""
@@ -261,6 +266,9 @@ class CBash_RaceTweaker_MergeSimilarRaceHairs(
 class ARaceTweaker_MergeSimilarRaceEyes(AMultiTweakItem):
     """Merges similar race's eyes."""
     tweak_read_classes = 'RACE',
+    tweak_name = _(u'Merge Eyes from similar races')
+    tweak_tip = _(u'Merges eye lists from similar races (f.e. give RBP khajit '
+                  u'eyes to all the other varieties of khajits in Elsweyr)')
 
     def __init__(self):
         super(ARaceTweaker_MergeSimilarRaceEyes, self).__init__(
@@ -330,7 +338,6 @@ class RaceTweaker_MergeSimilarRaceEyes(ARaceTweaker_MergeSimilarRaceEyes,
 class CBash_RaceTweaker_MergeSimilarRaceEyes(ARaceTweaker_MergeSimilarRaceEyes,
                                              CBash_MultiTweakItem):
     """Merges similar race's eyes."""
-    tweak_name = _(u"Merge Eyes from similar races")
 
     def finishPatch(self,patchFile,progress):
         """Edits the bashed patch file directly."""
@@ -388,6 +395,8 @@ class CBash_RaceTweaker_MergeSimilarRaceEyes(ARaceTweaker_MergeSimilarRaceEyes,
 class ARaceTweaker_AllHairs(AMultiTweakItem):
     """Gives all races ALL hairs."""
     tweak_read_classes = 'RACE',
+    tweak_name = _(u'Races Have All Hairs')
+    tweak_tip = _(u'Gives all races every available hair.')
 
     def __init__(self):
         super(ARaceTweaker_AllHairs, self).__init__(_(u"Races Have All Hairs"),
@@ -418,7 +427,6 @@ class RaceTweaker_AllHairs(ARaceTweaker_AllHairs,MultiTweakItem):
             count[srcMod] = count.get(srcMod,0) + 1
 
 class CBash_RaceTweaker_AllHairs(ARaceTweaker_AllHairs,CBash_MultiTweakItem):
-    tweak_name = _(u"Races Have All Hairs")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -434,6 +442,8 @@ class CBash_RaceTweaker_AllHairs(ARaceTweaker_AllHairs,CBash_MultiTweakItem):
 class ARaceTweaker_AllEyes(AMultiTweakItem):
     """Gives all races ALL eyes."""
     tweak_read_classes = 'RACE',
+    tweak_name = _(u'Races Have All Eyes')
+    tweak_tip = _(u'Gives all races every available eye.')
 
     def __init__(self,opt=(u'what a lot of eyes you have dear',1)):
         super(ARaceTweaker_AllEyes, self).__init__(_(u"Races Have All Eyes"),
@@ -464,7 +474,6 @@ class RaceTweaker_AllEyes(ARaceTweaker_AllEyes,MultiTweakItem):
             count[srcMod] = count.get(srcMod,0) + 1
 
 class CBash_RaceTweaker_AllEyes(ARaceTweaker_AllEyes,CBash_MultiTweakItem):
-    tweak_name = _(u"Races Have All Eyes")
 
     def __init__(self):
         super(CBash_RaceTweaker_AllEyes, self).__init__(
@@ -485,6 +494,8 @@ class CBash_RaceTweaker_AllEyes(ARaceTweaker_AllEyes,CBash_MultiTweakItem):
 class ARaceTweaker_PlayableEyes(AMultiTweakItem):
     """Sets all eyes to be playable."""
     tweak_read_classes = 'EYES',
+    tweak_name = _(u'Playable Eyes')
+    tweak_tip = _(u'Sets all eyes to be playable.')
 
     def __init__(self):
         super(ARaceTweaker_PlayableEyes, self).__init__(_(u"Playable Eyes"),
@@ -517,7 +528,6 @@ class RaceTweaker_PlayableEyes(ARaceTweaker_PlayableEyes,MultiTweakItem):
 class CBash_RaceTweaker_PlayableEyes(ARaceTweaker_PlayableEyes,
                                      CBash_MultiTweakItem):
     """Sets all eyes to be playable."""
-    tweak_name = _(u"Playable Eyes")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -533,6 +543,8 @@ class CBash_RaceTweaker_PlayableEyes(ARaceTweaker_PlayableEyes,
 class ARaceTweaker_PlayableHairs(AMultiTweakItem):
     """Sets all hairs to be playable."""
     tweak_read_classes = 'HAIR',
+    tweak_name = _(u"Playable Hairs")
+    tweak_trip = _(u'Sets all Hairs to be playable.')
 
     def __init__(self):
         super(ARaceTweaker_PlayableHairs, self).__init__(_(u"Playable Hairs"),
@@ -565,7 +577,6 @@ class RaceTweaker_PlayableHairs(ARaceTweaker_PlayableHairs,MultiTweakItem):
 class CBash_RaceTweaker_PlayableHairs(ARaceTweaker_PlayableHairs,
                                       CBash_MultiTweakItem):
     """Sets all hairs to be playable."""
-    tweak_name = _(u"Playable Hairs")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -581,6 +592,8 @@ class CBash_RaceTweaker_PlayableHairs(ARaceTweaker_PlayableHairs,
 class ARaceTweaker_SexlessHairs(AMultiTweakItem):
     """Sets all hairs to be playable by both males and females."""
     tweak_read_classes = 'HAIR',
+    tweak_name = _(u'Sexless Hairs')
+    tweak_tip = _(u'Lets any sex of character use any hair.')
 
     def __init__(self):
         super(ARaceTweaker_SexlessHairs, self).__init__(_(u"Sexless Hairs"),
@@ -613,7 +626,6 @@ class RaceTweaker_SexlessHairs(ARaceTweaker_SexlessHairs,MultiTweakItem):
 
 class CBash_RaceTweaker_SexlessHairs(ARaceTweaker_SexlessHairs,
                                      CBash_MultiTweakItem):
-    tweak_name = _(u"Sexless Hairs")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """

@@ -81,6 +81,10 @@ class _CreaCTweak(CBash_MultiTweakItem):
 class AMAONPCSkeletonPatcher(AMultiTweakItem):
     """Changes all NPCs to use the right Mayu's Animation Overhaul Skeleton
     for use with MAO."""
+    tweak_name = _(u"Mayu's Animation Overhaul Skeleton Tweaker")
+    tweak_tip = _(u'Changes all (modded and vanilla) NPCs to use the MAO '
+                  u'skeletons.  Not compatible with VORB.  Note: ONLY use if '
+                  u'you have MAO installed.')
 
     def __init__(self):
         super(AMAONPCSkeletonPatcher, self).__init__(
@@ -133,7 +137,7 @@ class MAONPCSkeletonPatcher(AMAONPCSkeletonPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_MAONPCSkeletonPatcher(AMAONPCSkeletonPatcher, _NpcCTweak):
-    tweak_name = _(u"MAO Skeleton Setter")
+    tweak_name = _(u"MAO Skeleton Setter") # unused
 
     def apply(self, modFile, record, bashTags,
               __player_fid=_NpcCTweak.playerFid):
@@ -165,6 +169,11 @@ class CBash_MAONPCSkeletonPatcher(AMAONPCSkeletonPatcher, _NpcCTweak):
 #------------------------------------------------------------------------------
 class AVORB_NPCSkeletonPatcher(AMultiTweakItem):
     """Changes all NPCs to use the diverse skeleton for different look."""
+    tweak_name = _(u"VadersApp's Oblivion Real Bodies Skeleton Tweaker")
+    tweak_tip = _(u"Changes all (modded and vanilla) NPCs to use diverse "
+                  u"skeletons for different look.  Not compatible with MAO, "
+                  u"Requires VadersApp's Oblivion Real Bodies.")
+
     def __init__(self):
         super(AVORB_NPCSkeletonPatcher, self).__init__(
             _(u"VadersApp's Oblivion Real Bodies Skeleton Tweaker"),
@@ -238,7 +247,6 @@ class VORB_NPCSkeletonPatcher(AVORB_NPCSkeletonPatcher,BasalNPCTweaker):
         self._patchLog(log, count)
 
 class CBash_VORB_NPCSkeletonPatcher(AVORB_NPCSkeletonPatcher, _NpcCTweak):
-    tweak_name = _(u"VORB Skeleton Setter")
 
     def __init__(self):
         super(CBash_VORB_NPCSkeletonPatcher, self).__init__()
@@ -283,6 +291,7 @@ class CBash_VORB_NPCSkeletonPatcher(AVORB_NPCSkeletonPatcher, _NpcCTweak):
 #------------------------------------------------------------------------------
 class AVanillaNPCSkeletonPatcher(AMultiTweakItem):
     """Changes all NPCs to use the vanilla beast race skeleton."""
+    tweak_name = _(u'Vanilla Beast Skeleton Tweaker')
 
     def __init__(self):
         super(AVanillaNPCSkeletonPatcher, self).__init__(
@@ -335,7 +344,7 @@ class VanillaNPCSkeletonPatcher(AVanillaNPCSkeletonPatcher,BasalNPCTweaker):
 class CBash_VanillaNPCSkeletonPatcher(AVanillaNPCSkeletonPatcher, _NpcCTweak):
     scanOrder = 31 #Run before MAO
     editOrder = 31
-    tweak_name = _(u"Vanilla Beast Skeleton")
+    tweak_name = _(u"Vanilla Beast Skeleton") # unused
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -360,6 +369,9 @@ class CBash_VanillaNPCSkeletonPatcher(AVanillaNPCSkeletonPatcher, _NpcCTweak):
 class ARedguardNPCPatcher(AMultiTweakItem):
     """Changes all Redguard NPCs texture symmetry for Better Redguard
     Compatibility."""
+    tweak_name = _(u'Redguard FGTS Patcher')
+    tweak_tip = _(u'Nulls FGTS of all Redguard NPCs - for compatibility with '
+                  u'Better Redguards.')
 
     def __init__(self):
         super(ARedguardNPCPatcher, self).__init__(_(u"Redguard FGTS Nuller"),
@@ -386,7 +398,6 @@ class RedguardNPCPatcher(ARedguardNPCPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_RedguardNPCPatcher(ARedguardNPCPatcher, _NpcCTweak):
-    tweak_name = _(u"Redguard FGTS Patcher")
     redguardId = FormID(GPath(u'Oblivion.esm'),0x00000D43)
 
     def apply(self,modFile,record,bashTags):
@@ -406,6 +417,10 @@ class CBash_RedguardNPCPatcher(ARedguardNPCPatcher, _NpcCTweak):
 #------------------------------------------------------------------------------
 class ANoBloodCreaturesPatcher(AMultiTweakItem):
     """Set all creatures to have no blood records."""
+    tweak_name = _(u'No Bloody Creatures')
+    tweak_tip = _(u"Set all creatures to have no blood records, will have "
+                  u"pretty much no effect when used with MMM since the MMM "
+                  u"blood uses a different system.")
 
     def __init__(self):
         super(ANoBloodCreaturesPatcher, self).__init__(
@@ -436,7 +451,6 @@ class NoBloodCreaturesPatcher(ANoBloodCreaturesPatcher,BasalCreatureTweaker):
         self._patchLog(log, count)
 
 class CBash_NoBloodCreaturesPatcher(ANoBloodCreaturesPatcher, _CreaCTweak):
-    tweak_name = _(u"No Bloody Creatures")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -457,6 +471,9 @@ class AAsIntendedImpsPatcher(AMultiTweakItem):
     (discovered by the UOP team, made into a mod by Tejon)."""
     reImpModPath = re.compile(u'' r'(imp(?!erial)|gargoyle)\\.', re.I | re.U)
     reImp  = re.compile(u'(imp(?!erial)|gargoyle)',re.I|re.U)
+    tweak_name = _(u'As Intended: Imps')
+    tweak_tip = _(u'Set imps to have the unassigned Bethesda Imp Spells as '
+                  u'discovered by the UOP team and made into a mod by Tejon.')
 
     def __init__(self):
         super(AAsIntendedImpsPatcher, self).__init__(_(u'As Intended: Imps'),
@@ -502,7 +519,6 @@ class AsIntendedImpsPatcher(AAsIntendedImpsPatcher,BasalCreatureTweaker):
         self._patchLog(log,count)
 
 class CBash_AsIntendedImpsPatcher(AAsIntendedImpsPatcher, _CreaCTweak):
-    tweak_name = _(u"As Intended: Imps")
     spell = FormID(GPath(u'Oblivion.esm'), 0x02B53F)
 
     def apply(self,modFile,record,bashTags):
@@ -536,6 +552,9 @@ class AAsIntendedBoarsPatcher(AMultiTweakItem):
     assigned (discovered by the UOP team, made into a mod by Tejon)."""
     reBoarModPath = re.compile(u'' r'(boar)\\.', re.I | re.U)
     reBoar  = re.compile(u'(boar)', re.I|re.U)
+    tweak_name = _(u'As Intended: Boars')
+    tweak_tip = _(u'Set boars to have the unassigned Bethesda Boar Spells as '
+                  u'discovered by the UOP team and made into a mod by Tejon.')
 
     def __init__(self):
         super(AAsIntendedBoarsPatcher, self).__init__(_(u'As Intended: Boars'),
@@ -574,7 +593,6 @@ class AsIntendedBoarsPatcher(AAsIntendedBoarsPatcher,BasalCreatureTweaker):
         self._patchLog(log,count)
 
 class CBash_AsIntendedBoarsPatcher(AAsIntendedBoarsPatcher, _CreaCTweak):
-    tweak_name = _(u"As Intended: Boars")
     spell = FormID(GPath(u'Oblivion.esm'), 0x02B54E)
 
     def apply(self,modFile,record,bashTags):
@@ -600,6 +618,9 @@ class CBash_AsIntendedBoarsPatcher(AAsIntendedBoarsPatcher, _CreaCTweak):
 #------------------------------------------------------------------------------
 class ASWALKNPCAnimationPatcher(AMultiTweakItem):
     """Changes all female NPCs to use Mur Zuk's Sexy Walk."""
+    tweak_name = _(u'Sexy Walk for female NPCs')
+    tweak_tip = _(u"Changes all female NPCs to use Mur Zuk's Sexy Walk - "
+                  u"Requires Mur Zuk's Sexy Walk animation file.")
 
     def __init__(self):
         super(ASWALKNPCAnimationPatcher, self).__init__(
@@ -625,7 +646,6 @@ class SWALKNPCAnimationPatcher(ASWALKNPCAnimationPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_SWALKNPCAnimationPatcher(ASWALKNPCAnimationPatcher, _NpcCTweak):
-    tweak_name = _(u"Sexy Walk for female NPCs")
 
     def apply(self,modFile,record,bashTags,
               __player_fid=_NpcCTweak.playerFid):
@@ -642,6 +662,9 @@ class CBash_SWALKNPCAnimationPatcher(ASWALKNPCAnimationPatcher, _NpcCTweak):
 #------------------------------------------------------------------------------
 class ARWALKNPCAnimationPatcher(AMultiTweakItem):
     """Changes all female NPCs to use Mur Zuk's Real Walk."""
+    tweak_name = _(u'Real Walk for female NPCs')
+    tweak_tip = _(u"Changes all female NPCs to use Mur Zuk's Real Walk - "
+                  u"Requires Mur Zuk's Real Walk animation file.")
 
     def __init__(self):
         super(ARWALKNPCAnimationPatcher, self).__init__(
@@ -666,7 +689,6 @@ class RWALKNPCAnimationPatcher(ARWALKNPCAnimationPatcher,BasalNPCTweaker):
         self._patchLog(log,count)
 
 class CBash_RWALKNPCAnimationPatcher(ARWALKNPCAnimationPatcher, _NpcCTweak):
-    tweak_name = _(u"Real Walk for female NPCs")
 
     #--Patch Phase ------------------------------------------------------------
     def apply(self,modFile,record,bashTags,
@@ -685,6 +707,9 @@ class CBash_RWALKNPCAnimationPatcher(ARWALKNPCAnimationPatcher, _NpcCTweak):
 class AQuietFeetPatcher(AMultiTweakItem):
     """Removes 'foot' sounds from all/specified creatures - like the mod by
     the same name but works on all modded creatures."""
+    tweak_name = _(u'Quiet Feet')
+    tweak_tip = _(u"Removes all/some 'foot' sounds from creatures; on some"
+                  u" computers can have a significant performance boost.")
 
     def __init__(self):
         super(AQuietFeetPatcher, self).__init__(_(u'Quiet Feet'),
@@ -729,7 +754,6 @@ class QuietFeetPatcher(AQuietFeetPatcher,BasalCreatureTweaker):
         self._patchLog(log,count)
 
 class CBash_QuietFeetPatcher(AQuietFeetPatcher, _CreaCTweak):
-    tweak_name = _(u"Quiet Feet")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """
@@ -760,6 +784,9 @@ class CBash_QuietFeetPatcher(AQuietFeetPatcher, _CreaCTweak):
 class AIrresponsibleCreaturesPatcher(AMultiTweakItem):
     """Sets responsibility to 0 for all/specified creatures - like the mod
     by the name of Irresponsible Horses but works on all modded creatures."""
+    tweak_name = _(u"Irresponsible Creatures")
+    tweak_tip = _(u"Sets responsibility to 0 for all/specified creatures - so "
+                  u"they can't report you for crimes.")
 
     def __init__(self):
         super(AIrresponsibleCreaturesPatcher, self).__init__(
@@ -774,6 +801,7 @@ class AIrresponsibleCreaturesPatcher(AMultiTweakItem):
 
 class IrresponsibleCreaturesPatcher(AIrresponsibleCreaturesPatcher,
                                     BasalCreatureTweaker):
+
     def buildPatch(self,log,progress,patchFile):
         """Edits patch file as desired. Will write to log."""
         count = Counter()
@@ -797,7 +825,6 @@ class IrresponsibleCreaturesPatcher(AIrresponsibleCreaturesPatcher,
 
 class CBash_IrresponsibleCreaturesPatcher(AIrresponsibleCreaturesPatcher,
                                           _CreaCTweak):
-    tweak_name = _(u"Irresponsible Creatures")
 
     def apply(self,modFile,record,bashTags):
         """Edits patch file as desired. """

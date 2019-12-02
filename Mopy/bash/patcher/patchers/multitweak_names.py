@@ -48,6 +48,8 @@ class _AMultiTweakItem_Names(MultiTweakItem):
 # Patchers: 30 ----------------------------------------------------------------
 class ANamesTweak_BodyTags(AMultiTweakItem):
     tweak_name = _(u'Body Part Codes')
+    tweak_tip = _(u'Sets body part codes used by Armor/Clothes name tweaks. '
+                  u'A: Amulet, R: Ring, etc.')
     # FIXME tweak_read_classes?
 
     def __init__(self):
@@ -74,7 +76,12 @@ class CBash_NamesTweak_BodyTags(ANamesTweak_BodyTags,CBash_MultiTweakItem):
 #------------------------------------------------------------------------------
 class NamesTweak_Body(_AMultiTweakItem_Names):
     """Names tweaker for armor and clothes."""
-    #--Patch Phase ------------------------------------------------------------
+
+    def __init__(self, label, tweak_tip, key, *choices, **kwargs):
+        self.tweak_name = label
+        self.tweak_tip = tweak_tip
+        super(NamesTweak_Body, self).__init__(label, tweak_tip, key,
+                                                    *choices, **kwargs)
     def getReadClasses(self):
         """Returns load factory classes needed for reading."""
         return self.key,
@@ -131,6 +138,8 @@ class CBash_NamesTweak_Body(CBash_MultiTweakItem):
     """Names tweaker for armor and clothes."""
 
     def __init__(self, label, tweak_tip, key, *choices, **kwargs):
+        self.tweak_name = label
+        self.tweak_tip = tweak_tip
         super(CBash_NamesTweak_Body, self).__init__(label, tweak_tip, key,
                                                     *choices, **kwargs)
         self.logMsg = u'* ' + _(u'%(record_type)s Renamed') % {
@@ -177,6 +186,7 @@ class ANamesTweak_Potions(AMultiTweakItem):
     reOldEnd = re.compile(u' -$',re.U)
     tweak_read_classes = 'ALCH',
     tweak_name = _(u"Potions")
+    tweak_tip = _(u'Label potions to sort by type and effect.')
 
     def __init__(self):
         super(ANamesTweak_Potions, self).__init__(_(u"Potions"),
@@ -288,6 +298,7 @@ reSpell = re.compile(u'^(\([ACDIMR]\d\)|\w{3,6}:) ',re.U) # compile once
 class ANamesTweak_Scrolls(AMultiTweakItem):
     reOldLabel = reSpell
     tweak_name = _(u"Notes and Scrolls")
+    tweak_tip = _(u'Mark notes and scrolls to sort separately from books')
 
     def __init__(self):
         super(ANamesTweak_Scrolls,self).__init__(_(u"Notes and Scrolls"),
@@ -416,6 +427,8 @@ class CBash_NamesTweak_Scrolls(ANamesTweak_Scrolls,CBash_MultiTweakItem):
 class ANamesTweak_Spells(AMultiTweakItem):
     """Names tweaker for spells."""
     tweak_read_classes = 'SPEL',
+    tweak_name = _(u"Spells")
+    tweak_tip = _(u'Label spells to sort by school and level.')
 
     reOldLabel = reSpell
     def __init__(self):
@@ -523,6 +536,8 @@ class CBash_NamesTweak_Spells(ANamesTweak_Spells,CBash_MultiTweakItem):
 class ANamesTweak_Weapons(AMultiTweakItem):
     """Names tweaker for weapons and ammo."""
     tweak_read_classes = 'AMMO','WEAP',
+    tweak_name = _(u"Weapons")
+    tweak_tip = _(u'Label ammo and weapons to sort by type and damage.')
 
     def __init__(self):
         super(ANamesTweak_Weapons, self).__init__(_(u"Weapons"),
