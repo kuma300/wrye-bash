@@ -94,7 +94,7 @@ except ImportError:
     def subEnv(match):
         key = match.group(1).upper()
         if not envDefs.get(key):
-            raise BoltError(u'Can\'t find user directories in windows registry'
+            raise BoltError(u"Can't find user directories in windows registry"
                     u'.\n>> See "If Bash Won\'t Start" in bash docs for help.')
         return envDefs[key]
 
@@ -109,7 +109,7 @@ except ImportError:
         try:
             path = winreg.QueryValueEx(regKey, folderKey)[0]
         except WindowsError:
-            raise BoltError(u'Can\'t find user directories in windows registry'
+            raise BoltError(u"Can't find user directories in windows registry"
                     u'.\n>> See "If Bash Won\'t Start" in bash docs for help.')
         regKey.Close()
         path = reEnv.sub(subEnv, path)
@@ -203,7 +203,7 @@ def _get_app_links(apps_dir):
     if win32client is None: return {}
     links = {}
     try:
-        sh = win32client.Dispatch('WScript.Shell')
+        sh = win32client.Dispatch(u'WScript.Shell')
         for lnk in apps_dir.list():
             lnk = apps_dir.join(lnk)
             if lnk.cext == u'.lnk' and lnk.isfile():
@@ -215,7 +215,7 @@ def _get_app_links(apps_dir):
                               # shortcut.WorkingDirectory, shortcut.Arguments,
                               description)
     except:
-        deprint(_(u"Error initializing links:"), traceback=True)
+        deprint(_(u'Error initializing links:'), traceback=True)
     return links
 
 def init_app_links(apps_dir, badIcons, iconList):
@@ -447,7 +447,7 @@ def _linux_get_file_version_info(filename):
         offset = _pad(file_obj.tell()) - pos
         file_obj.seek(pos + offset)
         if type_ == 0: # binary data
-            if info[:-1] == 'VS_VERSION_INFO':
+            if info[:-1] == b'VS_VERSION_INFO':
                 file_v = _read(_WORD, file_obj, count=4, offset=8)
                 # prod_v = _read(_WORD, f, count=4) # this isn't used
                 return 0, (file_v[1], file_v[0], file_v[3], file_v[2])
@@ -475,7 +475,7 @@ def _linux_get_file_version_info(filename):
         for section_num in xrange(section_count):
             section_pos = section_table_pos + 40 * section_num
             f.seek(section_pos)
-            if f.read(8).rstrip('\x00') != '.rsrc':  # section name
+            if f.read(8).rstrip(b'\x00') != b'.rsrc':  # section name
                 continue
             section_va = _read(_DWORD, f, offset=4)
             raw_data_pos = _read(_DWORD, f, offset=4)
@@ -617,7 +617,7 @@ def _fileOperation(operation, source, target=None, allowUndo=True,
             # silent - no real effect (we don't show visuals deleting this way)
             if confirm:
                 message = _(u'Are you sure you want to permanently delete '
-                            u'these %(count)d items?') % {'count':len(source)}
+                            u'these %(count)d items?') % {u'count':len(source)}
                 message += u'\n\n' + '\n'.join([u' * %s' % x for x in source])
                 if not balt.askYes(parent,message,_(u'Delete Multiple Items')):
                     return {}
@@ -649,7 +649,7 @@ def shellDeletePass(node, parent=None):
     """Delete tmp dirs/files - ignore errors (but log them)."""
     if node.exists():
         try: shellDelete(node, parent=parent, confirm=False, recycle=False)
-        except OSError: deprint(u"Error deleting %s:" % node, traceback=True)
+        except OSError: deprint(u'Error deleting %s:' % node, traceback=True)
 
 def shellMove(filesFrom, filesTo, parent=None, askOverwrite=False,
               allowUndo=False, autoRename=False, silent=False):
@@ -671,7 +671,7 @@ def shellMakeDirs(dirs, parent=None):
     #--Check for dirs that are impossible to create (the drive they are
     #  supposed to be on doesn't exist
     def _filterUnixPaths(path):
-        return _os.name != 'posix' and not path.s.startswith(u"\\")\
+        return _os.name != 'posix' and not path.s.startswith(u'\\')\
                and not path.drive().exists()
     errorPaths = [d for d in dirs if _filterUnixPaths(d)]
     if errorPaths:
@@ -720,7 +720,7 @@ def setUAC(handle, uac=True):
 def testUAC(gameDataPath):
     if _os.name != 'nt': # skip this when not in Windows
         return False
-    print('testing UAC')
+    print(u'testing UAC')
     tmpDir = Path.tempDir()
     tempFile = tmpDir.join(u'_tempfile.tmp')
     dest = gameDataPath.join(u'_tempfile.tmp')
@@ -738,16 +738,16 @@ def getJava():
     """Locate javaw.exe to launch jars from Bash."""
     if _os.name == 'posix':
         import subprocess
-        java_bin_path = ''
+        java_bin_path = u''
         try:
-            java_bin_path = subprocess.check_output('command -v java',
-                                                    shell=True).rstrip('\n')
+            java_bin_path = subprocess.check_output(u'command -v java',
+                                                    shell=True).rstrip(u'\n')
         except subprocess.CalledProcessError:
             pass # what happens when java doesn't exist?
         return GPath(java_bin_path)
     try:
         java_home = GPath(_os.environ['JAVA_HOME'])
-        java = java_home.join('bin', u'javaw.exe')
+        java = java_home.join(u'bin', u'javaw.exe')
         if java.exists(): return java
     except KeyError: # no JAVA_HOME
         pass
