@@ -49,7 +49,7 @@ class _StatusBar_Hide(ItemLink):
         tip_ = window.tooltip
         self._text = _(u"Hide '%s'") % tip_
         self._help = _(u"Hides %(buttonname)s's status bar button (can be"
-            u" restored through the settings menu).") % ({'buttonname': tip_})
+            u' restored through the settings menu).') % ({u'buttonname': tip_})
 
     def Execute(self): Link.Frame.statusBar.HideButton(self.window)
 
@@ -106,7 +106,7 @@ class StatusBar_Button(ItemLink):
     def obseVersion(self):
         if not bass.settings['bash.statusbar.showversion']: return u''
         for ver_file in bush.game.se.ver_files:
-            ver_path = bass.dirs['app'].join(ver_file)
+            ver_path = bass.dirs[u'app'].join(ver_file)
             if ver_path.exists():
                 return u' ' + u'.'.join([u'%s' % x for x
                                          in ver_path.strippedVersion])
@@ -248,8 +248,8 @@ class App_Button(StatusBar_Button):
             finally:
                 cwd.setcwd()
         elif self.isExe:
-            exeObse = bass.dirs['app'].join(bush.game.se.exe)
-            exeLaa = bass.dirs['app'].join(bush.game.laa.exe)
+            exeObse = bass.dirs[u'app'].join(bush.game.se.exe)
+            exeLaa = bass.dirs[u'app'].join(bush.game.laa.exe)
             if BashStatusBar.laaButton.button_state and \
                             self.exePath.tail == bush.game.launch_exe:
                 # Should use the LAA Launcher
@@ -285,9 +285,9 @@ class App_Button(StatusBar_Button):
                     self.ShowError(werr)
                 try:
                     import win32api
-                    win32api.ShellExecute(0,'runas', exePath.s,
+                    win32api.ShellExecute(0,u'runas', exePath.s,
                                           u'%s' % self.exeArgs,
-                                          bass.dirs['app'].s, 1)
+                                          bass.dirs[u'app'].s, 1)
                 except:
                     self.ShowError(werr)
             except Exception as error:
@@ -302,13 +302,13 @@ class App_Button(StatusBar_Button):
                 import win32api
                 r, executable = win32api.FindExecutable(self.exePath.s)
                 executable = win32api.GetLongPathName(executable)
-                win32api.ShellExecute(0,u"open",executable,args,dir_,1)
+                win32api.ShellExecute(0,u'open',executable,args,dir_,1)
             except Exception as error:
                 if isinstance(error,WindowsError) and error.winerror == 740:
                     # Requires elevated permissions
                     try:
                         import win32api
-                        win32api.ShellExecute(0,'runas',executable,args,dir_,1)
+                        win32api.ShellExecute(0,u'runas',executable,args,dir_,1)
                     except Exception as error:
                         self.ShowError(error)
                 else:
@@ -414,7 +414,7 @@ class _Mods_BOSSDisableLockTimes(BoolLink):
     _text = _(u'BOSS Disable Lock Load Order')
     key = 'BOSS.ClearLockTimes'
     _help = _(u"If selected, will temporarily disable Bash's Lock Load Order"
-             u" when running BOSS through Bash.")
+             u' when running BOSS through Bash.')
 
 #------------------------------------------------------------------------------
 class _Mods_BOSSLaunchGUI(BoolLink):
@@ -513,7 +513,7 @@ class TESCS_Button(App_Button):
         # + OBSE
         tip_ += u' + %s%s' % (bush.game.se.se_abbrev, self.obseVersion)
         # + CSE
-        cse_path = bass.dirs['mods'].join(u'obse', u'plugins',
+        cse_path = bass.dirs[u'mods'].join(u'obse', u'plugins',
                                           u'Construction Set Extender.dll')
         if cse_path.exists():
             version = cse_path.strippedVersion
@@ -574,7 +574,7 @@ class Obse_Button(_StatefulButton):
     _state_key = 'bash.obse.on'
     _state_img_key = u'checkbox.green.%s.%s'
     @property
-    def _present(self): return bass.dirs['app'].join(bush.game.se.exe).exists()
+    def _present(self): return bass.dirs[u'app'].join(bush.game.se.exe).exists()
 
     def SetState(self,state=None):
         super(Obse_Button, self).SetState(state)
@@ -586,7 +586,7 @@ class Obse_Button(_StatefulButton):
         return state
 
     @property
-    def sb_button_tip(self): return ((_(u"%s%s Disabled"), _(u"%s%s Enabled"))[
+    def sb_button_tip(self): return ((_(u'%s%s Disabled'), _(u'%s%s Enabled'))[
         self.button_state]) % (bush.game.se.se_abbrev, self.obseVersion)
 
     def UpdateToolTips(self):
@@ -600,7 +600,7 @@ class LAA_Button(_StatefulButton):
     _state_img_key = u'checkbox.blue.%s.%s'
     @property
     def _present(self):
-        return bass.dirs['app'].join(bush.game.laa.exe).exists()
+        return bass.dirs[u'app'].join(bush.game.laa.exe).exists()
 
     def SetState(self,state=None):
         super(LAA_Button, self).SetState(state)
@@ -629,16 +629,16 @@ class AutoQuit_Button(_StatefulButton):
         [u'off', u'x'][self.button_state], u'%d')
 
     @property
-    def sb_button_tip(self): return (_(u"Auto-Quit Disabled"), _(u"Auto-Quit Enabled"))[
+    def sb_button_tip(self): return (_(u'Auto-Quit Disabled'), _(u'Auto-Quit Enabled'))[
         self.button_state]
 
 #------------------------------------------------------------------------------
 class App_Help(StatusBar_Button):
     """Show help browser."""
-    imageKey, _tip = u'help.%s', _(u"Help File")
+    imageKey, _tip = u'help.%s', _(u'Help File')
 
     def Execute(self):
-        html = bass.dirs['mopy'].join(u'Docs\Wrye Bash General Readme.html')
+        html = bass.dirs[u'mopy'].join(u'Docs\Wrye Bash General Readme.html')
         if html.exists():
             html.start()
         else:
@@ -647,7 +647,7 @@ class App_Help(StatusBar_Button):
 #------------------------------------------------------------------------------
 class App_DocBrowser(StatusBar_Button):
     """Show doc browser."""
-    imageKey, _tip = u'doc.%s', _(u"Doc Browser")
+    imageKey, _tip = u'doc.%s', _(u'Doc Browser')
 
     def Execute(self):
         if not Link.Frame.docBrowser:
@@ -659,7 +659,7 @@ class App_DocBrowser(StatusBar_Button):
 #------------------------------------------------------------------------------
 class App_Settings(StatusBar_Button):
     """Show settings dialog."""
-    imageKey, _tip = 'settingsbutton.%s', _(u'Settings')
+    imageKey, _tip = u'settingsbutton.%s', _(u'Settings')
 
     def GetBitmapButton(self, window, image=None, onRClick=None):
         return super(App_Settings, self).GetBitmapButton(
@@ -672,7 +672,7 @@ class App_Settings(StatusBar_Button):
 #------------------------------------------------------------------------------
 class App_Restart(StatusBar_Button):
     """Restart Wrye Bash"""
-    _tip = _(u"Restart")
+    _tip = _(u'Restart')
 
     def GetBitmapButton(self, window, image=None, onRClick=None):
         size = bass.settings['bash.statusbar.iconSize']
@@ -685,7 +685,7 @@ class App_Restart(StatusBar_Button):
 #------------------------------------------------------------------------------
 class App_GenPickle(StatusBar_Button):
     """Generate PKL File. Ported out of bish.py which wasn't working."""
-    imageKey, _tip = 'pickle.%s', _(u"Generate PKL File")
+    imageKey, _tip = u'pickle.%s', _(u'Generate PKL File')
 
     def Execute(self): self._update_pkl()
 
@@ -697,7 +697,7 @@ class App_GenPickle(StatusBar_Button):
         #--Data base
         import cPickle as pickle  # PY3
         try:
-            fids = pickle.load(GPath(bush.game.pklfile).open('r'))['GMST']
+            fids = pickle.load(GPath(bush.game.pklfile).open('r'))[b'GMST']
             if fids:
                 maxId = max(fids.values())
             else:
@@ -707,7 +707,7 @@ class App_GenPickle(StatusBar_Button):
             maxId = 0
         maxId = max(maxId, 0xf12345)
         maxOld = maxId
-        print('maxId', hex(maxId))
+        print(u'maxId', hex(maxId))
         #--Eid list? - if the GMST has a 00000000 eid when looking at it in
         # the CS with nothing but oblivion.esm loaded you need to add the
         # gmst to this list, rebuild the pickle and overwrite the old one.
@@ -715,7 +715,7 @@ class App_GenPickle(StatusBar_Button):
             if eid not in fids:
                 maxId += 1
                 fids[eid] = maxId
-                print('%08X  %08X %s' % (0, maxId, eid))
+                print(u'%08X  %08X %s' % (0, maxId, eid))
         #--Source file
         if fileName:
             sorter = lambda a: a.eid
@@ -728,12 +728,12 @@ class App_GenPickle(StatusBar_Button):
                 if gmst.eid not in fids:
                     maxId += 1
                     fids[gmst.eid] = maxId
-                    print('%08X  %08X %s' % (gmst.fid, maxId, gmst.eid))
+                    print(u'%08X  %08X %s' % (gmst.fid, maxId, gmst.eid))
         #--Changes?
         if maxId > maxOld:
-            outData = {'GMST': fids}
+            outData = {b'GMST': fids}
             pickle.dump(outData, GPath(bush.game.pklfile).open('w'))
-            print(_(u"%d new gmst ids written to " + bush.game.pklfile) % (
+            print(_(u'%d new gmst ids written to ' + bush.game.pklfile) % (
                 (maxId - maxOld),))
         else:
             print(_(u'No changes necessary. PKL data unchanged.'))
@@ -741,7 +741,7 @@ class App_GenPickle(StatusBar_Button):
 #------------------------------------------------------------------------------
 class App_ModChecker(StatusBar_Button):
     """Show mod checker."""
-    imageKey, _tip = 'modchecker.%s', _(u"Mod Checker")
+    imageKey, _tip = u'modchecker.%s', _(u'Mod Checker')
 
     def Execute(self):
         if not Link.Frame.modChecker:

@@ -230,7 +230,7 @@ class _ListPatcherPanel(_PatcherPanel):
         if self.forceItemCheck:
             self.gList = balt.listBox(gConfigPanel, isSingle=False)
         else:
-            self.gList = balt.listBox(gConfigPanel, kind='checklist',
+            self.gList = balt.listBox(gConfigPanel, kind=u'checklist',
                                       onCheck=self.OnListCheck)
         #--Manual controls
         if self.forceAuto:
@@ -490,7 +490,7 @@ class _ChoiceMenuMixin(object):
 #------------------------------------------------------------------------------
 class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
     """Patcher panel with list of checkable, configurable tweaks."""
-    tweak_label = _(u"Tweaks")
+    tweak_label = _(u'Tweaks')
     _right_click_list = 'gTweakList'
 
     def GetConfigPanel(self, parent, config_layout, gTipText):
@@ -509,7 +509,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
         return gConfigPanel
 
     def _build_tweaks_list(self):
-        self.gTweakList = balt.listBox(self.gConfigPanel, kind='checklist',
+        self.gTweakList = balt.listBox(self.gConfigPanel, kind=u'checklist',
                                        onCheck=self.TweakOnListCheck)
         #--Events
         self._bind_mouse_events()
@@ -1056,7 +1056,7 @@ class CBash_ListsMerger(special.CBash_ListsMerger, _ListsMergerPanel):
     show_empty_sublist_checkbox = True
 
 class FidListsMerger(special.FidListsMerger, _ListsMergerPanel):
-    listLabel = _(u"Override Deflst Tags")
+    listLabel = _(u'Override Deflst Tags')
     forceItemCheck = False #--Force configChecked to True for all items
     choiceMenu = (u'Auto', u'----', u'Deflst')
     # CONFIG DEFAULTS

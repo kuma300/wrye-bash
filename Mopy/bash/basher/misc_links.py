@@ -52,7 +52,7 @@ class Screens_NextScreenShot(EnabledLink):
     def menu_help(self):
         if not self._enable():
             return self._help + u'.  ' + _(u'%(ini)s must exist') % {
-                'ini': bush.game.iniFiles[0]}
+                u'ini': bush.game.iniFiles[0]}
         else: return self._help
 
     def Execute(self):
@@ -61,9 +61,9 @@ class Screens_NextScreenShot(EnabledLink):
                                       u'ScreenShot')
         next_ = oblivionIni.getSetting(u'Display', u'iScreenShotIndex', u'0')
         pattern = self._askText(
-            _(u"Screenshot base name, optionally with next screenshot number.")
+            _(u'Screenshot base name, optionally with next screenshot number.')
             + u'\n' +
-            _(u"E.g. ScreenShot or ScreenShot_101 or Subdir\\ScreenShot_201."),
+            _(u'E.g. ScreenShot or ScreenShot_101 or Subdir\\ScreenShot_201.'),
             default=base + next_)
         if not pattern: return
         maPattern = self.__class__.rePattern.match(pattern)
@@ -74,7 +74,7 @@ class Screens_NextScreenShot(EnabledLink):
             u'bAllowScreenShot': u'1', }}
         screensDir = GPath(newBase).head
         if screensDir:
-            if not screensDir.isabs(): screensDir = bass.dirs['app'].join(
+            if not screensDir.isabs(): screensDir = bass.dirs[u'app'].join(
                 screensDir)
             screensDir.makedirs()
         oblivionIni.saveSettings(settings_screens)
@@ -99,7 +99,7 @@ class Screen_ConvertTo(EnabledLink):
 
     def Execute(self):
         try:
-            with balt.Progress(_(u"Converting to %s") % self.ext) as progress:
+            with balt.Progress(_(u'Converting to %s') % self.ext) as progress:
                 progress.setFull(len(self.convertable))
                 for index, fileName in enumerate(self.convertable):
                     progress(index,fileName.s)
@@ -162,10 +162,10 @@ class People_AddNew(ItemLink, People_Link):
     _help = _(u'Add a new record')
 
     def Execute(self):
-        person = self._askText(_(u"Add new person:"), self.dialogTitle)
+        person = self._askText(_(u'Add new person:'), self.dialogTitle)
         if not person: return
         if person in self.pdata: return self._showInfo(
-            person + _(u" already exists."), title=self.dialogTitle)
+            person + _(u' already exists.'), title=self.dialogTitle)
         self.pdata[person] = (time.time(),0,u'')
         self.window.RefreshUI(redraw=[person])
         self.window.EnsureVisibleItem(person, focus=True)
@@ -174,12 +174,12 @@ class People_AddNew(ItemLink, People_Link):
 #------------------------------------------------------------------------------
 class People_Export(ItemLink, People_Link):
     """Export people to text archive."""
-    dialogTitle = _(u"Export People")
+    dialogTitle = _(u'Export People')
     _text = _(u'Export...')
     _help = _(u'Export people to text archive')
 
     def Execute(self):
-        textDir = bass.settings.get('bash.workDir', bass.dirs['app'])
+        textDir = bass.settings.get('bash.workDir', bass.dirs[u'app'])
         #--File dialog
         export_path = self._askSave(title=_(u'Export people to text file:'),
                              defaultDir=textDir, defaultFile=u'People.txt',
@@ -193,12 +193,12 @@ class People_Export(ItemLink, People_Link):
 #------------------------------------------------------------------------------
 class People_Import(ItemLink, People_Link):
     """Import people from text archive."""
-    dialogTitle = _(u"Import People")
+    dialogTitle = _(u'Import People')
     _text = _(u'Import...')
     _help = _(u'Import people from text archive')
 
     def Execute(self):
-        textDir = bass.settings.get('bash.workDir', bass.dirs['app'])
+        textDir = bass.settings.get('bash.workDir', bass.dirs[u'app'])
         #--File dialog
         import_path = self._askOpen(title=_(u'Import people from text file:'),
                                     defaultDir=textDir, wildcard=u'*.txt',
@@ -206,7 +206,7 @@ class People_Import(ItemLink, People_Link):
         if not import_path: return
         bass.settings['bash.workDir'] = import_path.head
         newNames = self.pdata.loadText(import_path)
-        self._showInfo(_(u"People imported: %d") % len(newNames),
+        self._showInfo(_(u'People imported: %d') % len(newNames),
                        title=self.dialogTitle)
         self.window.RefreshUI()
 
@@ -258,8 +258,8 @@ class _Master_EditList(OneItemLink): # one item cause _singleSelect = True
 
 class Master_ChangeTo(_Master_EditList):
     """Rename/replace master through file dialog."""
-    _text = _(u"Change to...")
-    _help = _(u"Rename/replace master through file dialog")
+    _text = _(u'Change to...')
+    _help = _(u'Rename/replace master through file dialog')
 
     @balt.conversation
     def Execute(self):
@@ -275,8 +275,8 @@ class Master_ChangeTo(_Master_EditList):
         (newDir,newName) = newPath.headTail
         #--Valid directory?
         if newDir != bosh.modInfos.store_dir:
-            self._showError(_(u"File must be selected from "
-                u"%s Data Files directory." % bush.game.displayName))
+            self._showError(_(u'File must be selected from '
+                u'%s Data Files directory.' % bush.game.displayName))
             return
         elif newName == master_name:
             return
@@ -288,8 +288,8 @@ class Master_ChangeTo(_Master_EditList):
 #------------------------------------------------------------------------------
 class Master_Disable(AppendableLink, _Master_EditList):
     """Rename/replace master through file dialog."""
-    _text = _(u"Disable")
-    _help = _(u"Disable master")
+    _text = _(u'Disable')
+    _help = _(u'Disable master')
 
     def _append(self, window): #--Saves only
         return isinstance(window.detailsPanel, SaveDetails)
@@ -312,7 +312,7 @@ class _Column(CheckLink, EnabledLink):
         self.colName = _text
         self._text = bass.settings['bash.colNames'][_text]
         self._help = _(u"Show/Hide '%(colname)s' column.") % {
-            'colname': self._text}
+            u'colname': self._text}
 
     def _enable(self):
         return self.colName not in self.window.persistent_columns
@@ -333,7 +333,7 @@ class _Column(CheckLink, EnabledLink):
 
 class ColumnsMenu(ChoiceLink, MenuLink):
     """Customize visible columns."""
-    _text = _(u"Columns")
+    _text = _(u'Columns')
     # extraItems
     class _AutoWidth(RadioLink):
         wxFlag = 0

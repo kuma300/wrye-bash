@@ -52,7 +52,7 @@ class ColorDialog(balt.Dialog):
         self.changes = dict()
         #--ComboBox
         def _display_text(k):
-            return _(self._keys_to_tabs[k.split('.')[0]]) + colorInfo[k][0]
+            return _(self._keys_to_tabs[k.split(u'.')[0]]) + colorInfo[k][0]
         self.text_key = dict((_display_text(x), x) for x in colors)
         colored = self.text_key.keys()
         colored.sort(key=unicode.lower)
@@ -356,7 +356,7 @@ class CreateNewProject(balt.Dialog):
         super(CreateNewProject, self).__init__(parent, resize=False)
         #--Build a list of existing directories
         #  The text control will use this to change background color when name collisions occur
-        self.existingProjects = [x for x in bass.dirs['installers'].list() if bass.dirs['installers'].join(x).isdir()]
+        self.existingProjects = [x for x in bass.dirs[u'installers'].list() if bass.dirs[u'installers'].join(x).isdir()]
 
         #--Attributes
         self.textName = TextField(self, _(u'New Project Name-#####'))
