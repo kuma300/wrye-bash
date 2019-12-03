@@ -60,32 +60,32 @@ def _init_settings_files(fsName_, mods_folder):
     if not initialization.bash_dirs_initialized:
         raise BoltError(u'_init_settings_files: Bash dirs are not initialized')
     settings_info = {
-        (dirs['mopy'], jo(fsName_, u'Mopy')): {u'bash.ini', },
-        (dirs['mods'].join(u'Bash'), jo(fsName_, mods_folder, u'Bash')): {
+        (dirs[u'mopy'], jo(fsName_, u'Mopy')): {u'bash.ini', },
+        (dirs[u'mods'].join(u'Bash'), jo(fsName_, mods_folder, u'Bash')): {
             u'Table.dat', },
-        (dirs['mods'].join(u'Docs'), jo(fsName_, mods_folder, u'Docs')): {
+        (dirs[u'mods'].join(u'Docs'), jo(fsName_, mods_folder, u'Docs')): {
             u'Bash Readme Template.txt', u'Bash Readme Template.html',
             u'My Readme Template.txt', u'My Readme Template.html',
             u'wtxt_sand_small.css', u'wtxt_teal.css', },
-        (dirs['modsBash'], jo(fsName_ + u' Mods', u'Bash Mod Data')): {
+        (dirs[u'modsBash'], jo(fsName_ + u' Mods', u'Bash Mod Data')): {
             u'Table.dat', },
-        (dirs['modsBash'].join(u'INI Data'),
+        (dirs[u'modsBash'].join(u'INI Data'),
          jo(fsName_ + u' Mods', u'Bash Mod Data', u'INI Data')): {
            u'Table.dat', },
-        (dirs['bainData'],
+        (dirs[u'bainData'],
          jo(fsName_ + u' Mods', u'Bash Installers', u'Bash')): {
            u'Converters.dat', u'Installers.dat', },
-        (dirs['saveBase'], jo(u'My Games', fsName_)): {
+        (dirs[u'saveBase'], jo(u'My Games', fsName_)): {
             u'BashProfiles.dat', u'BashSettings.dat', u'BashLoadOrders.dat',
             u'People.dat', },
         # backup all files in Mopy\bash\l10n, Data\Bash Patches\,
         # Data\BashTags\ and Data\INI Tweaks\
-        (dirs['l10n'], jo(fsName_, u'Mopy', u'bash', u'l10n')): {},
-        (dirs['mods'].join(u'Bash Patches'),
+        (dirs[u'l10n'], jo(fsName_, u'Mopy', u'bash', u'l10n')): {},
+        (dirs[u'mods'].join(u'Bash Patches'),
          jo(fsName_, mods_folder, u'Bash Patches')): {},
-        (dirs['mods'].join(u'BashTags'),
+        (dirs[u'mods'].join(u'BashTags'),
          jo(fsName_, mods_folder, u'BashTags')): {},
-        (dirs['mods'].join(u'INI Tweaks'),
+        (dirs[u'mods'].join(u'INI Tweaks'),
          jo(fsName_, mods_folder, u'INI Tweaks')): {},
     }
     for setting_files in settings_info.itervalues():
@@ -121,11 +121,11 @@ class BackupSettings(object):
             loadorderTxt = (u'Saves', profile, u'loadorder.txt')
             for txt in (pluginsTxt, loadorderTxt):
                 tpath = savedir.join(*txt)
-                fpath = dirs['saveBase'].join(*txt)
+                fpath = dirs[u'saveBase'].join(*txt)
                 if fpath.exists(): self.files[tpath] = fpath
             table = (u'Saves', profile, u'Bash', u'Table.dat')
             tpath = savedir.join(*table)
-            fpath = dirs['saveBase'].join(*table)
+            fpath = dirs[u'saveBase'].join(*table)
             if fpath.exists(): self.files[tpath] = fpath
             if fpath.backup.exists(): self.files[tpath.backup] = fpath.backup
 
@@ -145,7 +145,7 @@ class BackupSettings(object):
     @staticmethod
     def backup_filename(fsName_):
         return u'Backup Bash Settings %s (%s) v%s-%s.7z' % (
-            fsName_, bolt.timestamp(), bass.settings['bash.version'],
+            fsName_, bolt.timestamp(), bass.settings[u'bash.version'],
             AppVersion)
 
     def backup_settings(self, balt_):
@@ -165,10 +165,10 @@ class BackupSettings(object):
             deprint(tpath.s + u' <-- ' + fpath.s)
             fpath.copyTo(temp_dir.join(tpath))
         # dump the version info and file listing
-        with temp_dir.join(u'backup.dat').open('wb') as out:
+        with temp_dir.join(u'backup.dat').open(u'wb') as out:
             # Bash version the settings were saved with, if this is newer
             # than the installed settings version, do not allow restore
-            pickle.dump(bass.settings['bash.version'], out, -1)
+            pickle.dump(bass.settings[u'bash.version'], out, -1)
             # app version, if this doesn't match the installed settings
             # version, warn the user on restore
             pickle.dump(AppVersion, out, -1)
@@ -177,7 +177,7 @@ class BackupSettings(object):
         backup_dir, dest7z = self._backup_dest_file.head, self._backup_dest_file.tail
         command = archives.compressCommand(dest7z, backup_dir, temp_dir)
         archives.compress7z(command, backup_dir, dest7z, temp_dir)
-        bass.settings['bash.backupPath'] = backup_dir
+        bass.settings[u'bash.backupPath'] = backup_dir
 
     def _backup_success(self, balt_):
         if balt_ is None: return
@@ -256,7 +256,7 @@ class RestoreSettings(object):
         deprint(u'')
         deprint(_(u'RESTORE BASH SETTINGS: ') + self._settings_file.s)
         # backup previous Bash ini if it exists
-        old_bash_ini = dirs['mopy'].join(u'bash.ini')
+        old_bash_ini = dirs[u'mopy'].join(u'bash.ini')
         self._timestamped_old = u''.join(
             [old_bash_ini.root.s, u'(', bolt.timestamp(), u').ini'])
         try:
@@ -277,7 +277,7 @@ class RestoreSettings(object):
                     _restore_file(dest_dir, GPath(back_path), fname)
         # restore savegame profile settings
         back_path = GPath(u'My Games').join(fsName, u'Saves')
-        saves_dir = dirs['saveBase'].join(u'Saves')
+        saves_dir = dirs[u'saveBase'].join(u'Saves')
         full_back_path = self._extract_dir.join(back_path)
         if full_back_path.exists():
             for root_dir, folders, files_ in full_back_path.walk(True, None,
@@ -290,13 +290,13 @@ class RestoreSettings(object):
     def incompatible_backup_error(self, current_game):
         saved_settings_version, settings_saved_with = \
             self._get_settings_versions()
-        if saved_settings_version > bass.settings['bash.version']:
+        if saved_settings_version > bass.settings[u'bash.version']:
             # Disallow restoring settings saved on a newer version of bash # TODO(ut) drop?
             return u'\n'.join([
                 _(u'The data format of the selected backup file is newer than '
                   u'the current Bash version!'),
                 _(u'Backup v%s is not compatible with v%s') % (
-                    saved_settings_version, bass.settings['bash.version']),
+                    saved_settings_version, bass.settings[u'bash.version']),
                 u'', _(u'You cannot use this backup with this version of '
                        u'Bash.')]), _(
                 u'Error: Settings are from newer Bash version')
@@ -313,12 +313,12 @@ class RestoreSettings(object):
     def incompatible_backup_warn(self):
         saved_settings_version, settings_saved_with = \
             self._get_settings_versions()
-        if settings_saved_with != bass.settings['bash.version']:
+        if settings_saved_with != bass.settings[u'bash.version']:
             return u'\n'.join(
                 [_(u'The version of Bash used to create the selected backup '
                    u'file does not match the current Bash version!'),
                  _(u'Backup v%s does not match v%s') % (
-                     settings_saved_with, bass.settings['bash.version']), u'',
+                     settings_saved_with, bass.settings[u'bash.version']), u'',
                  _(u'Do you want to restore this backup anyway?')]), _(
                 u'Warning: Version Mismatch!')
         return u'', u''
@@ -330,7 +330,7 @@ class RestoreSettings(object):
         if self._saved_settings_version is None:
             backup_dat = self._extract_dir.join(u'backup.dat')
             try:
-                with backup_dat.open('rb') as ins:
+                with backup_dat.open(u'rb') as ins:
                     # version of Bash that created the backed up settings
                     self._saved_settings_version = pickle.load(ins)
                     # version of Bash that created the backup
