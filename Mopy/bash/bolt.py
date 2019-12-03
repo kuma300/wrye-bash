@@ -113,7 +113,7 @@ def getbestencoding(bitstream):
     """Tries to detect the encoding a bitstream was saved in.  Uses Mozilla's
        detection library to find the best match (heuristics)"""
     result = chardet.detect(bitstream)
-    encoding_,confidence = result['encoding'],result['confidence']
+    encoding_,confidence = result[u'encoding'],result[u'confidence']
     encoding_ = _encodingSwap.get(encoding_,encoding_)
     ## Debug: uncomment the following to output stats on encoding detection
     #print
@@ -420,7 +420,7 @@ class Path(object):
         return len(self._s)
 
     def __repr__(self):
-        return u"bolt.Path("+repr(self._s)+u")"
+        return 'bolt.Path('+repr(self._s)+')'
 
     def __unicode__(self):
         return self._s
@@ -536,20 +536,20 @@ class Path(object):
         except UnicodeDecodeError:
             try:
                 traceback.print_exc()
-                print('Trying to pass temp dir in...')
+                print(u'Trying to pass temp dir in...')
                 tempdir = unicode(tempfile.gettempdir(), Path.sys_fs_enc)
                 return GPath(tempfile.mkdtemp(prefix=prefix, dir=tempdir))
             except UnicodeDecodeError:
                 try:
                     traceback.print_exc()
-                    print('Trying to encode temp dir prefix...')
+                    print(u'Trying to encode temp dir prefix...')
                     return GPath(tempfile.mkdtemp(
                         prefix=prefix.encode(Path.sys_fs_enc)).decode(
                         Path.sys_fs_enc))
                 except:
                     traceback.print_exc()
-                    print('Failed to create tmp dir, Bash will not function ' \
-                          'correctly.')
+                    print(u'Failed to create tmp dir, Bash will not function ' \
+                          u'correctly.')
 
     @staticmethod
     def baseTempDir():
@@ -587,7 +587,7 @@ class Path(object):
         return int(os.path.getmtime(self._s))
     def _setmtime(self, mtime):
         os.utime(self._s, (self.atime, int(mtime)))
-    mtime = property(_getmtime, _setmtime, doc="Time file was last modified.")
+    mtime = property(_getmtime, _setmtime, doc='Time file was last modified.')
 
     def size_mtime(self):
         lstat = os.lstat(self._s)
@@ -624,7 +624,7 @@ class Path(object):
         """Calculates and returns crc value for self."""
         crc = 0
         with self.open('rb') as ins:
-            for block in iter(partial(ins.read, 2097152), ''):
+            for block in iter(partial(ins.read, 2097152), b''):
                 crc = crc32(block, crc) # 2MB at a time, probably ok
         return crc & 0xffffffff
 
@@ -714,7 +714,7 @@ class Path(object):
     def open(self,*args,**kwdargs):
         if self.shead and not os.path.exists(self.shead):
             os.makedirs(self.shead)
-        if 'encoding' in kwdargs:
+        if u'encoding' in kwdargs:
             return codecs.open(self._s,*args,**kwdargs)
         else:
             return open(self._s,*args,**kwdargs)
@@ -736,7 +736,7 @@ class Path(object):
         except OSError:
             self.clearRO()
             os.removedirs(self._s)
-    def rmtree(self,safety='PART OF DIRECTORY NAME'):
+    def rmtree(self,safety=u'PART OF DIRECTORY NAME'):
         """Removes directory tree. As a safety factor, a part of the directory name must be supplied."""
         if self.isdir() and safety and safety.lower() in self._cs:
             shutil.rmtree(self._s,onerror=Path._onerror)
@@ -901,9 +901,9 @@ class CsvReader(object):
 
     def __init__(self,path):
         self.ins = path.open('rb',encoding='utf-8-sig')
-        format = ('excel','excel-tab')[u'\t' in self.ins.readline()]
-        if format == 'excel':
-            delimiter = (',',';')[u';' in self.ins.readline()]
+        format = (u'excel',u'excel-tab')[u'\t' in self.ins.readline()]
+        if format == u'excel':
+            delimiter = (b',',b';')[u';' in self.ins.readline()]
             self.ins.seek(0)
             self.reader = csv.reader(CsvReader.utf_8_encoder(self.ins),format,delimiter=delimiter)
         else:
@@ -1048,8 +1048,8 @@ class Flags(object):
 
     def __repr__(self):
         """Shows all set flags."""
-        all_flags = u', '.join(self.getTrueAttrs()) if self._field else u'None'
-        return u'0x%s (%s)' % (self.hex(), all_flags)
+        all_flags = ', '.join(self.getTrueAttrs()) if self._field else 'None'
+        return '0x%s (%s)' % (self.hex(), all_flags)
 
 #------------------------------------------------------------------------------
 class DataDict(object):
@@ -1098,7 +1098,7 @@ class OrderedSet(list, MutableSet):
        to the end of the set.
     """
     def update(self, *args, **kwdargs):
-        if kwdargs: raise exception.TypeError("update() takes no keyword arguments")
+        if kwdargs: raise exception.TypeError(u'update() takes no keyword arguments')
         for s in args:
             for e in s:
                 self.add(e)
@@ -1111,7 +1111,7 @@ class OrderedSet(list, MutableSet):
         left = OrderedSet(self)
         left.update(other)
         return left
-    def __repr__(self): return u'OrderedSet%s' % unicode(list(self))[1:-1]
+    def __repr__(self): return 'OrderedSet%s' % unicode(list(self))[1:-1]
     def __unicode__(self): return u'{%s}' % unicode(list(self))[1:-1]
 
 #------------------------------------------------------------------------------
@@ -1149,8 +1149,8 @@ class MemorySet(object):
     def __iter__(self):
         for i,elem in enumerate(self.items):
             if self.mask[i]: yield self.items[i]
-    def __str__(self): return u'{%s}' % (','.join(repr(i) for i in self._items()))
-    def __repr__(self): return u'MemorySet([%s])' % (','.join(repr(i) for i in self._items()))
+    def __str__(self): return '{%s}' % (','.join(repr(i) for i in self._items()))
+    def __repr__(self): return 'MemorySet([%s])' % (','.join(repr(i) for i in self._items()))
     def forget(self, elem):
         # Permanently remove an item from the list.  Don't remember its order
         if elem in self.items:
@@ -1239,7 +1239,7 @@ class MainFunctions(object):
         key = attrs.pop(0)
         func = self.funcs.get(key)
         if not func:
-            msg = _(u"Unknown function/object: %s") % key
+            msg = _(u'Unknown function/object: %s') % key
             try: print(msg)
             except UnicodeError: print(msg.encode('mbcs'))
             return
@@ -1330,7 +1330,7 @@ class PickleDict(object):
                             deprint(u'Unable to load %s (moved to "%s")' % (
                                 path, cor_name.tail), traceback=True)
                             continue # file corrupt - try next file
-                        if firstPickle == 'VDATA2':
+                        if firstPickle == b'VDATA2':
                             self.vdata.update(pickle.load(ins))
                             self.data.update(pickle.load(ins))
                         else:
@@ -1349,9 +1349,9 @@ class PickleDict(object):
         """
         if self.readOnly: return False
         #--Pickle it
-        self.vdata['boltPaths'] = True # needed so pre 307 versions don't blow
+        self.vdata[u'boltPaths'] = True # needed so pre 307 versions don't blow
         with self.path.temp.open('wb') as out:
-            for data in ('VDATA2',self.vdata,self.data):
+            for data in (b'VDATA2',self.vdata,self.data):
                 pickle.dump(data,out,-1)
         self.path.untemp(doBackup=True)
         return True
@@ -1632,7 +1632,7 @@ def copyattrs(source,dest,attrs):
 
 def cstrip(inString): # TODO(ut): hunt down and deprecate - it's O(n)+
     """Convert c-string (null-terminated string) to python string."""
-    zeroDex = inString.find('\x00')
+    zeroDex = inString.find(b'\x00')
     if zeroDex == -1:
         return inString
     else:
@@ -1661,9 +1661,9 @@ class tempDebugMode(object):
 import inspect
 def deprint(*args,**keyargs):
     """Prints message along with file and line location."""
-    if not deprintOn and not keyargs.get('on'): return
+    if not deprintOn and not keyargs.get(u'on'): return
 
-    if keyargs.get('trace', True):
+    if keyargs.get(u'trace', True):
         stack = inspect.stack()
         file_, line, function = stack[1][1:4]
         msg = u'%s %4d %s: ' % (GPath(file_).tail.s, line, function)
@@ -1681,7 +1681,7 @@ def deprint(*args,**keyargs):
             except UnicodeError:
                 msg += u' %s' % repr(x)
 
-    if keyargs.get('traceback',False):
+    if keyargs.get(u'traceback',False):
         o = StringIO.StringIO()
         traceback.print_exc(file=o)
         value = o.getvalue()
@@ -1798,7 +1798,7 @@ class Progress(object):
         """Increments progress by 1."""
         self.__call__(self.state+increment)
 
-    def __call__(self,state,message=''):
+    def __call__(self,state,message=u''):
         """Update progress with current state. Progress is state/full."""
         if (1.0*self.full) == 0: raise exception.ArgumentError(u'Full must be non-zero!')
         if message: self.message = message
@@ -1816,7 +1816,7 @@ class Progress(object):
 #------------------------------------------------------------------------------
 class SubProgress(Progress):
     """Sub progress goes from base to ceiling."""
-    def __init__(self,parent,baseFrom=0.0,baseTo='+1',full=1.0,silent=False):
+    def __init__(self,parent,baseFrom=0.0,baseTo=u'+1',full=1.0,silent=False):
         """For creating a subprogress of another progress meter.
         progress: parent (base) progress meter
         baseFrom: Base progress when this progress == 0.
@@ -1824,7 +1824,7 @@ class SubProgress(Progress):
           Usually a number. But string '+1' sets it to baseFrom + 1
         full: Full meter by this progress' scale."""
         Progress.__init__(self,full)
-        if baseTo == '+1': baseTo = baseFrom + 1
+        if baseTo == u'+1': baseTo = baseFrom + 1
         if baseFrom < 0 or baseFrom >= baseTo:
             raise exception.ArgumentError(u'BaseFrom must be >= 0 and BaseTo must be > BaseFrom')
         self.parent = parent
@@ -1842,13 +1842,13 @@ class SubProgress(Progress):
 def readCString(ins, file_path):
     """Read null terminated string, dropping the final null byte."""
     byte_list = []
-    for b in iter(partial(ins.read, 1), ''):
-        if b == '\0': break
+    for b in iter(partial(ins.read, 1), b''):
+        if b == b'\0': break
         byte_list.append(b)
     else:
         raise exception.FileError(file_path,
                                   u'Reached end of file while expecting null')
-    return ''.join(byte_list)
+    return b''.join(byte_list)
 
 class StringTable(dict):
     """For reading .STRINGS, .DLSTRINGS, .ILSTRINGS files."""
@@ -1884,9 +1884,9 @@ class StringTable(dict):
                 insSeek(0)
                 if eof < 8:
                     deprint(u"Warning: Strings file '%s' file size (%d) is "
-                            u"less than 8 bytes.  8 bytes are the minimum "
-                            u"required by the expected format, assuming the "
-                            u"Strings file is empty." % (path, eof))
+                            u'less than 8 bytes.  8 bytes are the minimum '
+                            u'required by the expected format, assuming the '
+                            u'Strings file is empty.' % (path, eof))
                     return
 
                 numIds,dataSize = unpack_many(ins, '=2I')
@@ -1894,8 +1894,8 @@ class StringTable(dict):
                 stringsStart = 8 + (numIds*8)
                 if stringsStart != eof-dataSize:
                     deprint(u"Warning: Strings file '%s' dataSize element "
-                            u"(%d) results in a string start location of %d, "
-                            u"but the expected location is %d"
+                            u'(%d) results in a string start location of %d, '
+                            u'but the expected location is %d'
                             % (path, dataSize, eof-dataSize, stringsStart))
 
                 id_ = -1
@@ -2040,7 +2040,7 @@ class WryeText(object):
         #--Headers
         reHead = re.compile(u'(=+) *(.+)',re.U)
         headFormat = u"<h%d><a id='%s'>%s</a></h%d>\n"
-        headFormatNA = u"<h%d>%s</h%d>\n"
+        headFormatNA = u'<h%d>%s</h%d>\n'
         #--List
         reWryeList = re.compile(u'( *)([-x!?.+*o])(.*)',re.U)
         #--Code
@@ -2086,15 +2086,15 @@ class WryeText(object):
         reBold = re.compile(u'__',re.U)
         reItalic = re.compile(u'~~',re.U)
         reBoldItalic = re.compile(u'' r'\*\*',re.U)
-        states = {'bold':False,'italic':False,'boldItalic':False,'code':0}
+        states = {u'bold':False,u'italic':False,u'boldItalic':False,u'code':0}
         def subBold(match):
-            state = states['bold'] = not states['bold']
+            state = states[u'bold'] = not states[u'bold']
             return u'<b>' if state else u'</b>'
         def subItalic(match):
-            state = states['italic'] = not states['italic']
+            state = states[u'italic'] = not states[u'italic']
             return u'<i>' if state else u'</i>'
         def subBoldItalic(match):
-            state = states['boldItalic'] = not states['boldItalic']
+            state = states[u'boldItalic'] = not states[u'boldItalic']
             return u'<i><b>' if state else u'</b></i>'
         #--Preformatting
         #--Links
@@ -2146,7 +2146,7 @@ class WryeText(object):
         anchorHeaders = True
         #--Read source file --------------------------------------------------
         for line in ins:
-            line = line.replace('\r\n','\n')
+            line = line.replace(u'\r\n',u'\n')
             #--Codebox -----------------------------------
             if codebox:
                 if codeboxLines is not None:
@@ -2234,7 +2234,7 @@ class WryeText(object):
             #--Headers
             elif maHead:
                 lead,text = maHead.group(1,2)
-                text = re.sub(u' *=*#?$','',text.strip())
+                text = re.sub(u' *=*#?$',u'',text.strip())
                 anchor = unicode(quote(reWd.sub(u'',text).encode('utf8')),'cp1252')
                 level = len(lead)
                 if anchorHeaders:
@@ -2255,7 +2255,7 @@ class WryeText(object):
                 #--Title?
                 if not title and level <= 2: title = text
             #--Paragraph
-            elif maPar and not states['code']:
+            elif maPar and not states[u'code']:
                 line = u'<p>'+line+u'</p>\n'
             #--List item
             elif maList:
