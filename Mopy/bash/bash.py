@@ -85,8 +85,8 @@ def _import_wx():
         from wx import _core
         sys.modules['wx._gdi'] = _core
     except Exception as e:
-        but_kwargs = {'text': _(u"QUIT"),
-                      'fg': 'red'}  # foreground button color
+        but_kwargs = {u'text': _(u"QUIT"),
+                      u'fg': u'red'}  # foreground button color
         msg = u'\n'.join([dump_environment(), u'', u'Unable to load wx:',
                           traceback.format_exc(e), u'Exiting.'])
         _tkinter_error_dial(msg, but_kwargs)
@@ -140,7 +140,7 @@ def exit_cleanup():
                 exe = [u'%s', u'"%s"'][u' ' in exe] % exe
                 cli = u' '.join([u'%s', u'"%s"'][u' ' in x] % x for x in cli)
                 cmd_line = u'%s %s' % (exe, cli)
-                win32api.ShellExecute(0, 'runas', exe, cli, None, True)
+                win32api.ShellExecute(0, u'runas', exe, cli, None, True)
                 return
             else:
                 import subprocess
@@ -234,7 +234,7 @@ def _main(opts, wx_locale):
         dump_environment()
 
     # Check if there are other instances of Wrye Bash running
-    instance = _wx.SingleInstanceChecker('Wrye Bash') # must stay alive !
+    instance = _wx.SingleInstanceChecker(u'Wrye Bash') # must stay alive !
     assure_single_instance(instance)
 
     global initialization
@@ -321,14 +321,14 @@ def _main(opts, wx_locale):
         if not opts.noUac and not opts.uac:
             # Show a prompt asking if we should restart in Admin Mode
             message = _(
-                u"Wrye Bash needs Administrator Privileges to make changes "
-                u"to the %(gameName)s directory.  If you do not start Wrye "
-                u"Bash with elevated privileges, you will be prompted at "
-                u"each operation that requires elevated privileges.") % {
-                          'gameName': bush_game.displayName}
+                u'Wrye Bash needs Administrator Privileges to make changes '
+                u'to the %(gameName)s directory.  If you do not start Wrye '
+                u'Bash with elevated privileges, you will be prompted at '
+                u'each operation that requires elevated privileges.') % {
+                          u'gameName': bush_game.displayName}
             uacRestart = balt.ask_uac_restart(message,
                                               title=_(u'UAC Protection'),
-                                              mopy=bass.dirs['mopy'])
+                                              mopy=bass.dirs[u'mopy'])
             if uacRestart: bass.update_sys_argv(['--uac'])
         if uacRestart:
             bass.is_restarting = True
@@ -336,12 +336,12 @@ def _main(opts, wx_locale):
     # Backup the Bash settings - we need settings being initialized to get
     # the previous version - we should read this from a file so we can move
     # backup higher up in the boot sequence.
-    previous_bash_version = bass.settings['bash.version']
+    previous_bash_version = bass.settings[u'bash.version']
     # backup settings if app version has changed or on user request
     if opts.backup or barb.BackupSettings.new_bash_version_prompt_backup(
             balt, previous_bash_version):
         frame = None # balt.Link.Frame, not defined yet, no harm done
-        base_dir = bass.settings['bash.backupPath'] or bass.dirs['modsBash']
+        base_dir = bass.settings[u'bash.backupPath'] or bass.dirs[u'modsBash']
         settings_file = (opts.backup and opts.filename) or None
         if not settings_file:
             settings_file = balt.askSave(frame,
@@ -400,13 +400,13 @@ def _import_bush_and_set_game(opts, bashIni):
     if ret is not None:  # None == success
         if len(ret) == 0:
             msgtext = _(
-                u"Wrye Bash could not find a game to manage. Please use\n"
-                u"the -o command line argument to specify the game path.")
+                u'Wrye Bash could not find a game to manage. Please use\n'
+                u'the -o command line argument to specify the game path.')
         else:
             msgtext = _(
-                u"Wrye Bash could not determine which game to manage.\n"
-                u"The following games have been detected, please select "
-                u"one to manage.")
+                u'Wrye Bash could not determine which game to manage.\n'
+                u'The following games have been detected, please select '
+                u'one to manage.')
             msgtext += u'\n\n'
             msgtext += _(
                 u'To prevent this message in the future, use the -o command\n'
@@ -427,7 +427,7 @@ def _show_wx_error(msg):
     try:
         class MessageBox(_wx.Dialog):
             def __init__(self, msg):
-                _wx.Dialog.__init__(self, None, -1, title=_('Wrye Bash Error'),
+                _wx.Dialog.__init__(self, None, -1, title=_(u'Wrye Bash Error'),
                                     size=(400, 300),
                                     style=_wx.DEFAULT_DIALOG_STYLE |
                                           _wx.STAY_ON_TOP |
@@ -462,8 +462,8 @@ def _show_wx_error(msg):
                 app.Exit()
             else:
                 # Instantiating wx.App failed, fallback to tkinter.
-                but_kwargs = {'text': _(u"QUIT"),
-                              'fg': 'red'}  # foreground button color
+                but_kwargs = {u'text': _(u"QUIT"),
+                              u'fg': u'red'}  # foreground button color
                 _tkinter_error_dial(msg, but_kwargs)
 
     except Exception as e:
@@ -570,10 +570,10 @@ def _rightWxVersion():
 def _rightPythonVersion():
     sysVersion = sys.version_info[:3]
     if sysVersion < (2, 7) or sysVersion >= (3,):
-        balt.showError(None, _(u"Only Python 2.7 and newer is supported "
+        balt.showError(None, _(u'Only Python 2.7 and newer is supported '
             u"(%s.%s.%s detected). If you know what you're doing install the "
-            u"WB python version and edit this warning out. "
-            u"Wrye Bash will exit.") % sysVersion,
-            title=_(u"Incompatible Python version detected"))
+            u'WB python version and edit this warning out. '
+            u'Wrye Bash will exit.') % sysVersion,
+            title=_(u'Incompatible Python version detected'))
         return False
     return True
