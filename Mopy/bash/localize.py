@@ -40,7 +40,7 @@ import traceback
 from . import bass
 from . import bolt
 
-__author__ = 'Infernio'
+__author__ = u'Infernio'
 
 #------------------------------------------------------------------------------
 # Locale Detection & Setup
@@ -83,7 +83,7 @@ def setup_locale(cli_lang, _wx):
         # WB does not support the default language, use English instead
         target_locale = _wx.Locale(_wx.LANGUAGE_ENGLISH)
         bolt.deprint(u"No translation file for language '%s', falling back to "
-                     u"English" % target_name)
+                     u'English' % target_name)
         target_name = target_locale.GetSysName().split(u'_', 1)[0]
     bolt.deprint(u"Set wx locale to '%s' (%s)" % (
         target_name, target_locale.GetCanonicalName()))
@@ -202,7 +202,7 @@ def dump_translator(out_path, lang):
             with open(old_txt, 'r') as ins:
                 for line in ins:
                     if not encoding:
-                        encoding_match = re_encoding.match(line.strip('\r\n'))
+                        encoding_match = re_encoding.match(line.strip(u'\r\n'))
                         if encoding_match:
                             encoding = encoding_match.group(1)
                     msg_ids_match = re_msg_ids_start.match(line)
@@ -220,12 +220,12 @@ def dump_translator(out_path, lang):
                             header = True
                             out.write(line)
                         continue
-                    elif line[0:7] == 'msgid "':
-                        stripped = line.strip('\r\n')[7:-1]
+                    elif line[0:7] == u'msgid "':
+                        stripped = line.strip(u'\r\n')[7:-1]
                         # Replace escape sequences
-                        stripped = stripped.replace('\\"','"')      # Quote
-                        stripped = stripped.replace('\\t','\t')     # Tab
-                        stripped = stripped.replace('\\\\', '\\')   # Backslash
+                        stripped = stripped.replace(u'\\"',u'"')      # Quote
+                        stripped = stripped.replace(u'\\t',u'\t')     # Tab
+                        stripped = stripped.replace(u'\\\\', u'\\')   # Backslash
                         # Try translating, check if that changes the string
                         # TODO(inf) Won't this break if we try dumping a
                         #  translation file for a language other than the
@@ -234,20 +234,20 @@ def dump_translator(out_path, lang):
                         if stripped != translated:
                             # Already translated
                             out.write(line)
-                            out.write('msgstr "')
+                            out.write(u'msgstr "')
                             translated = translated.encode(encoding)
                             # Re-escape the escape sequences
-                            translated = translated.replace('\\', '\\\\')
-                            translated = translated.replace('\t', '\\t')
+                            translated = translated.replace(u'\\', u'\\\\')
+                            translated = translated.replace(u'\t', u'\\t')
                             translated = re_non_escaped_quote.sub(sub_quote,
                                                                   translated)
                             out.write(translated)
-                            out.write('"\n')
+                            out.write(u'"\n')
                         else:
                             # Not translated
                             out.write(line)
-                            out.write('msgstr ""\n')
-                    elif line[0:8] == 'msgstr "':
+                            out.write(u'msgstr ""\n')
+                    elif line[0:8] == u'msgstr "':
                         continue
                     else:
                         out.write(line)
