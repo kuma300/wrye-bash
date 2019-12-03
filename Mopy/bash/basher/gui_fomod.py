@@ -32,10 +32,10 @@ from ..gui import CENTER, CheckBox, HBoxedLayout, HLayout, Label, \
     LayoutOptions, TextArea, VLayout
 from ..fomod import FailedCondition, FomodInstaller
 
-__author__ = "Ganda"
+__author__ = u'Ganda'
 
 class WizardReturn(object):
-    __slots__ = ("cancelled", "install_files", "install", "page_size", "pos")
+    __slots__ = ('cancelled', 'install_files', 'install', 'page_size', 'pos')
 
     def __init__(self):
         # cancelled: true if the user canceled or if an error occurred
@@ -62,8 +62,8 @@ class InstallerFomod(wiz.Wizard):
         # installer will return.
         self.files_list = [a[0] for a in installer.fileSizeCrcs]
         fomod_file = installer.fomod_file().s
-        data_path = bass.dirs["mods"]
-        ver = env.get_file_version(bass.dirs["app"].join(
+        data_path = bass.dirs[u'mods']
+        ver = env.get_file_version(bass.dirs[u'app'].join(
             *bush.game.version_detect_file).s)
         self.parser = FomodInstaller(fomod_file, self.files_list, data_path,
                                      u'.'.join([unicode(i) for i in ver]))
@@ -267,7 +267,7 @@ class PageSelect(PageInstaller):
                 if option.type == "Required":
                     SetComponentValue_(button, True)
                     any_selected = True
-                    if group_type in ("SelectExactlyOne", "SelectAtMostOne"):
+                    if group_type in (u'SelectExactlyOne', u'SelectAtMostOne'):
                         required_disable = True
                     else:
                         EnableComponent_(button, False)
@@ -275,7 +275,7 @@ class PageSelect(PageInstaller):
                     if not any_selected or not group_force_selection:
                         SetComponentValue_(button, True)
                         any_selected = True
-                elif option.type in ("Optional", "CouldBeUsable"):
+                elif option.type in (u'Optional', u'CouldBeUsable'):
                     if first_selectable is None:
                         first_selectable = button
                 elif option.type == "NotUsable":

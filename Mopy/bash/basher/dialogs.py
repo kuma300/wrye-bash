@@ -38,12 +38,12 @@ class ColorDialog(balt.Dialog):
     title = _(u'Color Configuration')
 
     _keys_to_tabs = {
-        'mods': _(u'[Mods] '),
-        'screens': _(u'[Saves, Screens] '),
-        'installers': _(u'[Installers] '),
-        'ini': _(u'[INI Edits] '),
-        'tweak': _(u'[INI Edits] '),
-        'default': _(u'[All] '),
+        u'mods': _(u'[Mods] '),
+        u'screens': _(u'[Saves, Screens] '),
+        u'installers': _(u'[Installers] '),
+        u'ini': _(u'[INI Edits] '),
+        u'tweak': _(u'[INI Edits] '),
+        u'default': _(u'[All] '),
     }
 
     def __init__(self):
@@ -51,7 +51,7 @@ class ColorDialog(balt.Dialog):
         self.changes = dict()
         #--ComboBox
         def _display_text(k):
-            return _(self._keys_to_tabs[k.split('.')[0]]) + colorInfo[k][0]
+            return _(self._keys_to_tabs[k.split(u'.')[0]]) + colorInfo[k][0]
         self.text_key = dict((_display_text(x), x) for x in colors)
         colored = self.text_key.keys()
         colored.sort(key=unicode.lower)
@@ -122,7 +122,7 @@ class ColorDialog(balt.Dialog):
                 color = self.changes[key]
             else:
                 color = colors[key]
-            default = bool(color == settingDefaults['bash.colors'][key])
+            default = bool(color == settingDefaults[u'bash.colors'][key])
             if not default:
                 allDefault = False
                 break
@@ -133,7 +133,7 @@ class ColorDialog(balt.Dialog):
             color = self.changes[color_key]
         else:
             color = colors[color_key]
-        default = bool(color == settingDefaults['bash.colors'][color_key])
+        default = bool(color == settingDefaults[u'bash.colors'][color_key])
         # Update the Buttons, ComboBox, and ColorPicker
         self.apply.enabled = changed
         self.applyAll.enabled = anyChanged
@@ -148,13 +148,13 @@ class ColorDialog(balt.Dialog):
 
     def OnDefault(self):
         color_key = self.GetColorKey()
-        newColor = settingDefaults['bash.colors'][color_key]
+        newColor = settingDefaults[u'bash.colors'][color_key]
         self.changes[color_key] = newColor
         self.UpdateUIButtons()
 
     def OnDefaultAll(self):
         for key in colors:
-            default = settingDefaults['bash.colors'][key]
+            default = settingDefaults[u'bash.colors'][key]
             if colors[key] != default:
                 self.changes[key] = default
         self.UpdateUIButtons()
@@ -163,17 +163,17 @@ class ColorDialog(balt.Dialog):
         color_key = self.GetColorKey()
         newColor = self.changes[color_key]
         #--Update settings and colors
-        bass.settings['bash.colors'][color_key] = newColor
-        bass.settings.setChanged('bash.colors')
+        bass.settings[u'bash.colors'][color_key] = newColor
+        bass.settings.setChanged(u'bash.colors')
         colors[color_key] = newColor
         self.UpdateUIButtons()
         self.UpdateUIColors()
 
     def OnApplyAll(self):
         for key,newColor in self.changes.iteritems():
-            bass.settings['bash.colors'][key] = newColor
+            bass.settings[u'bash.colors'][key] = newColor
             colors[key] = newColor
-        bass.settings.setChanged('bash.colors')
+        bass.settings.setChanged(u'bash.colors')
         self.UpdateUIButtons()
         self.UpdateUIColors()
 
@@ -182,13 +182,13 @@ class ColorDialog(balt.Dialog):
         self.OnApplyAll()
 
     def OnExport(self):
-        outDir = bass.dirs['patches']
+        outDir = bass.dirs[u'patches']
         outDir.makedirs()
         #--File dialog
         outPath = balt.askSave(self,_(u'Export color configuration to:'), outDir, _(u'Colors.txt'), u'*.txt')
         if not outPath: return
         try:
-            with outPath.open('w') as file:
+            with outPath.open(u'w') as file:
                 for key in colors:
                     if key in self.changes:
                         color = self.changes[key]
@@ -199,13 +199,13 @@ class ColorDialog(balt.Dialog):
             balt.showError(self,_(u'An error occurred writing to ')+outPath.stail+u':\n\n%s'%e)
 
     def OnImport(self):
-        inDir = bass.dirs['patches']
+        inDir = bass.dirs[u'patches']
         inDir.makedirs()
         #--File dialog
         inPath = balt.askOpen(self,_(u'Import color configuration from:'), inDir, _(u'Colors.txt'), u'*.txt', mustExist=True)
         if not inPath: return
         try:
-            with inPath.open('r') as file:
+            with inPath.open(u'r') as file:
                 for line in file:
                     # Format validation
                     if u':' not in line:
@@ -278,7 +278,7 @@ class ImportFaceDialog(balt.Dialog):
         self.listBox.SetSizeHints(175,150)
         #--Name,Race,Gender Checkboxes
         fi_flgs = bosh.faces.PCFaces.pcf_flags(
-            bass.settings.get('bash.faceImport.flags', 0x4))
+            bass.settings.get(u'bash.faceImport.flags', 0x4))
         self.nameCheck = CheckBox(self, _(u'Name'), checked=fi_flgs.name)
         self.raceCheck = CheckBox(self, _(u'Race'), checked=fi_flgs.race)
         self.genderCheck = CheckBox(self, _(u'Gender'), checked=fi_flgs.gender)
@@ -319,7 +319,7 @@ class ImportFaceDialog(balt.Dialog):
         self.raceText.label_text = face.getRaceName()
         self.genderText.label_text = face.getGenderName()
         self.statsText.label_text = _(u'Health ') + unicode(face.health)
-        itemImagePath = bass.dirs['mods'].join(u'Docs', u'Images', '%s.jpg' % item)
+        itemImagePath = bass.dirs[u'mods'].join(u'Docs', u'Images', u'%s.jpg' % item)
         # TODO(ut): any way to get the picture ? see mod_links.Mod_Face_Import
         bitmap = itemImagePath.exists() and Image(
             itemImagePath.s).GetBitmap() or None
@@ -343,7 +343,7 @@ class ImportFaceDialog(balt.Dialog):
         pc_flags.stats = self.statsCheck.is_checked
         pc_flags.iclass = self.classCheck.is_checked
         #deprint(flags.getTrueAttrs())
-        bass.settings['bash.faceImport.flags'] = int(pc_flags)
+        bass.settings[u'bash.faceImport.flags'] = int(pc_flags)
         bosh.faces.PCFaces.save_setFace(self.fileInfo,self.data[item],pc_flags)
         balt.showOk(self,_(u'Face imported.'),self.fileInfo.name.s)
         self.EndModalOK()
@@ -355,7 +355,7 @@ class CreateNewProject(balt.Dialog):
         super(CreateNewProject, self).__init__(parent, resize=False)
         #--Build a list of existing directories
         #  The text control will use this to change background color when name collisions occur
-        self.existingProjects = [x for x in bass.dirs['installers'].list() if bass.dirs['installers'].join(x).isdir()]
+        self.existingProjects = [x for x in bass.dirs[u'installers'].list() if bass.dirs[u'installers'].join(x).isdir()]
 
         #--Attributes
         self.textName = TextField(self, _(u'New Project Name-#####'))
@@ -388,16 +388,17 @@ class CreateNewProject(balt.Dialog):
         ]).apply_to(self)
         self.SetInitialSize()
         # Dialog Icon Handlers
-        self.SetIcon(installercons.get_image('off.white.dir').GetIcon())
+        self.SetIcon(installercons.get_image(u'off.white.dir').GetIcon())
         self.OnCheckBoxChange()
 
     def OnCheckProjectsColorTextCtrl(self, new_text):
         projectName = bolt.GPath(new_text)
         if projectName in self.existingProjects: #Fill this in. Compare this with the self.existingprojects list
-            self.textName.background_color = '#FF0000'
+            # PY3: See note in basher/constants.py
+            self.textName.background_color = b'#FF0000'
             self.textName.tooltip = _(u'There is already a project with that name!')
         else:
-            self.textName.background_color = '#FFFFFF'
+            self.textName.background_color = b'#FFFFFF'
             self.textName.tooltip = None
 
     def OnCheckBoxChange(self, is_checked=None):
@@ -406,17 +407,17 @@ class CreateNewProject(balt.Dialog):
         if self.checkEsp.is_checked:
             if self.checkWizard.is_checked:
                 self.SetIcon(
-                    installercons.get_image('off.white.dir.wiz').GetIcon())
+                    installercons.get_image(u'off.white.dir.wiz').GetIcon())
             else:
                 self.SetIcon(
-                    installercons.get_image('off.white.dir').GetIcon())
+                    installercons.get_image(u'off.white.dir').GetIcon())
         else:
-            self.SetIcon(installercons.get_image('off.grey.dir').GetIcon())
+            self.SetIcon(installercons.get_image(u'off.grey.dir').GetIcon())
 
     def OnClose(self):
         """ Create the New Project and add user specified extras. """
         projectName = bolt.GPath(self.textName.text_content.strip())
-        projectDir = bass.dirs['installers'].join(projectName)
+        projectDir = bass.dirs[u'installers'].join(projectName)
 
         if projectDir.exists():
             balt.showError(self, _(
@@ -438,7 +439,7 @@ class CreateNewProject(balt.Dialog):
         if self.checkWizard.is_checked:
             # Create empty wizard.txt
             wizardPath = tempProject.join(u'wizard.txt')
-            with wizardPath.open('w',encoding='utf-8') as out:
+            with wizardPath.open(u'w', encoding=u'utf-8') as out:
                 out.write(u'; %s BAIN Wizard Installation Script\n' % projectName)
         if self.checkWizardImages.is_checked:
             # Create 'Wizard Images' directory

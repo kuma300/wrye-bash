@@ -43,8 +43,8 @@ class DocBrowser(BaltFrame):
     def __init__(self):
         # Data
         self._mod_name = GPath(u'')
-        self._db_doc_paths = bosh.modInfos.table.getColumn('doc')
-        self._db_is_editing = bosh.modInfos.table.getColumn('docEdit')
+        self._db_doc_paths = bosh.modInfos.table.getColumn(u'doc')
+        self._db_is_editing = bosh.modInfos.table.getColumn(u'docEdit')
         self._doc_is_wtxt = False
         # Clean data
         for mod_name, doc in self._db_doc_paths.items():
@@ -132,7 +132,7 @@ class DocBrowser(BaltFrame):
             return bell()
         if not doc_path.isfile():
             balt.showWarning(self, _(u'The assigned document is not present:')
-                             + '\n  ' + doc_path.s)
+                             + u'\n  ' + doc_path.s)
         else:
             doc_path.start()
 
@@ -171,7 +171,7 @@ class DocBrowser(BaltFrame):
         if mod_name in self._db_doc_paths:
             (docs_dir, file_name) = self._db_doc_paths[mod_name].headTail
         else:
-            docs_dir = bass.settings['bash.modDocs.dir'] or bass.dirs['mods']
+            docs_dir = bass.settings['bash.modDocs.dir'] or bass.dirs[u'mods']
             file_name = GPath(u'')
         doc_path = balt.askOpen(self ,_(u'Select doc for %s:') % mod_name.s,
                                 docs_dir, file_name, u'*.*')
@@ -395,7 +395,7 @@ class ModChecker(BaltFrame):
               for setting_key in (_MOD_LIST, _CRC, _VERSION)],
             mod_checker=(None, self)[self._controls[_SCAN_DIRTY].is_checked])
         if web_viewer_available():
-            log_path = bass.dirs['saveBase'].join(u'ModChecker.html')
+            log_path = bass.dirs[u'saveBase'].join(u'ModChecker.html')
             balt.convert_wtext_to_html(log_path, self.check_mods_text)
             self._html_ctrl.try_load_html(log_path)
         else:

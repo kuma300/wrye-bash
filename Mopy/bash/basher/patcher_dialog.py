@@ -104,7 +104,7 @@ class PatchDialog(balt.Dialog):
         self.gDeselectAll.on_clicked.subscribe(self.DeselectAll)
         cancelButton = CancelButton(self)
         self.gPatchers = balt.listBox(self, choices=patcherNames,
-                                      isSingle=True, kind='checklist',
+                                      isSingle=True, kind=u'checklist',
                                       onSelect=self.OnSelect,
                                       onCheck=self.OnCheck)
         self.gExportConfig = SaveAsButton(self, label=_(u'Export'))
@@ -214,7 +214,7 @@ class PatchDialog(balt.Dialog):
             timerString = unicode(timedelta(seconds=round(timer2 - timer1, 3))).rstrip(u'0')
             logValue = re.sub(u'TIMEPLACEHOLDER', timerString, logValue, 1)
             readme = bosh.modInfos.store_dir.join(u'Docs', patch_name.sroot + u'.txt')
-            docsDir = bass.settings.get('balt.WryeLog.cssDir', GPath(u''))
+            docsDir = bass.settings.get(u'balt.WryeLog.cssDir', GPath(u''))
             if self.doCBash: ##: eliminate this if/else
                 with readme.open('w',encoding='utf-8') as file:
                     file.write(logValue)
@@ -230,18 +230,18 @@ class PatchDialog(balt.Dialog):
                 bolt.WryeText.genHtml(tempReadme,None,docsDir)
                 #--Try moving temp log/readme to Docs dir
                 try:
-                    env.shellMove(tempReadmeDir, bass.dirs['mods'],
+                    env.shellMove(tempReadmeDir, bass.dirs[u'mods'],
                                   parent=self)
                 except (CancelError,SkipError):
                     # User didn't allow UAC, move to My Games directory instead
                     env.shellMove([tempReadme, tempReadme.root + u'.html'],
-                                  bass.dirs['saveBase'], parent=self)
-                    readme = bass.dirs['saveBase'].join(readme.tail)
+                                  bass.dirs[u'saveBase'], parent=self)
+                    readme = bass.dirs[u'saveBase'].join(readme.tail)
                 #finally:
                 #    tempReadmeDir.head.rmtree(safety=tempReadmeDir.head.stail)
             readme = readme.root + u'.html'
-            bosh.modInfos.table.setItem(patch_name, 'doc', readme)
-            balt.playSound(self.parent, bass.inisettings['SoundSuccess'].s)
+            bosh.modInfos.table.setItem(patch_name, u'doc', readme)
+            balt.playSound(self.parent, bass.inisettings[u'SoundSuccess'].s)
             balt.WryeLog(self.parent, readme, patch_name.s,
                          log_icons=Resources.bashBlue)
             #--Select?
@@ -252,7 +252,7 @@ class PatchDialog(balt.Dialog):
                 bosh.modInfos.cached_lo_save_active() ##: also done below duh
             count, message = 0, _(u'Activate %s?') % patch_name.s
             if load_order.cached_is_active(patch_name) or (
-                        bass.inisettings['PromptActivateBashedPatch'] and
+                        bass.inisettings[u'PromptActivateBashedPatch'] and
                         balt.askYes(self.parent, message, patch_name.s)):
                 try:
                     changedFiles = bosh.modInfos.lo_activate(patch_name,
@@ -275,15 +275,15 @@ class PatchDialog(balt.Dialog):
                 info.calculate_crc(recalculate=True)
             BashFrame.modList.RefreshUI(refreshSaves=bool(count))
         except FileEditError as error:
-            balt.playSound(self.parent, bass.inisettings['SoundError'].s)
+            balt.playSound(self.parent, bass.inisettings[u'SoundError'].s)
             balt.showError(self,u'%s'%error,_(u'File Edit Error'))
         except CancelError:
             pass
         except BoltError as error:
-            balt.playSound(self.parent, bass.inisettings['SoundError'].s)
+            balt.playSound(self.parent, bass.inisettings[u'SoundError'].s)
             balt.showError(self,u'%s'%error,_(u'Processing Error'))
         except:
-            balt.playSound(self.parent, bass.inisettings['SoundError'].s)
+            balt.playSound(self.parent, bass.inisettings[u'SoundError'].s)
             raise
         finally:
             if self.doCBash:
@@ -354,21 +354,21 @@ class PatchDialog(balt.Dialog):
     def _saveConfig(self, patch_name):
         """Save the configuration"""
         config = self.__config()
-        bosh.modInfos.table.setItem(patch_name, 'bash.patch.configs', config)
+        bosh.modInfos.table.setItem(patch_name, u'bash.patch.configs', config)
 
     def ExportConfig(self):
         """Export the configuration to a user selected dat file."""
         config = self.__config()
         exportConfig(patch_name=self.patchInfo.name, config=config,
                      isCBash=self.doCBash, win=self.parent,
-                     outDir=bass.dirs['patches'])
+                     outDir=bass.dirs[u'patches'])
 
     __old_key = GPath(u'Saved Bashed Patch Configuration')
     __new_key = u'Saved Bashed Patch Configuration (%s)'
     def ImportConfig(self):
         """Import the configuration from a user selected dat file."""
         config_dat = self.patchInfo.name + _(u'_Configuration.dat')
-        textDir = bass.dirs['patches']
+        textDir = bass.dirs[u'patches']
         textDir.makedirs()
         #--File dialog
         textPath = balt.askOpen(self.parent,
@@ -379,15 +379,15 @@ class PatchDialog(balt.Dialog):
         # try the current Bashed Patch mode.
         patchConfigs = table.getItem(
             GPath(self.__new_key % ([u'Python', u'CBash'][self.doCBash])),
-            'bash.patch.configs', {})
+            u'bash.patch.configs', {})
         convert = False
         if not patchConfigs: # try the non-current Bashed Patch mode
             patchConfigs = table.getItem(
                 GPath(self.__new_key % ([u'CBash', u'Python'][self.doCBash])),
-                'bash.patch.configs', {})
+                u'bash.patch.configs', {})
             convert = bool(patchConfigs)
         if not patchConfigs: # try the old format
-            patchConfigs = table.getItem(self.__old_key, 'bash.patch.configs',
+            patchConfigs = table.getItem(self.__old_key, u'bash.patch.configs',
                                          {})
             convert = configIsCBash(patchConfigs) != self.doCBash
         if not patchConfigs:
@@ -409,10 +409,10 @@ class PatchDialog(balt.Dialog):
     def UpdateConfig(self, patchConfigs):
         if not balt.askYes(self.parent, _(
             u"Wrye Bash detects that the selected file was saved in Bash's "
-            u"%s mode, do you want Wrye Bash to attempt to adjust the "
-            u"configuration on import to work with %s mode (Good chance "
-            u"there will be a few mistakes)? (Otherwise this import will "
-            u"have no effect.)") % ([u'CBash', u'Python'][self.doCBash],
+            u'%s mode, do you want Wrye Bash to attempt to adjust the '
+            u'configuration on import to work with %s mode (Good chance '
+            u'there will be a few mistakes)? (Otherwise this import will '
+            u'have no effect.)') % ([u'CBash', u'Python'][self.doCBash],
                                     [u'Python', u'CBash'][self.doCBash])):
             return
         return self.ConvertConfig(patchConfigs)
@@ -430,7 +430,7 @@ class PatchDialog(balt.Dialog):
     def RevertConfig(self):
         """Revert configuration back to saved"""
         patchConfigs = bosh.modInfos.table.getItem(self.patchInfo.name,
-                                                   'bash.patch.configs', {})
+                                                   u'bash.patch.configs', {})
         if configIsCBash(patchConfigs) and not self.doCBash:
             patchConfigs = self.ConvertConfig(patchConfigs)
         self._load_config(patchConfigs)
@@ -519,60 +519,60 @@ class PatchDialog(balt.Dialog):
 # Used in ConvertConfig to convert between C and P *gui* patchers config - so
 # it belongs with gui_patchers (and not with patchers/ package). Still a hack
 otherPatcherDict = {
-    'AliasesPatcher' : 'CBash_AliasesPatcher',
-    'AssortedTweaker' : 'CBash_AssortedTweaker',
-    'PatchMerger' : 'CBash_PatchMerger',
-    'KFFZPatcher' : 'CBash_KFFZPatcher',
-    'ActorImporter' : 'CBash_ActorImporter',
-    'DeathItemPatcher' : 'CBash_DeathItemPatcher',
-    'NPCAIPackagePatcher' : 'CBash_NPCAIPackagePatcher',
-    'UpdateReferences' : 'CBash_UpdateReferences',
-    'CellImporter' : 'CBash_CellImporter',
-    'ClothesTweaker' : 'CBash_ClothesTweaker',
-    'GmstTweaker' : 'CBash_GmstTweaker',
-    'GraphicsPatcher' : 'CBash_GraphicsPatcher',
-    'ImportFactions' : 'CBash_ImportFactions',
-    'ImportInventory' : 'CBash_ImportInventory',
-    'SpellsPatcher' : 'CBash_SpellsPatcher',
-    'TweakActors' : 'CBash_TweakActors',
-    'ImportRelations' : 'CBash_ImportRelations',
-    'ImportScripts' : 'CBash_ImportScripts',
-    'ImportActorsSpells' : 'CBash_ImportActorsSpells',
-    'ListsMerger' : 'CBash_ListsMerger',
-    'NamesPatcher' : 'CBash_NamesPatcher',
-    'NamesTweaker' : 'CBash_NamesTweaker',
-    'NpcFacePatcher' : 'CBash_NpcFacePatcher',
-    'RacePatcher' : 'CBash_RacePatcher',
-    'RoadImporter' : 'CBash_RoadImporter',
-    'SoundPatcher' : 'CBash_SoundPatcher',
-    'StatsPatcher' : 'CBash_StatsPatcher',
-    'ContentsChecker' : 'CBash_ContentsChecker',
-    'CBash_AliasesPatcher' : 'AliasesPatcher',
-    'CBash_AssortedTweaker' : 'AssortedTweaker',
-    'CBash_PatchMerger' : 'PatchMerger',
-    'CBash_KFFZPatcher' : 'KFFZPatcher',
-    'CBash_ActorImporter' : 'ActorImporter',
-    'CBash_DeathItemPatcher' : 'DeathItemPatcher',
-    'CBash_NPCAIPackagePatcher' : 'NPCAIPackagePatcher',
-    'CBash_UpdateReferences' : 'UpdateReferences',
-    'CBash_CellImporter' : 'CellImporter',
-    'CBash_ClothesTweaker' : 'ClothesTweaker',
-    'CBash_GmstTweaker' : 'GmstTweaker',
-    'CBash_GraphicsPatcher' : 'GraphicsPatcher',
-    'CBash_ImportFactions' : 'ImportFactions',
-    'CBash_ImportInventory' : 'ImportInventory',
-    'CBash_SpellsPatcher' : 'SpellsPatcher',
-    'CBash_TweakActors' : 'TweakActors',
-    'CBash_ImportRelations' : 'ImportRelations',
-    'CBash_ImportScripts' : 'ImportScripts',
-    'CBash_ImportActorsSpells' : 'ImportActorsSpells',
-    'CBash_ListsMerger' : 'ListsMerger',
-    'CBash_NamesPatcher' : 'NamesPatcher',
-    'CBash_NamesTweaker' : 'NamesTweaker',
-    'CBash_NpcFacePatcher' : 'NpcFacePatcher',
-    'CBash_RacePatcher' : 'RacePatcher',
-    'CBash_RoadImporter' : 'RoadImporter',
-    'CBash_SoundPatcher' : 'SoundPatcher',
-    'CBash_StatsPatcher' : 'StatsPatcher',
-    'CBash_ContentsChecker' : 'ContentsChecker',
+    u'AliasesPatcher' : u'CBash_AliasesPatcher',
+    u'AssortedTweaker' : u'CBash_AssortedTweaker',
+    u'PatchMerger' : u'CBash_PatchMerger',
+    u'KFFZPatcher' : u'CBash_KFFZPatcher',
+    u'ActorImporter' : u'CBash_ActorImporter',
+    u'DeathItemPatcher' : u'CBash_DeathItemPatcher',
+    u'NPCAIPackagePatcher' : u'CBash_NPCAIPackagePatcher',
+    u'UpdateReferences' : u'CBash_UpdateReferences',
+    u'CellImporter' : u'CBash_CellImporter',
+    u'ClothesTweaker' : u'CBash_ClothesTweaker',
+    u'GmstTweaker' : u'CBash_GmstTweaker',
+    u'GraphicsPatcher' : u'CBash_GraphicsPatcher',
+    u'ImportFactions' : u'CBash_ImportFactions',
+    u'ImportInventory' : u'CBash_ImportInventory',
+    u'SpellsPatcher' : u'CBash_SpellsPatcher',
+    u'TweakActors' : u'CBash_TweakActors',
+    u'ImportRelations' : u'CBash_ImportRelations',
+    u'ImportScripts' : u'CBash_ImportScripts',
+    u'ImportActorsSpells' : u'CBash_ImportActorsSpells',
+    u'ListsMerger' : u'CBash_ListsMerger',
+    u'NamesPatcher' : u'CBash_NamesPatcher',
+    u'NamesTweaker' : u'CBash_NamesTweaker',
+    u'NpcFacePatcher' : u'CBash_NpcFacePatcher',
+    u'RacePatcher' : u'CBash_RacePatcher',
+    u'RoadImporter' : u'CBash_RoadImporter',
+    u'SoundPatcher' : u'CBash_SoundPatcher',
+    u'StatsPatcher' : u'CBash_StatsPatcher',
+    u'ContentsChecker' : u'CBash_ContentsChecker',
+    u'CBash_AliasesPatcher' : u'AliasesPatcher',
+    u'CBash_AssortedTweaker' : u'AssortedTweaker',
+    u'CBash_PatchMerger' : u'PatchMerger',
+    u'CBash_KFFZPatcher' : u'KFFZPatcher',
+    u'CBash_ActorImporter' : u'ActorImporter',
+    u'CBash_DeathItemPatcher' : u'DeathItemPatcher',
+    u'CBash_NPCAIPackagePatcher' : u'NPCAIPackagePatcher',
+    u'CBash_UpdateReferences' : u'UpdateReferences',
+    u'CBash_CellImporter' : u'CellImporter',
+    u'CBash_ClothesTweaker' : u'ClothesTweaker',
+    u'CBash_GmstTweaker' : u'GmstTweaker',
+    u'CBash_GraphicsPatcher' : u'GraphicsPatcher',
+    u'CBash_ImportFactions' : u'ImportFactions',
+    u'CBash_ImportInventory' : u'ImportInventory',
+    u'CBash_SpellsPatcher' : u'SpellsPatcher',
+    u'CBash_TweakActors' : u'TweakActors',
+    u'CBash_ImportRelations' : u'ImportRelations',
+    u'CBash_ImportScripts' : u'ImportScripts',
+    u'CBash_ImportActorsSpells' : u'ImportActorsSpells',
+    u'CBash_ListsMerger' : u'ListsMerger',
+    u'CBash_NamesPatcher' : u'NamesPatcher',
+    u'CBash_NamesTweaker' : u'NamesTweaker',
+    u'CBash_NpcFacePatcher' : u'NpcFacePatcher',
+    u'CBash_RacePatcher' : u'RacePatcher',
+    u'CBash_RoadImporter' : u'RoadImporter',
+    u'CBash_SoundPatcher' : u'SoundPatcher',
+    u'CBash_StatsPatcher' : u'StatsPatcher',
+    u'CBash_ContentsChecker' : u'ContentsChecker',
     }
