@@ -111,7 +111,7 @@ class RecordHeader(object):
     #--Plugin form version, we must pack this in the TES4 header
     plugin_form_version = 0
 
-    def __init__(self, recType='TES4', size=0, arg1=0, arg2=0, arg3=0, arg4=0):
+    def __init__(self, recType=b'TES4', size=0, arg1=0, arg2=0, arg3=0, arg4=0):
         """RecordHeader defining different sets of attributes based on recType
         is a huge smell and must be fixed. The fact that Oblivion has different
         unpack formats than other games adds to complexity - we need a proper
@@ -132,7 +132,7 @@ class RecordHeader(object):
         """
         self.recType = recType
         self.size = size
-        if self.recType == 'GRUP':
+        if self.recType == b'GRUP':
             self.label = arg1
             self.groupType = arg2
             self.stamp = arg3
@@ -156,7 +156,7 @@ class RecordHeader(object):
             raise exception.ModError(ins.inName,
                                      u'Bad header type: ' + repr(rec_type))
         #--Record
-        if rec_type != 'GRUP':
+        if rec_type != b'GRUP':
             pass
         #--Top Group
         elif args[3] == 0: #groupType == 0 (Top Type)
@@ -173,7 +173,7 @@ class RecordHeader(object):
         """Return the record header packed into a bitstream to be written to
         file. We decide what kind of GRUP we have based on the type of
         label, hacky but to redo this we must revisit records code."""
-        if self.recType == 'GRUP':
+        if self.recType == b'GRUP':
             if isinstance(self.label, str):
                 pack_args = [RecordHeader.pack_formats[0], self.recType,
                              self.size, self.label, self.groupType, self.stamp]
@@ -204,7 +204,7 @@ class RecordHeader(object):
         return struct_unpack('=2h', struct_pack('=I', self.extra))[0]
 
     def __repr__(self):
-        if self.recType == 'GRUP':
+        if self.recType == b'GRUP':
             return u'<GRUP Header: %s v%u>' % (self.label, self.form_version)
         else:
             return u'<Record Header: %s v%u>' % (strFid(self.fid),
@@ -240,7 +240,7 @@ class ModReader(object):
             self.strings = table
 
     #--I/O Stream -----------------------------------------
-    def seek(self,offset,whence=os.SEEK_SET,recType='----'):
+    def seek(self,offset,whence=os.SEEK_SET,recType=b'----'):
         """File seek."""
         if whence == os.SEEK_CUR:
             newPos = self.ins.tell() + offset
@@ -260,7 +260,7 @@ class ModReader(object):
         """Close file."""
         self.ins.close()
 
-    def atEnd(self,endPos=-1,recType='----'):
+    def atEnd(self,endPos=-1,recType=b'----'):
         """Return True if current read position is at EOF."""
         filePos = self.ins.tell()
         if endPos == -1:
@@ -271,7 +271,7 @@ class ModReader(object):
             return filePos == endPos
 
     #--Read/Unpack ----------------------------------------
-    def read(self,size,recType='----'):
+    def read(self,size,recType=b'----'):
         """Read from file."""
         endPos = self.ins.tell() + size
         if endPos > self.size:
@@ -279,7 +279,7 @@ class ModReader(object):
                                          self.size)
         return self.ins.read(size)
 
-    def readLString(self,size,recType='----'):
+    def readLString(self,size,recType=b'----'):
         """Read translatible string.  If the mod has STRINGS file, this is a
         uint32 to lookup the string in the string table.  Otherwise, this is a
         zero-terminated string."""
@@ -293,22 +293,22 @@ class ModReader(object):
         else:
             return self.readString(size,recType)
 
-    def readString32(self, recType='----'):
+    def readString32(self, recType=b'----'):
         """Read wide pascal string: uint32 is used to indicate length."""
         strLen, = self.unpack('I',4,recType)
         return self.readString(strLen,recType)
 
-    def readString(self,size,recType='----'):
+    def readString(self,size,recType=b'----'):
         """Read string from file, stripping zero terminator."""
         return u'\n'.join(decode(x,bolt.pluginEncoding,avoidEncodings=('utf8','utf-8')) for x in
-                          bolt.cstrip(self.read(size,recType)).split('\n'))
+                          bolt.cstrip(self.read(size,recType)).split(b'\n'))
 
-    def readStrings(self,size,recType='----'):
+    def readStrings(self,size,recType=b'----'):
         """Read strings from file, stripping zero terminator."""
         return [decode(x,bolt.pluginEncoding,avoidEncodings=('utf8','utf-8')) for x in
                 self.read(size,recType).rstrip(null1).split(null1)]
 
-    def unpack(self,format,size,recType='----'):
+    def unpack(self,format,size,recType=b'----'):
         """Read file and unpack according to struct format."""
         endPos = self.ins.tell() + size
         if endPos > self.size:
@@ -321,37 +321,37 @@ class ModReader(object):
 
     def unpackRecHeader(self): return RecordHeader.unpack(self)
 
-    def unpackSubHeader(self,recType='----',expType=None,expSize=0):
+    def unpackSubHeader(self,recType=b'----',expType=None,expSize=0):
         """Unpack a subrecord header.  Optionally checks for match with expected
         type and size."""
         selfUnpack = self.unpack
-        (rec_type, size) = selfUnpack('4sH', 6, recType + '.SUB_HEAD')
+        (rec_type, size) = selfUnpack('4sH', 6, recType + b'.SUB_HEAD')
         #--Extended storage?
-        while rec_type == 'XXXX':
-            size = selfUnpack('I',4,recType+'.XXXX.SIZE.')[0]
-            rec_type = selfUnpack('4sH', 6, recType + '.XXXX.TYPE')[0] #--Throw away size (always == 0)
+        while rec_type == b'XXXX':
+            size = selfUnpack('I',4,recType+b'.XXXX.SIZE.')[0]
+            rec_type = selfUnpack('4sH', 6, recType + b'.XXXX.TYPE')[0] #--Throw away size (always == 0)
         #--Match expected name?
         if expType and expType != rec_type:
             raise exception.ModError(self.inName, u'%s: Expected %s subrecord, but '
                            u'found %s instead.' % (recType, expType, rec_type))
         #--Match expected size?
         if expSize and expSize != size:
-            raise exception.ModSizeError(self.inName, recType + '.' + rec_type,
+            raise exception.ModSizeError(self.inName, recType + b'.' + rec_type,
                                          (expSize,), size)
         return rec_type,size
 
     #--Find data ------------------------------------------
-    def findSubRecord(self,subType,recType='----'):
+    def findSubRecord(self,subType,recType=b'----'):
         """Finds subrecord with specified type."""
         atEnd = self.atEnd
         self_unpack = self.unpack
         seek = self.seek
         while not atEnd():
-            (sub_type_,sub_rec_size) = self_unpack('4sH',6,recType+'.SUB_HEAD')
+            (sub_type_,sub_rec_size) = self_unpack('4sH',6,recType+b'.SUB_HEAD')
             if sub_type_ == subType:
-                return self.read(sub_rec_size,recType+'.'+subType)
+                return self.read(sub_rec_size,recType+b'.'+subType)
             else:
-                seek(sub_rec_size,1,recType+'.'+sub_type_)
+                seek(sub_rec_size,1,recType+b'.'+sub_type_)
         #--Didn't find it?
         else:
             return None
@@ -391,7 +391,7 @@ class ModWriter(object):
             if lenData <= 0xFFFF:
                 outWrite(struct_pack('=4sH', sub_rec_type, lenData))
             else:
-                outWrite(struct_pack('=4sHI', 'XXXX', 4, lenData))
+                outWrite(struct_pack('=4sHI', b'XXXX', 4, lenData))
                 outWrite(struct_pack('=4sH', sub_rec_type, 0))
             outWrite(data)
         except Exception:
@@ -409,10 +409,10 @@ class ModWriter(object):
         if lenData < 0xFFFF:
             outWrite(struct_pack('=4sH', sub_rec_type, lenData))
         else:
-            outWrite(struct_pack('=4sHI', 'XXXX', 4, lenData))
+            outWrite(struct_pack('=4sHI', b'XXXX', 4, lenData))
             outWrite(struct_pack('=4sH', sub_rec_type, 0))
         outWrite(data)
-        outWrite('\x00')
+        outWrite(b'\x00')
 
     def packRef(self, sub_rec_type, fid):
         """Write subrecord header and fid reference."""
@@ -421,11 +421,11 @@ class ModWriter(object):
 
     def writeGroup(self,size,label,groupType,stamp):
         if type(label) is str:
-            self.pack('=4sI4sII','GRUP',size,label,groupType,stamp)
+            self.pack('=4sI4sII',b'GRUP',size,label,groupType,stamp)
         elif type(label) is tuple:
-            self.pack('=4sIhhII','GRUP',size,label[1],label[0],groupType,stamp)
+            self.pack('=4sIhhII',b'GRUP',size,label[1],label[0],groupType,stamp)
         else:
-            self.pack('=4s4I','GRUP',size,label,groupType,stamp)
+            self.pack('=4s4I',b'GRUP',size,label,groupType,stamp)
 
     def write_string(self, sub_type, string_val, max_size=0,
                      preferred_encoding=None):
@@ -785,7 +785,7 @@ class MelSequential(MelBase):
 
     def getDefaulters(self, defaulters, base):
         for element in self.elements:
-            element.getDefaulters(defaulters, base + '.')
+            element.getDefaulters(defaulters, base + u'.')
 
     def getLoaders(self, loaders):
         for element in self.elements:
@@ -882,7 +882,7 @@ class MelBounds(MelGroup):
     Bounds. Uses MelGroup to avoid merging them when importing."""
     def __init__(self):
         MelGroup.__init__(self, 'bounds',
-            MelStruct('OBND', '=6h', 'boundX1', 'boundY1', 'boundZ1',
+            MelStruct(b'OBND', '=6h', 'boundX1', 'boundY1', 'boundZ1',
                       'boundX2', 'boundY2', 'boundZ2')
         )
 
@@ -1259,8 +1259,8 @@ class MelReferences(MelGroups):
     """Handles mixed sets of SCRO and SCRV for scripts, quests, etc."""
     def __init__(self):
         MelGroups.__init__(self, 'references', MelUnion({
-            'SCRO': MelFid('SCRO', 'reference'),
-            'SCRV': MelUInt32('SCRV', 'reference'),
+            b'SCRO': MelFid(b'SCRO', 'reference'),
+            b'SCRV': MelUInt32(b'SCRV', 'reference'),
         }))
 
 #------------------------------------------------------------------------------
@@ -1290,7 +1290,7 @@ class MelUnicode(MelString):
 
     def loadData(self, record, ins, sub_type, size_, readId):
         value = u'\n'.join(decode(x,self.encoding,avoidEncodings=('utf8','utf-8'))
-                           for x in bolt.cstrip(ins.read(size_, readId)).split('\n'))
+                           for x in bolt.cstrip(ins.read(size_, readId)).split(b'\n'))
         record.__setattr__(self.attr,value)
 
     def dumpData(self,record,out):
@@ -1438,7 +1438,7 @@ class MelArray(MelBase):
 
         def packSub0(self, sub_rec_type, data):
             self.out.write(data)
-            self.out.write('\x00')
+            self.out.write(b'\x00')
 
         def packRef(self, sub_rec_type, fid):
             if fid is not None: self.pack('I', fid)
@@ -1639,20 +1639,20 @@ class MelUInt32(MelStruct):
 class MelEdid(MelString):
     """Handles an Editor ID (EDID) subrecord."""
     def __init__(self):
-        MelString.__init__(self, 'EDID', 'eid')
+        MelString.__init__(self, b'EDID', 'eid')
 
 #------------------------------------------------------------------------------
 class MelFull(MelLString):
     """Handles a name (FULL) subrecord."""
     def __init__(self):
-        MelLString.__init__(self, 'FULL', 'full')
+        MelLString.__init__(self, b'FULL', 'full')
 
 #------------------------------------------------------------------------------
 class MelIcons(MelSequential):
     """Handles icon subrecords. Defaults to ICON and MICO, with attribute names
     'iconPath' and 'smallIconPath', since that's most common."""
     def __init__(self, icon_attr='iconPath', mico_attr='smallIconPath',
-                 icon_sig='ICON', mico_sig='MICO'):
+                 icon_sig=b'ICON', mico_sig=b'MICO'):
         """Creates a new MelIcons with the specified attributes.
 
         :param icon_attr: The attribute to use for the ICON subrecord. If
@@ -1670,7 +1670,7 @@ class MelIcons2(MelIcons):
     def __init__(self, ico2_attr='femaleIconPath',
                  mic2_attr='femaleSmallIconPath'):
         MelIcons.__init__(self, icon_attr=ico2_attr, mico_attr=mic2_attr,
-                          icon_sig='ICO2', mico_sig='MIC2')
+                          icon_sig=b'ICO2', mico_sig=b'MIC2')
 
 class MelIcon(MelIcons):
     """Handles a standalone ICON subrecord, i.e. without any MICO subrecord."""
@@ -2187,7 +2187,7 @@ class MreSubrecord(object):
         if ins: self.load(ins)
 
     def load(self,ins):
-        self.data = ins.read(self.size,'----.'+self.subType)
+        self.data = ins.read(self.size,b'----.'+self.subType)
 
     def setChanged(self,value=True):
         """Sets changed attribute to value. [Default = True.]"""
@@ -2222,7 +2222,7 @@ class MreSubrecord(object):
 #------------------------------------------------------------------------------
 class MreRecord(object):
     """Generic Record. flags1 are game specific see comments."""
-    subtype_attr = {'EDID':'eid','FULL':'full','MODL':'model'}
+    subtype_attr = {b'EDID':'eid',b'FULL':'full',b'MODL':'model'}
     flags1_ = bolt.Flags(0, bolt.Flags.getNames(
         # {Sky}, {FNV} 0x00000000 ACTI: Collision Geometry (default)
         ( 0,'esm'), # {0x00000001}
@@ -2493,7 +2493,7 @@ class MreRecord(object):
             raise exception.StateError(u'Data undefined: ' + self.recType + u' ' + hex(self.fid))
         #--Update the header so it 'packs' correctly
         self.header.size = self.size
-        if self.recType != 'GRUP':
+        if self.recType != b'GRUP':
             self.header.flags1 = self.flags1
             self.header.fid = self.fid
         out.write(self.header.pack())
@@ -2596,8 +2596,8 @@ class MreHeaderBase(MelRecord):
             pack1 = out.packSub0
             pack2 = out.packSub
             for master_name in record.masters:
-                pack1('MAST', encode(master_name.s, firstEncoding='cp1252'))
-                pack2('DATA','Q',0)
+                pack1(b'MAST', encode(master_name.s, firstEncoding='cp1252'))
+                pack2(b'DATA','Q',0)
 
     def getNextObject(self):
         """Gets next object index and increments it for next time."""
@@ -2612,11 +2612,11 @@ class MreGlob(MelRecord):
     """Global record.  Rather stupidly all values, despite their designation
        (short,long,float), are stored as floats -- which means that very large
        integers lose precision."""
-    classType = 'GLOB'
+    classType = b'GLOB'
     melSet = MelSet(
         MelEdid(),
-        MelStruct('FNAM','s',('format','s')),
-        MelFloat('FLTV', 'value'),
+        MelStruct(b'FNAM','s',('format','s')),
+        MelFloat(b'FLTV', 'value'),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -2625,17 +2625,17 @@ class MreGmstBase(MelRecord):
     """Game Setting record.  Base class, each game should derive from this
     class."""
     Ids = None
-    classType = 'GMST'
+    classType = b'GMST'
 
     melSet = MelSet(
         MelEdid(),
         MelUnion({
-            u'b': MelUInt32('DATA', 'value'), # actually a bool
-            u'f': MelFloat('DATA', 'value'),
-            u's': MelLString('DATA', 'value'),
+            u'b': MelUInt32(b'DATA', 'value'), # actually a bool
+            u'f': MelFloat(b'DATA', 'value'),
+            u's': MelLString(b'DATA', 'value'),
         }, decider=AttrValDecider(
             'eid', transformer=lambda eid: decode(eid[0]) if eid else u'i'),
-            fallback=MelSInt32('DATA', 'value')
+            fallback=MelSInt32(b'DATA', 'value')
         ),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -2665,29 +2665,29 @@ class MreGmstBase(MelRecord):
 # and adding this to mergeClasses would slow us down quite a bit.
 class MreLand(MelRecord):
     """Land structure. Part of exterior cells."""
-    classType = 'LAND'
+    classType = b'LAND'
 
     melSet = MelSet(
-        MelBase('DATA', 'unknown'),
-        MelBase('VNML', 'vertex_normals'),
-        MelBase('VHGT', 'vertex_height_map'),
-        MelBase('VCLR', 'vertex_colors'),
+        MelBase(b'DATA', 'unknown'),
+        MelBase(b'VNML', 'vertex_normals'),
+        MelBase(b'VHGT', 'vertex_height_map'),
+        MelBase(b'VCLR', 'vertex_colors'),
         MelGroups('layers',
             # Start a new layer each time we hit one of these
             MelUnion({
-                'ATXT': MelStruct('ATXT', 'IBsh', (FID, 'atxt_texture'),
+                b'ATXT': MelStruct(b'ATXT', 'IBsh', (FID, 'atxt_texture'),
                                   'quadrant', 'unknown', 'layer'),
-                'BTXT': MelStruct('BTXT', 'IBsh', (FID, 'btxt_texture'),
+                b'BTXT': MelStruct(b'BTXT', 'IBsh', (FID, 'btxt_texture'),
                                   'quadrant', 'unknown', 'layer'),
             }),
             # VTXT only exists for ATXT layers
             MelUnion({
-                True:  MelBase('VTXT', 'alpha_layer_data'),
-                False: MelNull('VTXT'),
+                True:  MelBase(b'VTXT', 'alpha_layer_data'),
+                False: MelNull(b'VTXT'),
             }, decider=AttrExistsDecider('atxt_texture')),
         ),
         MelArray('vertex_textures',
-            MelFid('VTEX', 'vertex_texture'),
+            MelFid(b'VTEX', 'vertex_texture'),
         ),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -2818,7 +2818,7 @@ class MreLeveledListBase(MelRecord):
 #------------------------------------------------------------------------------
 class MreDial(MelRecord):
     """Dialog record."""
-    classType = 'DIAL'
+    classType = b'DIAL'
     __slots__ = ['infoStamp', 'infoStamp2', 'infos']
 
     def __init__(self, header, ins=None, do_unpack=False):
@@ -2834,7 +2834,7 @@ class MreDial(MelRecord):
         while not ins_at_end(endPos, 'INFO Block'):
             #--Get record info and handle it
             header = read_header()
-            if header.recType == 'INFO':
+            if header.recType == b'INFO':
                 append_info(infoClass(header, ins, True))
             else:
                 raise exception.ModError(ins.inName,
@@ -2850,7 +2850,7 @@ class MreDial(MelRecord):
                                        for info in self.infos])
         # Not all pack targets may be needed - limit the unpacked amount to the
         # number of specified GRUP format entries
-        pack_targets = ['GRUP', dial_size, self.fid, 7, self.infoStamp,
+        pack_targets = [b'GRUP', dial_size, self.fid, 7, self.infoStamp,
                         self.infoStamp2]
         out.pack(RecordHeader.rec_pack_format_str,
                  *pack_targets[:len(RecordHeader.rec_pack_format)])
@@ -2912,7 +2912,7 @@ class MelRaceParts(MelNull):
             element.setDefault(record)
 
     def loadData(self, record, ins, sub_type, size_, readId):
-        if sub_type == 'INDX':
+        if sub_type == b'INDX':
             self._last_indx, = ins.unpack('I', size_, readId)
         else:
             self._indx_to_loader[self._last_indx].loadData(
@@ -2921,7 +2921,7 @@ class MelRaceParts(MelNull):
     def dumpData(self, record, out):
         for part_indx, part_attr in self._indx_to_attr.iteritems():
             if hasattr(record, part_attr): # only dump present parts
-                out.packSub('INDX', '=I', part_indx)
+                out.packSub(b'INDX', '=I', part_indx)
                 self._indx_to_loader[part_indx].dumpData(record, out)
 
     @property
@@ -2945,11 +2945,11 @@ class MelScriptVars(MelGroups):
 
     def __init__(self):
         MelGroups.__init__(self, 'script_vars',
-            MelStruct('SLSD', 'I12sB7s', 'var_index',
+            MelStruct(b'SLSD', 'I12sB7s', 'var_index',
                       ('unused1', null4 + null4 + null4),
                       (self._var_flags, 'var_flags', 0),
                       ('unused2', null4 + null3)),
-            MelString('SCVR', 'var_name'),
+            MelString(b'SCVR', 'var_name'),
         )
 
 #------------------------------------------------------------------------------
@@ -3012,7 +3012,7 @@ class MelRegnEntrySubrecord(MelUnion):
         MelUnion.__init__(self, {
             entry_type_val: element,
         }, decider=AttrValDecider('entryType'),
-            fallback=MelNull('NULL')) # ignore
+            fallback=MelNull(b'NULL')) # ignore
 
 #------------------------------------------------------------------------------
 class MreHasEffects(object):
