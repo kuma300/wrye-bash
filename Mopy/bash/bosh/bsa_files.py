@@ -45,7 +45,7 @@ from ..bolt import deprint, Progress, struct_pack, struct_unpack, \
 from ..exception import AbstractError, BSAError, BSADecodingError, \
     BSAFlagError, BSANotImplemented
 
-__author__ = 'Utumno'
+__author__ = u'Utumno'
 
 _bsa_encoding = 'cp1252' # rumor has it that's the files/folders names encoding
 path_sep = u'\\'
@@ -128,8 +128,8 @@ class _Header(object):
     __slots__ = ('file_id', 'version')
     formats = ['4s', 'I']
     formats = list((f, struct.calcsize(f)) for f in formats)
-    bsa_magic = 'BSA\x00'
-    bsa_version = int('0x67', 16)
+    bsa_magic = b'BSA\x00'
+    bsa_version = int(u'0x67', 16)
 
     def load_header(self, ins):
         for fmt, attr in zip(_Header.formats, _Header.__slots__):
@@ -173,9 +173,9 @@ class Ba2Header(_Header):
         'ba2_files_type', 'ba2_num_files', 'ba2_name_table_offset')
     formats = ['4s', 'I', 'Q']
     formats = list((f, struct.calcsize(f)) for f in formats)
-    bsa_magic = 'BTDX'
-    file_types = {'GNRL', 'DX10'} # GNRL=General, DX10=Textures
-    bsa_version = int('0x01', 16)
+    bsa_magic = b'BTDX'
+    file_types = {b'GNRL', b'DX10'} # GNRL=General, DX10=Textures
+    bsa_version = int(u'0x01', 16)
     header_size = 24
 
     def load_header(self, ins):
@@ -211,11 +211,11 @@ class OblivionBsaHeader(BsaHeader):
 
 class SkyrimBsaHeader(BsaHeader):
     __slots__ = ()
-    bsa_version = int('0x68', 16)
+    bsa_version = int(u'0x68', 16)
 
 class SkyrimSeBsaHeader(BsaHeader):
     __slots__ = ()
-    bsa_version = int('0x69', 16)
+    bsa_version = int(u'0x69', 16)
 
 # Records ---------------------------------------------------------------------
 class _HashedRecord(object):
@@ -641,7 +641,7 @@ class BSA(ABsa):
                     total_names_length, self.bsa_header.folder_count))
             self.total_names_length = total_names_length
             file_names = bsa_file.read( # has an empty string at the end
-                self.bsa_header.total_file_name_length).split('\00')
+                self.bsa_header.total_file_name_length).split(b'\00')
             # close the file
         return file_names
 
@@ -661,7 +661,7 @@ class BA2(ABsa):
         # load the bsa - this should be reworked to load only needed records
         self._load_bsa()
         my_header = self.bsa_header # type: Ba2Header
-        if my_header.ba2_files_type != 'GNRL':
+        if my_header.ba2_files_type != b'GNRL':
             raise BSANotImplemented(
                 u'Texture ba2 archives are not yet supported')
         folder_to_assets = self._map_assets_to_folders(folder_files_dict)
@@ -700,7 +700,7 @@ class BA2(ABsa):
             my_header = self.bsa_header # type: Ba2Header
             my_header.load_header(bsa_file)
             # load the folder records from input stream
-            if my_header.ba2_files_type == 'GNRL':
+            if my_header.ba2_files_type == b'GNRL':
                 file_record_type = Ba2FileRecordGeneral
             else:
                 file_record_type = Ba2FileRecordTexture
@@ -819,8 +819,8 @@ class OblivionBsa(BSA):
     # A dictionary mapping file extensions to hash components. Used by Oblivion
     # when hashing file names for its BSAs.
     _bsa_ext_lookup = collections.defaultdict(int)
-    for ext, hash_part in [('.kf', 0x80), ('.nif', 0x8000), ('.dds', 0x8080),
-                           ('.wav', 0x80000000)]:
+    for ext, hash_part in [(u'.kf', 0x80), (u'.nif', 0x8000), (u'.dds', 0x8080),
+                           (u'.wav', 0x80000000)]:
         _bsa_ext_lookup[ext] = hash_part
 
     @staticmethod

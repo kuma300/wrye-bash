@@ -408,11 +408,11 @@ class DefaultIniFile(IniFile):
         self.lines, current_line = [], 0
         self._ci_settings_cache_linenum = OrderedLowerDict()
         for sect, setts in settings_dict.iteritems():
-            self.lines.append('[' + str(sect) + ']')
+            self.lines.append(u'[' + unicode(sect) + u']')
             self._ci_settings_cache_linenum[sect] = OrderedLowerDict()
             current_line += 1
             for sett, val in setts.iteritems():
-                self.lines.append(str(sett) + '=' + str(val))
+                self.lines.append(unicode(sett) + u'=' + unicode(val))
                 self._ci_settings_cache_linenum[sect][sett] = (val, current_line)
                 current_line += 1
         self._deleted_cache = self.__empty
@@ -428,7 +428,7 @@ class DefaultIniFile(IniFile):
         instantiation of the default ini is with windows EOL."""
         if as_unicode:
             return [unicode(l) for l in self.lines]
-        return '\r\n'.join(self.lines) + '\r\n'  # add a newline at the end of the ini
+        return u'\r\n'.join(self.lines) + u'\r\n'  # add a newline at the end of the ini
 
     # Abstract for DefaultIniFile, bit of a smell
     def do_update(self): raise AbstractError
@@ -661,13 +661,13 @@ class OblivionIni(IniFile):
         if super(OblivionIni, self).ask_create_target_ini(msg): return True
         from . import oblivionIni, iniInfos # YAK
         if self is not oblivionIni: return True
-        srcPath = dirs['app'].join(bush.game.defaultIniFile)
+        srcPath = dirs[u'app'].join(bush.game.defaultIniFile)
         default_path_exists = srcPath.exists()
-        msg = _(u'%(ini_path)s does not exist.' % {'ini_path': self.abs_path}) + \
+        msg = _(u'%(ini_path)s does not exist.' % {u'ini_path': self.abs_path}) + \
               u'\n\n' + ((msg + u'\n\n') if msg else u'')
         if default_path_exists:
             msg += _(u'Do you want Bash to create it by copying '
-                     u'%(default_ini)s ?' % {'default_ini': srcPath})
+                     u'%(default_ini)s ?' % {u'default_ini': srcPath})
             if not balt.askYes(None, msg, _(u'Missing game Ini')):
                 return False
         else:
@@ -693,7 +693,7 @@ class OblivionIni(IniFile):
         if self.isCorrupted: return
         section,key = bush.game.ini.bsaRedirection
         if not section or not key: return
-        aiBsa = dirs['mods'].join(u'ArchiveInvalidationInvalidated!.bsa')
+        aiBsa = dirs[u'mods'].join(u'ArchiveInvalidationInvalidated!.bsa')
         aiBsaMTime = time.mktime((2006, 1, 2, 0, 0, 0, 0, 2, 0))
         if aiBsa.exists() and aiBsa.mtime > aiBsaMTime:
             aiBsa.mtime = aiBsaMTime
@@ -705,7 +705,7 @@ class OblivionIni(IniFile):
             return
         # Skyrim does not have an Archive Invalidation File
         if doRedirect and not aiBsa.exists():
-            source = dirs['templates'].join(bush.game.fsName, u'ArchiveInvalidationInvalidated!.bsa')
+            source = dirs[u'templates'].join(bush.game.fsName, u'ArchiveInvalidationInvalidated!.bsa')
             source.mtime = aiBsaMTime
             try:
                 env.shellCopy(source, aiBsa, allowUndo=True, autoRename=True)

@@ -320,13 +320,13 @@ def _process_path(file_path):
             if parents_done:
                 raise ParserError(
                     u"Illegal file path: Unexpected '..' (may only be at the "
-                    u"start of the path).", file_path)
+                    u'start of the path).', file_path)
             parents += 1
         else:
             # Remember that we're done parsing any parent specifiers
             parents_done = True
             child_components.append(path_component)
-    relative_path = bass.dirs['mods']
+    relative_path = bass.dirs[u'mods']
     # Move up by the number of requested parents
     for x in range(parents):
         relative_path = relative_path.head
