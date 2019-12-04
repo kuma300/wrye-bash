@@ -93,23 +93,23 @@ class OmodFile(object):
     def writeInfo(self, dest_path, filename, readme, script):
         with dest_path.open('w') as file:
             file.write(encode(filename))
-            file.write('\n\n[basic info]\n')
-            file.write('Name: ')
+            file.write(u'\n\n[basic info]\n')
+            file.write(u'Name: ')
             file.write(encode(filename[:-5]))
-            file.write('\nAuthor: ')
+            file.write(u'\nAuthor: ')
             file.write(encode(self.author))
-            file.write('\nVersion:') # TODO, fix this?
-            file.write('\nContact: ')
+            file.write(u'\nVersion:') # TODO, fix this?
+            file.write(u'\nContact: ')
             file.write(encode(self.email))
-            file.write('\nWebsite: ')
+            file.write(u'\nWebsite: ')
             file.write(encode(self.website))
-            file.write('\n\n')
+            file.write(u'\n\n')
             file.write(encode(self.desc))
-            file.write('\n\n')
+            file.write(u'\n\n')
             #fTime = time.gmtime(self.ftime) #-error
             #file.write('Date this omod was compiled: %s-%s-%s %s:%s:%s\n' % (fTime.tm_mon, fTime.tm_mday, fTime.tm_year, fTime.tm_hour, fTime.tm_min, fTime.tm_sec))
-            file.write('Contains readme: %s\n' % ('yes' if readme else 'no'))
-            file.write('Contains script: %s\n' % ('yes' if readme else 'no'))
+            file.write(u'Contains readme: %s\n' % (u'yes' if readme else u'no'))
+            file.write(u'Contains script: %s\n' % (u'yes' if readme else u'no'))
             # Skip the reset that OBMM puts in
 
     def getOmodContents(self):
@@ -190,8 +190,8 @@ class OmodFile(object):
             else:
                 extract = self.extractFilesZip
 
-            pluginSize = sizes.get('plugins',0)
-            dataSize = sizes.get('data',0)
+            pluginSize = sizes.get(u'plugins',0)
+            dataSize = sizes.get(u'data',0)
             subprogress = bolt.SubProgress(progress, 0.5, 1)
             with stageDir.unicodeSafe() as tempOut:
                 if extractDir.join(u'plugins.crc').exists() and extractDir.join(u'plugins').exists():
@@ -275,7 +275,7 @@ class OmodFile(object):
 
         # Now decompress
         progress(0.3)
-        cmd = [bass.dirs['compiled'].join(u'lzma').s,u'd',outPath.join(dataPath.sbody+u'.tmp').s, outPath.join(dataPath.sbody+u'.uncomp').s]
+        cmd = [bass.dirs[u'compiled'].join(u'lzma').s,u'd',outPath.join(dataPath.sbody+u'.tmp').s, outPath.join(dataPath.sbody+u'.uncomp').s]
         subprocess.call(cmd,startupinfo=startupinfo)
         progress(0.8)
 
@@ -317,7 +317,7 @@ class OmodConfig(object):
     def getOmodConfig(name):
         """Get obmm config file for project."""
         config = OmodConfig(name)
-        configPath = bass.dirs['installers'].join(name,u'omod conversion data',u'config')
+        configPath = bass.dirs[u'installers'].join(name,u'omod conversion data',u'config')
         if configPath.exists():
             with open(configPath.s,'rb') as ins:
                 ins.read(1) #--Skip first four bytes
@@ -335,7 +335,7 @@ class OmodConfig(object):
     @staticmethod
     def writeOmodConfig(name, config):
         """Write obmm config file for project."""
-        configPath = bass.dirs['installers'].join(name,u'omod conversion data',u'config')
+        configPath = bass.dirs[u'installers'].join(name,u'omod conversion data',u'config')
         configPath.head.makedirs()
         with open(configPath.temp.s,'wb') as out:
             out.write(struct_pack('B', 4))
@@ -345,7 +345,7 @@ class OmodConfig(object):
             for attr in ('author','email','website','abstract'):
                 # OBMM reads it fine if in UTF-8, so we'll do that.
                 _writeNetString(out, getattr(config, attr).encode('utf-8'))
-            out.write('\x74\x1a\x74\x67\xf2\x7a\xca\x88') #--Random date time
+            out.write(b'\x74\x1a\x74\x67\xf2\x7a\xca\x88') #--Random date time
             out.write(struct_pack('b', 0)) #--zip compression (will be ignored)
-            out.write('\xFF\xFF\xFF\xFF')
+            out.write(b'\xFF\xFF\xFF\xFF')
         configPath.untemp()

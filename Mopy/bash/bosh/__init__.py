@@ -197,7 +197,7 @@ class MasterInfo(object):
         return 30 if not self.mod_info else 0
 
     def __repr__(self):
-        return self.__class__.__name__ + u"<" + repr(self.curr_name) + u">"
+        return self.__class__.__name__ + u'<' + repr(self.curr_name) + u'>'
 
 #------------------------------------------------------------------------------
 class FileInfo(AFile):
@@ -455,10 +455,10 @@ class ModInfo(FileInfo):
         self.setmtime(crc_changed=True)
 
     def calculate_crc(self, recalculate=False):
-        cached_crc = modInfos.table.getItem(self.name, 'crc')
+        cached_crc = modInfos.table.getItem(self.name, u'crc')
         if not recalculate:
-            cached_mtime = modInfos.table.getItem(self.name, 'crc_mtime')
-            cached_size = modInfos.table.getItem(self.name, 'crc_size')
+            cached_mtime = modInfos.table.getItem(self.name, u'crc_mtime')
+            cached_size = modInfos.table.getItem(self.name, u'crc_size')
             recalculate = cached_crc is None \
                           or self._file_mod_time != cached_mtime \
                           or self._file_size != cached_size
@@ -466,18 +466,18 @@ class ModInfo(FileInfo):
         if recalculate:
             path_crc = self.abs_path.crc
             if path_crc != cached_crc:
-                modInfos.table.setItem(self.name,'crc',path_crc)
-                modInfos.table.setItem(self.name,'ignoreDirty',False)
-            modInfos.table.setItem(self.name, 'crc_mtime', self._file_mod_time)
-            modInfos.table.setItem(self.name, 'crc_size', self._file_size)
+                modInfos.table.setItem(self.name,u'crc',path_crc)
+                modInfos.table.setItem(self.name,u'ignoreDirty',False)
+            modInfos.table.setItem(self.name, u'crc_mtime', self._file_mod_time)
+            modInfos.table.setItem(self.name, u'crc_size', self._file_size)
         return path_crc, cached_crc
 
     def cached_mod_crc(self): # be sure it's valid before using it!
-        return modInfos.table.getItem(self.name, 'crc')
+        return modInfos.table.getItem(self.name, u'crc')
 
     def crc_string(self):
         try:
-            return u'%08X' % modInfos.table.getItem(self.name, 'crc')
+            return u'%08X' % modInfos.table.getItem(self.name, u'crc')
         except TypeError: # None, should not happen so let it show
             return u'UNKNOWN!'
 
@@ -486,7 +486,7 @@ class ModInfo(FileInfo):
         set_time = FileInfo.setmtime(self, set_time)
         # Prevent re-calculating the File CRC
         if not crc_changed:
-            modInfos.table.setItem(self.name,'crc_mtime', set_time)
+            modInfos.table.setItem(self.name,u'crc_mtime', set_time)
         else:
             self.calculate_crc(recalculate=True)
 
@@ -536,7 +536,7 @@ class ModInfo(FileInfo):
     #--Bash Tags --------------------------------------------------------------
     def setBashTags(self,keys):
         """Sets bash keys as specified."""
-        modInfos.table.setItem(self.name,'bashTags',keys)
+        modInfos.table.setItem(self.name,u'bashTags',keys)
 
     def setBashTagsDesc(self,keys):
         """Sets bash keys as specified."""
@@ -546,7 +546,7 @@ class ModInfo(FileInfo):
             strKeys = u'{{BASH:'+(u','.join(sorted(keys)))+u'}}\n'
         else:
             strKeys = u''
-        description = self.header.description or ''
+        description = self.header.description or u''
         if reBashTags.search(description):
             description = reBashTags.sub(strKeys,description)
         else:
@@ -557,7 +557,7 @@ class ModInfo(FileInfo):
 
     def getBashTags(self):
         """Returns any Bash flag keys."""
-        return modInfos.table.getItem(self.name, 'bashTags', set())
+        return modInfos.table.getItem(self.name, u'bashTags', set())
 
     def getBashTagsDesc(self):
         """Returns any Bash flag keys."""
@@ -629,7 +629,7 @@ class ModInfo(FileInfo):
                     self.header.dump(out)
                     #--Write remainder
                     outWrite = out.write
-                    for block in iter(partial(ins.read, 0x5000000), ''):
+                    for block in iter(partial(ins.read, 0x5000000), b''):
                         outWrite(block)
                 except struct.error as rex:
                     raise ModError(self.name,u'Struct.error: %s' % rex)
@@ -637,9 +637,9 @@ class ModInfo(FileInfo):
         filePath.untemp()
         self.setmtime(crc_changed=True)
         #--Merge info
-        size,canMerge = modInfos.table.getItem(self.name,'mergeInfo',(None,None))
+        size,canMerge = modInfos.table.getItem(self.name,u'mergeInfo',(None,None))
         if size is not None:
-            modInfos.table.setItem(self.name,'mergeInfo',(filePath.size,canMerge))
+            modInfos.table.setItem(self.name,u'mergeInfo',(filePath.size,canMerge))
 
     def writeDescription(self,description):
         """Sets description to specified text and then writes hedr."""
@@ -702,7 +702,7 @@ class ModInfo(FileInfo):
         # type: (basestring) -> Iterable[Path]
         sbody, ext = self.name.sbody, self.get_extension()
         for join, format_str in bush.game.esp.stringsFiles:
-            fname = format_str % {'body': sbody, 'ext': ext, 'language': lang}
+            fname = format_str % {u'body': sbody, u'ext': ext, u'language': lang}
             assetPath = empty_path.join(*join).join(fname)
             yield assetPath
 
@@ -735,14 +735,14 @@ class ModInfo(FileInfo):
                 extract -= set(imap(unicode.lower, found_assets))
                 if not extract:
                     break
-            else: raise ModError(self.name, u"Could not locate Strings Files")
+            else: raise ModError(self.name, u'Could not locate Strings Files')
             for bsa, assets in bsa_assets.iteritems():
-                out_path = dirs['bsaCache'].join(bsa.name)
+                out_path = dirs[u'bsaCache'].join(bsa.name)
                 try:
                     bsa.extract_assets(assets, out_path.s)
                 except BSAError as e:
                     raise ModError(self.name,
-                                   u"Could not extract Strings File from "
+                                   u'Could not extract Strings File from '
                                    u"'%s': %s" % (bsa.name, e))
                 paths.update(imap(out_path.join, assets))
         return paths
@@ -861,7 +861,7 @@ class INIInfo(IniFile):
     def is_applicable(self, stat=None):
         stat = stat or self.tweak_status
         return stat != -20 and (
-            bass.settings['bash.ini.allowNewLines'] or stat != -10)
+            bass.settings[u'bash.ini.allowNewLines'] or stat != -10)
 
     def getStatus(self, target_ini=None):
         """Returns status of the ini tweak:
@@ -883,7 +883,7 @@ class INIInfo(IniFile):
         match = False
         mismatch = 0
         ini_settings = target_ini.get_ci_settings()
-        self_installer = infos.table.getItem(self.abs_path.tail, 'installer')
+        self_installer = infos.table.getItem(self.abs_path.tail, u'installer')
         for section_key in tweak_settings:
             if section_key not in ini_settings:
                 return _status(-10)
@@ -901,7 +901,7 @@ class INIInfo(IniFile):
                         for name, ini_info in infos.iteritems():
                             if self is ini_info: continue
                             if self_installer != infos.table.getItem(
-                                    name, 'installer'): continue
+                                    name, u'installer'): continue
                             # It's from the same installer
                             if self._incompatible(ini_info): continue
                             value = ini_info.getSetting(section_key, item, None)
@@ -970,7 +970,7 @@ from . import cosaves
 
 class SaveInfo(FileInfo):
     cosave_types = () # cosave types for this game - set once in SaveInfos
-    _cosave_ui_string = {PluggyCosave: 'XP', xSECosave: 'XO'} # ui strings
+    _cosave_ui_string = {PluggyCosave: u'XP', xSECosave: u'XO'} # ui strings
     __empty = {} # sentinel for _co_saves cache
     # Dict of cosaves that may come with this save file. Lazily initialized.
     _co_saves = __empty
@@ -1054,7 +1054,7 @@ class SaveInfo(FileInfo):
             if inst and inst.abs_path.exists():
                 co_ui_strings[j] = self._cosave_ui_string[co_typ][
                     abs(inst.abs_path.mtime - self.mtime) < 10]
-        return '\n'.join(co_ui_strings)
+        return u'\n'.join(co_ui_strings)
 
     def backup_restore_paths(self, first=False, fname=None):
         """Return as parent and in addition back up paths for the cosaves."""
@@ -1129,12 +1129,12 @@ class DataStore(DataDict):
         """Deletes member file(s)."""
         full_delete_paths, delete_info = self.files_to_delete(delete_keys,
             raise_on_master_deletion=kwargs.pop(
-                'raise_on_master_deletion', True))
+                u'raise_on_master_deletion', True))
         try:
             self._delete_operation(full_delete_paths, delete_info, **kwargs)
         finally:
             #--Refresh
-            if kwargs.pop('doRefresh', True):
+            if kwargs.pop(u'doRefresh', True):
                 self.delete_refresh(full_delete_paths, delete_info,
                                     check_existence=True)
 
@@ -1142,8 +1142,8 @@ class DataStore(DataDict):
         raise AbstractError
 
     def _delete_operation(self, paths, delete_info, **kwargs):
-        confirm = kwargs.pop('confirm', False)
-        recycle = kwargs.pop('recycle', True)
+        confirm = kwargs.pop(u'confirm', False)
+        recycle = kwargs.pop(u'recycle', True)
         env.shellDelete(paths, confirm=confirm, recycle=recycle)
 
     def delete_refresh(self, deleted, deleted2, check_existence):
@@ -1233,7 +1233,7 @@ class TableFileInfos(DataStore):
         info = self[fileName] = self.factory(self.store_dir.join(fileName),
                                              load_cache=True)
         if owner is not None:
-            self.table.setItem(fileName, 'installer', owner)
+            self.table.setItem(fileName, u'installer', owner)
         if notify_bain:
             self._notify_bain(changed={info.abs_path})
         return info
@@ -1444,7 +1444,7 @@ class DefaultIniInfo(DefaultIniFile, INIInfo):
     def is_default_tweak(self): return True
 
 # noinspection PyUnusedLocal
-def ini_info_factory(fullpath, load_cache='Ignored'):
+def ini_info_factory(fullpath, load_cache=u'Ignored'):
     """INIInfos factory
     :param fullpath: fullpath to the ini file to wrap
     :param load_cache: dummy param used in INIInfos#new_info factory call
@@ -1462,13 +1462,13 @@ class INIInfos(TableFileInfos):
         INIInfos._default_tweaks = dict(
             (GPath(k), DefaultIniInfo(k, v)) for k, v in
             bush.game.default_tweaks.iteritems())
-        super(INIInfos, self).__init__(dirs['ini_tweaks'],
+        super(INIInfos, self).__init__(dirs[u'ini_tweaks'],
                                        factory=ini_info_factory)
         self._ini = None
         # Check the list of target INIs, remove any that don't exist
         # if _target_inis is not an OrderedDict choice won't be set correctly
-        _target_inis = bass.settings['bash.ini.choices'] # type: OrderedDict
-        choice = bass.settings['bash.ini.choice'] # type: int
+        _target_inis = bass.settings[u'bash.ini.choices'] # type: OrderedDict
+        choice = bass.settings[u'bash.ini.choice'] # type: int
         if isinstance(_target_inis, OrderedDict):
             try:
                 previous_ini = _target_inis.keys()[choice]
@@ -1505,11 +1505,11 @@ class INIInfos(TableFileInfos):
             _target_inis[_(u'Browse...')] = None
         self.__sort_target_inis()
         if previous_ini:
-            choice = bass.settings['bash.ini.choices'].keys().index(
+            choice = bass.settings[u'bash.ini.choices'].keys().index(
                 previous_ini)
-        bass.settings['bash.ini.choice'] = choice if choice >= 0 else 0
-        self.ini = bass.settings['bash.ini.choices'].values()[
-            bass.settings['bash.ini.choice']]
+        bass.settings[u'bash.ini.choice'] = choice if choice >= 0 else 0
+        self.ini = bass.settings[u'bash.ini.choices'].values()[
+            bass.settings[u'bash.ini.choice']]
 
     @property
     def ini(self):
@@ -1526,17 +1526,17 @@ class INIInfos(TableFileInfos):
     def update_targets(targets_dict):
         """Update 'bash.ini.choices' with targets_dict then re-sort the dict
         of target INIs"""
-        for existing_ini in bass.settings['bash.ini.choices']:
+        for existing_ini in bass.settings[u'bash.ini.choices']:
             targets_dict.pop(existing_ini, None)
         if targets_dict:
-            bass.settings['bash.ini.choices'].update(targets_dict)
+            bass.settings[u'bash.ini.choices'].update(targets_dict)
             # now resort
             INIInfos.__sort_target_inis()
         return targets_dict
 
     @staticmethod
     def __sort_target_inis():
-        keys = bass.settings['bash.ini.choices'].keys()
+        keys = bass.settings[u'bash.ini.choices'].keys()
         # Sort alphabetically
         keys.sort()
         # Sort Oblivion.ini to the top, and 'Browse...' to the bottom
@@ -1544,9 +1544,9 @@ class INIInfos(TableFileInfos):
         len_inis = len(game_inis)
         keys.sort(key=lambda a: game_inis.index(a) if a in game_inis else (
                       len_inis + 1 if a == _(u'Browse...') else len_inis))
-        bass.settings['bash.ini.choices'] = collections.OrderedDict(
+        bass.settings[u'bash.ini.choices'] = collections.OrderedDict(
             # convert stray Path instances back to unicode
-            [(u'%s' % k, bass.settings['bash.ini.choices'][k]) for k in keys])
+            [(u'%s' % k, bass.settings[u'bash.ini.choices'][k]) for k in keys])
 
     def _refresh_ini_tweaks(self):
         """Refresh from file directory."""
@@ -1601,7 +1601,7 @@ class INIInfos(TableFileInfos):
         return _added, _updated, _deleted, changed
 
     @property
-    def bash_dir(self): return dirs['modsBash'].join(u'INI Data')
+    def bash_dir(self): return dirs[u'modsBash'].join(u'INI Data')
 
     def delete_refresh(self, deleted_keys, paths_to_keys, check_existence,
                        _in_refresh=False):
@@ -1706,22 +1706,22 @@ class ModInfos(FileInfos):
             u'(' + u'|'.join(re.escape(e) for e in bush.game.espm_extensions) + u'' r')(\.ghost)?$',
             re.I | re.U
         )
-        FileInfos.__init__(self, dirs['mods'], factory=ModInfo)
+        FileInfos.__init__(self, dirs[u'mods'], factory=ModInfo)
         #--Info lists/sets
         self.mergeScanned = [] #--Files that have been scanned for mergeability.
         for fname in bush.game.masterFiles:
-            if dirs['mods'].join(fname).exists():
+            if dirs[u'mods'].join(fname).exists():
                 self.masterName = GPath(fname)
                 break
         else:
             if len(bush.game.masterFiles) == 1:
-                deprint(_(u'Missing master file; %s does not exist in an unghosted state in %s') % (fname, dirs['mods'].s))
+                deprint(_(u'Missing master file; %s does not exist in an unghosted state in %s') % (fname, dirs[u'mods'].s))
             else:
                 msg = bush.game.masterFiles[0]
                 if len(bush.game.masterFiles) > 2:
                     msg += u', '.join(bush.game.masterFiles[1:-1])
                 msg += u' or ' + bush.game.masterFiles[-1]
-                deprint(_(u'Missing master file; Neither %s exists in an unghosted state in %s.  Presuming that %s is the correct masterfile.') % (msg, dirs['mods'].s, bush.game.masterFiles[0]))
+                deprint(_(u'Missing master file; Neither %s exists in an unghosted state in %s.  Presuming that %s is the correct masterfile.') % (msg, dirs[u'mods'].s, bush.game.masterFiles[0]))
             self.masterName = GPath(bush.game.masterFiles[0])
         self.mergeable = set() #--Set of all mods which can be merged.
         self.bad_names = set() #--Set of all mods with names that can't be saved to plugins.txt
@@ -1896,7 +1896,7 @@ class ModInfos(FileInfos):
         return True
 
     @property
-    def bash_dir(self): return dirs['modsBash']
+    def bash_dir(self): return dirs[u'modsBash']
 
     #--Refresh-----------------------------------------------------------------
     def _names(self):
@@ -2010,9 +2010,9 @@ class ModInfos(FileInfos):
         toggling bash.mods.autoGhost to False we forcibly unghost all mods
         """
         changed = []
-        toGhost = bass.settings.get('bash.mods.autoGhost',False)
+        toGhost = bass.settings.get(u'bash.mods.autoGhost',False)
         if force or toGhost:
-            allowGhosting = self.table.getColumn('allowGhosting')
+            allowGhosting = self.table.getColumn(u'allowGhosting')
             for mod, modInfo in self.iteritems():
                 modGhost = toGhost and not load_order.cached_is_active(mod) \
                            and allowGhosting.get(mod, True)
@@ -2027,7 +2027,7 @@ class ModInfos(FileInfos):
         #--Mods that need to be rescanned - call rescanMergeable !
         newMods = []
         self.mergeable.clear()
-        name_mergeInfo = self.table.getColumn('mergeInfo')
+        name_mergeInfo = self.table.getColumn(u'mergeInfo')
         #--Add known/unchanged and esms - we need to scan dependent mods
         # first to account for mergeability of their masters
         for mpath, modInfo in sorted(self.items(),
@@ -2050,7 +2050,7 @@ class ModInfos(FileInfos):
         """Rescan specified mods. Return value is only meaningful when
         return_results is set to True."""
         messagetext = _(u'Check ESL Qualifications') if bush.game.check_esl \
-            else _(u"Mark Mergeable")
+            else _(u'Mark Mergeable')
         with prog or balt.Progress(_(messagetext) + u' ' * 30) as prog:
             return self._rescanMergeable(names, prog, doCBash, return_results)
 
@@ -2066,7 +2066,7 @@ class ModInfos(FileInfos):
             is_mergeable = isCBashMergeable
         else:
             is_mergeable = isPBashMergeable
-        mod_mergeInfo = self.table.getColumn('mergeInfo')
+        mod_mergeInfo = self.table.getColumn(u'mergeInfo')
         progress.setFull(max(len(names),1))
         result, tagged_no_merge = OrderedDict(), set()
         for i,fileName in enumerate(names):
@@ -2102,15 +2102,15 @@ class ModInfos(FileInfos):
     def reloadBashTags(self):
         """Reloads bash tags for all mods set to receive automatic bash tags."""
         for modName, mod in self.iteritems():
-            autoTag = self.table.getItem(modName, 'autoBashTags')
+            autoTag = self.table.getItem(modName, u'autoBashTags')
             if autoTag is None and self.table.getItem(
-                    modName, 'bashTags') is None:
+                    modName, u'bashTags') is None:
                 # A new mod, set autoBashTags to True (default)
-                self.table.setItem(modName, 'autoBashTags', True)
+                self.table.setItem(modName, u'autoBashTags', True)
                 autoTag = True
             elif autoTag is None:
                 # An old mod that had manual bash tags added, disable autoBashTags
-                self.table.setItem(modName, 'autoBashTags', False)
+                self.table.setItem(modName, u'autoBashTags', False)
             if autoTag:
                 mod.reloadBashTags()
 
@@ -2142,16 +2142,16 @@ class ModInfos(FileInfos):
         merged_,imported_ = set(),set()
         patches = masters & self.bashed_patches
         for patch in patches:
-            patchConfigs = self.table.getItem(patch, 'bash.patch.configs')
+            patchConfigs = self.table.getItem(patch, u'bash.patch.configs')
             if not patchConfigs: continue
-            patcherstr = 'CBash_PatchMerger' if patcher.configIsCBash(
-                patchConfigs) else 'PatchMerger'
-            if patchConfigs.get(patcherstr,{}).get('isEnabled'):
-                config_checked = patchConfigs[patcherstr]['configChecks']
+            patcherstr = u'CBash_PatchMerger' if patcher.configIsCBash(
+                patchConfigs) else u'PatchMerger'
+            if patchConfigs.get(patcherstr,{}).get(u'isEnabled'):
+                config_checked = patchConfigs[patcherstr][u'configChecks']
                 for modName in config_checked:
                     if config_checked[modName] and modName in self:
                         merged_.add(modName)
-            imported_.update(x for x in patchConfigs.get('ImportedMods', ()) if x in self)
+            imported_.update(x for x in patchConfigs.get(u'ImportedMods', ()) if x in self)
         return merged_,imported_
 
     def getModList(self,showCRC=False,showVersion=True,fileInfo=None,wtxt=False):
@@ -2241,11 +2241,11 @@ class ModInfos(FileInfos):
         if dir_removed:
             tagList = _tags(_(u'Removed by %s: ') % tags_file,
                             sorted(dir_removed), tagList)
-        if not modInfos.table.getItem(mname, 'autoBashTags') and \
-               modInfos.table.getItem(mname, 'bashTags', u''):
+        if not modInfos.table.getItem(mname, u'autoBashTags') and \
+               modInfos.table.getItem(mname, u'bashTags', u''):
             tagList = _tags(
                 _(u'From Manual (overrides all other sources): '),
-                sorted(modInfos.table.getItem(mname, 'bashTags', u'')),
+                sorted(modInfos.table.getItem(mname, u'bashTags', u'')),
                 tagList)
         return _tags(_(u'Result: '), sorted(modInfo.getBashTags()), tagList)
 
@@ -2430,7 +2430,7 @@ class ModInfos(FileInfos):
 
     def getDirtyMessage(self, modname):
         """Returns a dirty message from LOOT."""
-        if self.table.getItem(modname, 'ignoreDirty', False):
+        if self.table.getItem(modname, u'ignoreDirty', False):
             return False, u''
         return configHelpers.getDirtyMessage(modname)
 
@@ -2524,7 +2524,7 @@ class ModInfos(FileInfos):
     def files_to_delete(self, filenames, **kwargs):
         for f in set(filenames):
             if f.s in bush.game.masterFiles:
-                if kwargs.pop('raise_on_master_deletion', True):
+                if kwargs.pop(u'raise_on_master_deletion', True):
                     raise BoltError(
                         u"Cannot delete the game's master file(s).")
                 else:
@@ -2576,7 +2576,7 @@ class ModInfos(FileInfos):
             if authorDir.isdir():
                 return authorDir
         #--Use group subdirectory instead?
-        file_group = self.table.getItem(name, 'group')
+        file_group = self.table.getItem(name, u'group')
         if file_group:
             groupDir = dest_dir.join(file_group)
             if groupDir.isdir():
@@ -2587,7 +2587,7 @@ class ModInfos(FileInfos):
     def getVersion(self, fileName):
         """Extracts and returns version number for fileName from header.hedr.description."""
         if not fileName in self.data or not self.data[fileName].header:
-            return ''
+            return u''
         maVersion = reVersion.search(self[fileName].header.description)
         return (maVersion and maVersion.group(2)) or u''
 
@@ -2698,11 +2698,11 @@ class ModInfos(FileInfos):
     # does not really belong here, but then where ?
         """Save current plugins into arcSaves directory, load plugins from
         newSaves directory and set oblivion version."""
-        arcPath, newPath = (dirs['saveBase'].join(saves) for saves in
+        arcPath, newPath = (dirs[u'saveBase'].join(saves) for saves in
                             (arcSaves, newSaves))
         load_order.swap(arcPath, newPath)
         # Swap Oblivion version to memorized version
-        voNew = saveInfos.profiles.setItemDefault(newSaves, 'vOblivion',
+        voNew = saveInfos.profiles.setItemDefault(newSaves, u'vOblivion',
                                                   self.voCurrent)
         if voNew in self.voAvailable: self.setOblivionVersion(voNew)
 
@@ -2727,11 +2727,11 @@ class SaveInfos(FileInfos):
         self.__class__.file_pattern = re.compile(patt, re.I | re.U)
         self.localSave = bush.game.save_prefix
         self._setLocalSaveFromIni()
-        super(SaveInfos, self).__init__(dirs['saveBase'].join(self.localSave),
+        super(SaveInfos, self).__init__(dirs[u'saveBase'].join(self.localSave),
                                         factory=SaveInfo)
         # Save Profiles database
         self.profiles = bolt.Table(bolt.PickleDict(
-            dirs['saveBase'].join(u'BashProfiles.dat')))
+            dirs[u'saveBase'].join(u'BashProfiles.dat')))
         # save profiles used to have a trailing slash, remove it if present
         for row in self.profiles.keys():
             if row.endswith(u'\\'):
@@ -2823,7 +2823,7 @@ class SaveInfos(FileInfos):
         self._setLocalSaveFromIni()
         if localSave == self.localSave: return # no change
         self.table.save()
-        self._initDB(dirs['saveBase'].join(self.localSave))
+        self._initDB(dirs[u'saveBase'].join(self.localSave))
 
     def setLocalSave(self, localSave, refreshSaveInfos=True):
         """Sets SLocalSavePath in Oblivion.ini."""
@@ -2836,7 +2836,7 @@ class SaveInfos(FileInfos):
         # the setting correctly, kept previous behavior
         oblivionIni.saveSetting(*bush.game.saveProfilesKey,
                                 value=localSave + u'\\')
-        self._initDB(dirs['saveBase'].join(self.localSave))
+        self._initDB(dirs[u'saveBase'].join(self.localSave))
         if refreshSaveInfos: self.refresh()
 
     #--Enabled ----------------------------------------------------------------
@@ -2872,7 +2872,7 @@ class BSAInfos(FileInfos):
 
         class BSAInfo(FileInfo, _bsa_type):
             _default_mtime = time.mktime(
-                time.strptime('01-01-2006 00:00:00', '%m-%d-%Y %H:%M:%S'))
+                time.strptime(u'01-01-2006 00:00:00', '%m-%d-%Y %H:%M:%S'))
 
             def __init__(self, fullpath, load_cache=False):
                 try:  # Never load_cache for memory reasons - let it be
@@ -2898,21 +2898,21 @@ class BSAInfos(FileInfos):
 
             def _reset_bsa_mtime(self):
                 if bush.game.allow_reset_bsa_timestamps and inisettings[
-                    'ResetBSATimestamps']:
+                    u'ResetBSATimestamps']:
                     if self._file_mod_time != self._default_mtime:
                         self.setmtime(self._default_mtime)
 
-        super(BSAInfos, self).__init__(dirs['mods'], factory=BSAInfo)
+        super(BSAInfos, self).__init__(dirs[u'mods'], factory=BSAInfo)
 
     @property
-    def bash_dir(self): return dirs['modsBash'].join(u'BSA Data')
+    def bash_dir(self): return dirs[u'modsBash'].join(u'BSA Data')
 
     @staticmethod
     def remove_invalidation_file():
         """Removes ArchiveInvalidation.txt, if it exists in the game folder.
         This is used when disabling other solutions to the Archive Invalidation
         problem prior to enabling WB's BSA Redirection."""
-        dirs['app'].join(u'ArchiveInvalidation.txt').remove()
+        dirs[u'app'].join(u'ArchiveInvalidation.txt').remove()
 
     @staticmethod
     def reset_oblivion_mtimes():
@@ -2921,20 +2921,20 @@ class BSAInfos(FileInfos):
         This is done to make sure they load in the correct order (that's why
         the dates are all in incremental order) and so they load before any
         mod-added content (that's why early 2006 is chosen)."""
-        bsa_times = ((1138162634, inisettings['OblivionTexturesBSAName']),
+        bsa_times = ((1138162634, inisettings[u'OblivionTexturesBSAName']),
                      (1138162934, u'Oblivion - Voices1.bsa'),
                      (1138166742, u'Oblivion - Voices2.bsa'),
                      (1138575220, u'Oblivion - Meshes.bsa'),
                      (1138660560, u'Oblivion - Sounds.bsa'),
                      (1139433736, u'Oblivion - Misc.bsa'))
         for mtime, bsa_file in bsa_times:
-            dirs['mods'].join(bsa_file).mtime = mtime
+            dirs[u'mods'].join(bsa_file).mtime = mtime
 
 #------------------------------------------------------------------------------
 class PeopleData(DataStore):
     """Data for a People UIList. Built on a PickleDict."""
     def __init__(self):
-        self.dictFile = bolt.PickleDict(dirs['saveBase'].join(u'People.dat'))
+        self.dictFile = bolt.PickleDict(dirs[u'saveBase'].join(u'People.dat'))
         self.data = self.dictFile.data
         self.hasChanged = False ##: move to bolt.PickleDict
         self.loaded = False
@@ -3001,12 +3001,12 @@ class ScreensData(DataStore):
         re.I | re.U)
 
     def __init__(self):
-        self.store_dir = dirs['app']
+        self.store_dir = dirs[u'app']
         self.data = {} #--data[Path] = (ext,mtime,size)
 
     def refresh(self):
         """Refresh list of screenshots."""
-        self.store_dir = dirs['app']
+        self.store_dir = dirs[u'app']
         ssBase = GPath(oblivionIni.getSetting(
             u'Display', u'SScreenShotBaseName', u'ScreenShot'))
         if ssBase.head:
@@ -3062,127 +3062,127 @@ def initDefaultTools():
 
     # BOSS can be in any number of places.
     # Detect locally installed (into game folder) BOSS
-    if dirs['app'].join(u'BOSS', u'BOSS.exe').exists():
-        tooldirs['boss'] = dirs['app'].join(u'BOSS').join(u'BOSS.exe')
+    if dirs[u'app'].join(u'BOSS', u'BOSS.exe').exists():
+        tooldirs[u'boss'] = dirs[u'app'].join(u'BOSS').join(u'BOSS.exe')
     else:
-        tooldirs['boss'] = GPath(u'C:\\**DNE**')
+        tooldirs[u'boss'] = GPath(u'C:\\**DNE**')
         # Detect globally installed (into Program Files) BOSS
         path_in_registry = env.get_registry_path(u'Boss', u'Installed Path',
                                                  [u'BOSS.exe'])
         if path_in_registry:
             if path_in_registry.isdir():
                 path_in_registry = path_in_registry.join(u'BOSS.exe')
-            tooldirs['boss'] = path_in_registry
+            tooldirs[u'boss'] = path_in_registry
 
-    tooldirs['Tes4FilesPath'] = dirs['app'].join(u'Tools', u'TES4Files.exe')
-    tooldirs['Tes4EditPath'] = dirs['app'].join(u'TES4Edit.exe')
-    tooldirs['Tes5EditPath'] = dirs['app'].join(u'TES5Edit.exe')
-    tooldirs['EnderalEditPath'] = dirs['app'].join(u'EnderalEdit.exe')
-    tooldirs['SSEEditPath'] = dirs['app'].join(u'SSEEdit.exe')
-    tooldirs['Fo4EditPath'] = dirs['app'].join(u'FO4Edit.exe')
-    tooldirs['Fo3EditPath'] = dirs['app'].join(u'FO3Edit.exe')
-    tooldirs['FnvEditPath'] = dirs['app'].join(u'FNVEdit.exe')
-    tooldirs['Tes4LodGenPath'] = dirs['app'].join(u'TES4LodGen.exe')
-    tooldirs['Tes4GeckoPath'] = dirs['app'].join(u'Tes4Gecko.jar')
-    tooldirs['Tes5GeckoPath'] = pathlist(u'Dark Creations',u'TESVGecko',u'TESVGecko.exe')
-    tooldirs['OblivionBookCreatorPath'] = dirs['mods'].join(u'OblivionBookCreator.jar')
-    tooldirs['NifskopePath'] = pathlist(u'NifTools',u'NifSkope',u'Nifskope.exe')
-    tooldirs['BlenderPath'] = pathlist(u'Blender Foundation',u'Blender',u'blender.exe')
-    tooldirs['GmaxPath'] = GPath(u'C:\\GMAX').join(u'gmax.exe')
-    tooldirs['MaxPath'] = pathlist(u'Autodesk',u'3ds Max 2010',u'3dsmax.exe')
-    tooldirs['MayaPath'] = undefinedPath
-    tooldirs['PhotoshopPath'] = pathlist(u'Adobe',u'Adobe Photoshop CS3',u'Photoshop.exe')
-    tooldirs['GIMP'] = pathlist(u'GIMP-2.0',u'bin',u'gimp-2.6.exe')
-    tooldirs['ISOBL'] = dirs['app'].join(u'ISOBL.exe')
-    tooldirs['ISRMG'] = dirs['app'].join(u'Insanitys ReadMe Generator.exe')
-    tooldirs['ISRNG'] = dirs['app'].join(u'Random Name Generator.exe')
-    tooldirs['ISRNPCG'] = dirs['app'].join(u'Random NPC.exe')
-    tooldirs['NPP'] = pathlist(u'Notepad++',u'notepad++.exe')
-    tooldirs['Fraps'] = GPath(u'C:\\Fraps').join(u'Fraps.exe')
-    tooldirs['Audacity'] = pathlist(u'Audacity',u'Audacity.exe')
-    tooldirs['Artweaver'] = pathlist(u'Artweaver 1.0',u'Artweaver.exe')
-    tooldirs['DDSConverter'] = pathlist(u'DDS Converter 2',u'DDS Converter 2.exe')
-    tooldirs['PaintNET'] = pathlist(u'Paint.NET',u'PaintDotNet.exe')
-    tooldirs['Milkshape3D'] = pathlist(u'MilkShape 3D 1.8.4',u'ms3d.exe')
-    tooldirs['Wings3D'] = pathlist(u'wings3d_1.2',u'Wings3D.exe')
-    tooldirs['BSACMD'] = pathlist(u'BSACommander',u'bsacmd.exe')
-    tooldirs['MAP'] = dirs['app'].join(u'Modding Tools', u'Interactive Map of Cyrodiil and Shivering Isles 3.52', u'Mapa v 3.52.exe')
-    tooldirs['OBMLG'] = dirs['app'].join(u'Modding Tools', u'Oblivion Mod List Generator', u'Oblivion Mod List Generator.exe')
-    tooldirs['OBFEL'] = pathlist(u'Oblivion Face Exchange Lite',u'OblivionFaceExchangeLite.exe')
-    tooldirs['ArtOfIllusion'] = pathlist(u'ArtOfIllusion',u'Art of Illusion.exe')
-    tooldirs['ABCAmberAudioConverter'] = pathlist(u'ABC Amber Audio Converter',u'abcaudio.exe')
-    tooldirs['Krita'] = pathlist(u'Krita (x86)',u'bin',u'krita.exe')
-    tooldirs['PixelStudio'] = pathlist(u'Pixel',u'Pixel.exe')
-    tooldirs['TwistedBrush'] = pathlist(u'Pixarra',u'TwistedBrush Open Studio',u'tbrush_open_studio.exe')
-    tooldirs['PhotoScape'] = pathlist(u'PhotoScape',u'PhotoScape.exe')
-    tooldirs['Photobie'] = pathlist(u'Photobie',u'Photobie.exe')
-    tooldirs['PhotoFiltre'] = pathlist(u'PhotoFiltre',u'PhotoFiltre.exe')
-    tooldirs['PaintShopPhotoPro'] = pathlist(u'Corel',u'Corel PaintShop Photo Pro',u'X3',u'PSPClassic',u'Corel Paint Shop Pro Photo.exe')
-    tooldirs['Dogwaffle'] = pathlist(u'project dogwaffle',u'dogwaffle.exe')
-    tooldirs['GeneticaViewer'] = pathlist(u'Spiral Graphics',u'Genetica Viewer 3',u'Genetica Viewer 3.exe')
-    tooldirs['LogitechKeyboard'] = pathlist(u'Logitech',u'GamePanel Software',u'G-series Software',u'LGDCore.exe')
-    tooldirs['AutoCad'] = pathlist(u'Autodesk Architectural Desktop 3',u'acad.exe')
-    tooldirs['Genetica'] = pathlist(u'Spiral Graphics',u'Genetica 3.5',u'Genetica.exe')
-    tooldirs['IrfanView'] = pathlist(u'IrfanView',u'i_view32.exe')
-    tooldirs['XnView'] = pathlist(u'XnView',u'xnview.exe')
-    tooldirs['FastStone'] = pathlist(u'FastStone Image Viewer',u'FSViewer.exe')
-    tooldirs['Steam'] = pathlist(u'Steam',u'steam.exe')
-    tooldirs['EVGAPrecision'] = pathlist(u'EVGA Precision',u'EVGAPrecision.exe')
-    tooldirs['IcoFX'] = pathlist(u'IcoFX 1.6',u'IcoFX.exe')
-    tooldirs['AniFX'] = pathlist(u'AniFX 1.0',u'AniFX.exe')
-    tooldirs['WinMerge'] = pathlist(u'WinMerge',u'WinMergeU.exe')
-    tooldirs['FreeMind'] = pathlist(u'FreeMind',u'Freemind.exe')
-    tooldirs['MediaMonkey'] = pathlist(u'MediaMonkey',u'MediaMonkey.exe')
-    tooldirs['Inkscape'] = pathlist(u'Inkscape',u'inkscape.exe')
-    tooldirs['FileZilla'] = pathlist(u'FileZilla FTP Client',u'filezilla.exe')
-    tooldirs['RADVideo'] = pathlist(u'RADVideo',u'radvideo.exe')
-    tooldirs['EggTranslator'] = pathlist(u'Egg Translator',u'EggTranslator.exe')
-    tooldirs['Sculptris'] = pathlist(u'sculptris',u'Sculptris.exe')
-    tooldirs['Mudbox'] = pathlist(u'Autodesk',u'Mudbox2011',u'mudbox.exe')
-    tooldirs['Tabula'] = dirs['app'].join(u'Modding Tools', u'Tabula', u'Tabula.exe')
-    tooldirs['MyPaint'] = pathlist(u'MyPaint',u'mypaint.exe')
-    tooldirs['Pixia'] = pathlist(u'Pixia',u'pixia.exe')
-    tooldirs['DeepPaint'] = pathlist(u'Right Hemisphere',u'Deep Paint',u'DeepPaint.exe')
-    tooldirs['CrazyBump'] = pathlist(u'Crazybump',u'CrazyBump.exe')
-    tooldirs['xNormal'] = pathlist(u'Santiago Orgaz',u'xNormal',u'3.17.3',u'x86',u'xNormal.exe')
-    tooldirs['SoftimageModTool'] = GPath(u'C:\\Softimage').join(u'Softimage_Mod_Tool_7.5',u'Application',u'bin',u'XSI.bat')
-    tooldirs['SpeedTree'] = undefinedPath
-    tooldirs['Treed'] = pathlist(u'gile[s]',u'plugins',u'tree[d]',u'tree[d].exe')
-    tooldirs['WinSnap'] = pathlist(u'WinSnap',u'WinSnap.exe')
-    tooldirs['PhotoSEAM'] = pathlist(u'PhotoSEAM',u'PhotoSEAM.exe')
-    tooldirs['TextureMaker'] = pathlist(u'Texture Maker',u'texturemaker.exe')
-    tooldirs['MaPZone'] = pathlist(u'Allegorithmic',u'MaPZone 2.6',u'MaPZone2.exe')
-    tooldirs['NVIDIAMelody'] = pathlist(u'NVIDIA Corporation',u'Melody',u'Melody.exe')
-    tooldirs['WTV'] = pathlist(u'WindowsTextureViewer',u'WTV.exe')
-    tooldirs['Switch'] = pathlist(u'NCH Swift Sound',u'Switch',u'switch.exe')
-    tooldirs['Freeplane'] = pathlist(u'Freeplane',u'freeplane.exe')
+    tooldirs[u'Tes4FilesPath'] = dirs[u'app'].join(u'Tools', u'TES4Files.exe')
+    tooldirs[u'Tes4EditPath'] = dirs[u'app'].join(u'TES4Edit.exe')
+    tooldirs[u'Tes5EditPath'] = dirs[u'app'].join(u'TES5Edit.exe')
+    tooldirs[u'EnderalEditPath'] = dirs[u'app'].join(u'EnderalEdit.exe')
+    tooldirs[u'SSEEditPath'] = dirs[u'app'].join(u'SSEEdit.exe')
+    tooldirs[u'Fo4EditPath'] = dirs[u'app'].join(u'FO4Edit.exe')
+    tooldirs[u'Fo3EditPath'] = dirs[u'app'].join(u'FO3Edit.exe')
+    tooldirs[u'FnvEditPath'] = dirs[u'app'].join(u'FNVEdit.exe')
+    tooldirs[u'Tes4LodGenPath'] = dirs[u'app'].join(u'TES4LodGen.exe')
+    tooldirs[u'Tes4GeckoPath'] = dirs[u'app'].join(u'Tes4Gecko.jar')
+    tooldirs[u'Tes5GeckoPath'] = pathlist(u'Dark Creations',u'TESVGecko',u'TESVGecko.exe')
+    tooldirs[u'OblivionBookCreatorPath'] = dirs[u'mods'].join(u'OblivionBookCreator.jar')
+    tooldirs[u'NifskopePath'] = pathlist(u'NifTools',u'NifSkope',u'Nifskope.exe')
+    tooldirs[u'BlenderPath'] = pathlist(u'Blender Foundation',u'Blender',u'blender.exe')
+    tooldirs[u'GmaxPath'] = GPath(u'C:\\GMAX').join(u'gmax.exe')
+    tooldirs[u'MaxPath'] = pathlist(u'Autodesk',u'3ds Max 2010',u'3dsmax.exe')
+    tooldirs[u'MayaPath'] = undefinedPath
+    tooldirs[u'PhotoshopPath'] = pathlist(u'Adobe',u'Adobe Photoshop CS3',u'Photoshop.exe')
+    tooldirs[u'GIMP'] = pathlist(u'GIMP-2.0',u'bin',u'gimp-2.6.exe')
+    tooldirs[u'ISOBL'] = dirs[u'app'].join(u'ISOBL.exe')
+    tooldirs[u'ISRMG'] = dirs[u'app'].join(u'Insanitys ReadMe Generator.exe')
+    tooldirs[u'ISRNG'] = dirs[u'app'].join(u'Random Name Generator.exe')
+    tooldirs[u'ISRNPCG'] = dirs[u'app'].join(u'Random NPC.exe')
+    tooldirs[u'NPP'] = pathlist(u'Notepad++',u'notepad++.exe')
+    tooldirs[u'Fraps'] = GPath(u'C:\\Fraps').join(u'Fraps.exe')
+    tooldirs[u'Audacity'] = pathlist(u'Audacity',u'Audacity.exe')
+    tooldirs[u'Artweaver'] = pathlist(u'Artweaver 1.0',u'Artweaver.exe')
+    tooldirs[u'DDSConverter'] = pathlist(u'DDS Converter 2',u'DDS Converter 2.exe')
+    tooldirs[u'PaintNET'] = pathlist(u'Paint.NET',u'PaintDotNet.exe')
+    tooldirs[u'Milkshape3D'] = pathlist(u'MilkShape 3D 1.8.4',u'ms3d.exe')
+    tooldirs[u'Wings3D'] = pathlist(u'wings3d_1.2',u'Wings3D.exe')
+    tooldirs[u'BSACMD'] = pathlist(u'BSACommander',u'bsacmd.exe')
+    tooldirs[u'MAP'] = dirs[u'app'].join(u'Modding Tools', u'Interactive Map of Cyrodiil and Shivering Isles 3.52', u'Mapa v 3.52.exe')
+    tooldirs[u'OBMLG'] = dirs[u'app'].join(u'Modding Tools', u'Oblivion Mod List Generator', u'Oblivion Mod List Generator.exe')
+    tooldirs[u'OBFEL'] = pathlist(u'Oblivion Face Exchange Lite',u'OblivionFaceExchangeLite.exe')
+    tooldirs[u'ArtOfIllusion'] = pathlist(u'ArtOfIllusion',u'Art of Illusion.exe')
+    tooldirs[u'ABCAmberAudioConverter'] = pathlist(u'ABC Amber Audio Converter',u'abcaudio.exe')
+    tooldirs[u'Krita'] = pathlist(u'Krita (x86)',u'bin',u'krita.exe')
+    tooldirs[u'PixelStudio'] = pathlist(u'Pixel',u'Pixel.exe')
+    tooldirs[u'TwistedBrush'] = pathlist(u'Pixarra',u'TwistedBrush Open Studio',u'tbrush_open_studio.exe')
+    tooldirs[u'PhotoScape'] = pathlist(u'PhotoScape',u'PhotoScape.exe')
+    tooldirs[u'Photobie'] = pathlist(u'Photobie',u'Photobie.exe')
+    tooldirs[u'PhotoFiltre'] = pathlist(u'PhotoFiltre',u'PhotoFiltre.exe')
+    tooldirs[u'PaintShopPhotoPro'] = pathlist(u'Corel',u'Corel PaintShop Photo Pro',u'X3',u'PSPClassic',u'Corel Paint Shop Pro Photo.exe')
+    tooldirs[u'Dogwaffle'] = pathlist(u'project dogwaffle',u'dogwaffle.exe')
+    tooldirs[u'GeneticaViewer'] = pathlist(u'Spiral Graphics',u'Genetica Viewer 3',u'Genetica Viewer 3.exe')
+    tooldirs[u'LogitechKeyboard'] = pathlist(u'Logitech',u'GamePanel Software',u'G-series Software',u'LGDCore.exe')
+    tooldirs[u'AutoCad'] = pathlist(u'Autodesk Architectural Desktop 3',u'acad.exe')
+    tooldirs[u'Genetica'] = pathlist(u'Spiral Graphics',u'Genetica 3.5',u'Genetica.exe')
+    tooldirs[u'IrfanView'] = pathlist(u'IrfanView',u'i_view32.exe')
+    tooldirs[u'XnView'] = pathlist(u'XnView',u'xnview.exe')
+    tooldirs[u'FastStone'] = pathlist(u'FastStone Image Viewer',u'FSViewer.exe')
+    tooldirs[u'Steam'] = pathlist(u'Steam',u'steam.exe')
+    tooldirs[u'EVGAPrecision'] = pathlist(u'EVGA Precision',u'EVGAPrecision.exe')
+    tooldirs[u'IcoFX'] = pathlist(u'IcoFX 1.6',u'IcoFX.exe')
+    tooldirs[u'AniFX'] = pathlist(u'AniFX 1.0',u'AniFX.exe')
+    tooldirs[u'WinMerge'] = pathlist(u'WinMerge',u'WinMergeU.exe')
+    tooldirs[u'FreeMind'] = pathlist(u'FreeMind',u'Freemind.exe')
+    tooldirs[u'MediaMonkey'] = pathlist(u'MediaMonkey',u'MediaMonkey.exe')
+    tooldirs[u'Inkscape'] = pathlist(u'Inkscape',u'inkscape.exe')
+    tooldirs[u'FileZilla'] = pathlist(u'FileZilla FTP Client',u'filezilla.exe')
+    tooldirs[u'RADVideo'] = pathlist(u'RADVideo',u'radvideo.exe')
+    tooldirs[u'EggTranslator'] = pathlist(u'Egg Translator',u'EggTranslator.exe')
+    tooldirs[u'Sculptris'] = pathlist(u'sculptris',u'Sculptris.exe')
+    tooldirs[u'Mudbox'] = pathlist(u'Autodesk',u'Mudbox2011',u'mudbox.exe')
+    tooldirs[u'Tabula'] = dirs[u'app'].join(u'Modding Tools', u'Tabula', u'Tabula.exe')
+    tooldirs[u'MyPaint'] = pathlist(u'MyPaint',u'mypaint.exe')
+    tooldirs[u'Pixia'] = pathlist(u'Pixia',u'pixia.exe')
+    tooldirs[u'DeepPaint'] = pathlist(u'Right Hemisphere',u'Deep Paint',u'DeepPaint.exe')
+    tooldirs[u'CrazyBump'] = pathlist(u'Crazybump',u'CrazyBump.exe')
+    tooldirs[u'xNormal'] = pathlist(u'Santiago Orgaz',u'xNormal',u'3.17.3',u'x86',u'xNormal.exe')
+    tooldirs[u'SoftimageModTool'] = GPath(u'C:\\Softimage').join(u'Softimage_Mod_Tool_7.5',u'Application',u'bin',u'XSI.bat')
+    tooldirs[u'SpeedTree'] = undefinedPath
+    tooldirs[u'Treed'] = pathlist(u'gile[s]',u'plugins',u'tree[d]',u'tree[d].exe')
+    tooldirs[u'WinSnap'] = pathlist(u'WinSnap',u'WinSnap.exe')
+    tooldirs[u'PhotoSEAM'] = pathlist(u'PhotoSEAM',u'PhotoSEAM.exe')
+    tooldirs[u'TextureMaker'] = pathlist(u'Texture Maker',u'texturemaker.exe')
+    tooldirs[u'MaPZone'] = pathlist(u'Allegorithmic',u'MaPZone 2.6',u'MaPZone2.exe')
+    tooldirs[u'NVIDIAMelody'] = pathlist(u'NVIDIA Corporation',u'Melody',u'Melody.exe')
+    tooldirs[u'WTV'] = pathlist(u'WindowsTextureViewer',u'WTV.exe')
+    tooldirs[u'Switch'] = pathlist(u'NCH Swift Sound',u'Switch',u'switch.exe')
+    tooldirs[u'Freeplane'] = pathlist(u'Freeplane',u'freeplane.exe')
 
 def initDefaultSettings():
     #other settings from the INI:
-    inisettings['EnableUnicode'] = False
-    inisettings['ScriptFileExt'] = u'.txt'
-    inisettings['KeepLog'] = 0
-    inisettings['LogFile'] = dirs['mopy'].join(u'bash.log')
-    inisettings['ResetBSATimestamps'] = True
-    inisettings['EnsurePatchExists'] = True
-    inisettings['OblivionTexturesBSAName'] = GPath(u'Oblivion - Textures - Compressed.bsa')
-    inisettings['ShowDevTools'] = False
-    inisettings['Tes4GeckoJavaArg'] = u'-Xmx1024m'
-    inisettings['OblivionBookCreatorJavaArg'] = u'-Xmx1024m'
-    inisettings['ShowTextureToolLaunchers'] = True
-    inisettings['ShowModelingToolLaunchers'] = True
-    inisettings['ShowAudioToolLaunchers'] = True
-    inisettings['7zExtraCompressionArguments'] = u''
-    inisettings['xEditCommandLineArguments'] = u''
-    inisettings['AutoItemCheck'] = True
-    inisettings['SkipHideConfirmation'] = False
-    inisettings['SkipResetTimeNotifications'] = False
-    inisettings['SoundSuccess'] = GPath(u'')
-    inisettings['SoundError'] = GPath(u'')
-    inisettings['EnableSplashScreen'] = True
-    inisettings['PromptActivateBashedPatch'] = True
-    inisettings['WarnTooManyFiles'] = True
-    inisettings['SkippedBashInstallersDirs'] = u''
+    inisettings[u'EnableUnicode'] = False
+    inisettings[u'ScriptFileExt'] = u'.txt'
+    inisettings[u'KeepLog'] = 0
+    inisettings[u'LogFile'] = dirs[u'mopy'].join(u'bash.log')
+    inisettings[u'ResetBSATimestamps'] = True
+    inisettings[u'EnsurePatchExists'] = True
+    inisettings[u'OblivionTexturesBSAName'] = GPath(u'Oblivion - Textures - Compressed.bsa')
+    inisettings[u'ShowDevTools'] = False
+    inisettings[u'Tes4GeckoJavaArg'] = u'-Xmx1024m'
+    inisettings[u'OblivionBookCreatorJavaArg'] = u'-Xmx1024m'
+    inisettings[u'ShowTextureToolLaunchers'] = True
+    inisettings[u'ShowModelingToolLaunchers'] = True
+    inisettings[u'ShowAudioToolLaunchers'] = True
+    inisettings[u'7zExtraCompressionArguments'] = u''
+    inisettings[u'xEditCommandLineArguments'] = u''
+    inisettings[u'AutoItemCheck'] = True
+    inisettings[u'SkipHideConfirmation'] = False
+    inisettings[u'SkipResetTimeNotifications'] = False
+    inisettings[u'SoundSuccess'] = GPath(u'')
+    inisettings[u'SoundError'] = GPath(u'')
+    inisettings[u'EnableSplashScreen'] = True
+    inisettings[u'PromptActivateBashedPatch'] = True
+    inisettings[u'WarnTooManyFiles'] = True
+    inisettings[u'SkippedBashInstallersDirs'] = u''
 
 def initOptions(bashIni):
     initDefaultTools()
@@ -3210,7 +3210,7 @@ def initOptions(bashIni):
                     if value == u'.': continue
                     value = GPath(value)
                     if not value.isabs():
-                        value = dirs['app'].join(value)
+                        value = dirs[u'app'].join(value)
                 elif settingType is bool:
                     if value == u'.': continue
                     value = bashIni.getboolean(section,key)
@@ -3229,15 +3229,15 @@ def initOptions(bashIni):
                 elif compValue != compDefaultValue:
                     usedSettings[usedKey] = value
 
-    tooldirs['Tes4ViewPath'] = tooldirs['Tes4EditPath'].head.join(u'TES4View.exe')
-    tooldirs['Tes4TransPath'] = tooldirs['Tes4EditPath'].head.join(u'TES4Trans.exe')
+    tooldirs[u'Tes4ViewPath'] = tooldirs[u'Tes4EditPath'].head.join(u'TES4View.exe')
+    tooldirs[u'Tes4TransPath'] = tooldirs[u'Tes4EditPath'].head.join(u'TES4Trans.exe')
 
 def initLogFile():
-    if inisettings['KeepLog'] == 0: return
-    with inisettings['LogFile'].open('a', encoding='utf-8-sig') as log:
+    if inisettings[u'KeepLog'] == 0: return
+    with inisettings[u'LogFile'].open('a', encoding='utf-8-sig') as log:
         log.write(_(u'%s Wrye Bash ini file read, Keep Log level: %d, '
                     u'initialized.') % (
-                  bolt.timestamp(), inisettings['KeepLog']) + u'\r\n')
+                  bolt.timestamp(), inisettings[u'KeepLog']) + u'\r\n')
 
 def initBosh(bashIni, game_ini_path):
     # Setup LOOT API, needs to be done after the dirs are initialized
@@ -3249,19 +3249,19 @@ def initBosh(bashIni, game_ini_path):
     global oblivionIni, gameInis
     oblivionIni = OblivionIni(game_ini_path, 'cp1252')
     gameInis = [oblivionIni]
-    gameInis.extend(OblivionIni(dirs['saveBase'].join(x), 'cp1252') for x in
+    gameInis.extend(OblivionIni(dirs[u'saveBase'].join(x), 'cp1252') for x in
                     bush.game.iniFiles[1:])
     load_order.initialize_load_order_files()
     initOptions(bashIni)
     try:
         initLogFile()
     except IOError:
-        deprint('Error creating log file', traceback=True)
+        deprint(u'Error creating log file', traceback=True)
     from .bain import Installer
     Installer.init_bain_dirs()
     if os.name == u'nt': # don't add local directory to binaries on linux
-        archives.exe7z = dirs['compiled'].join(archives.exe7z).s
-        archives.pngcrush = dirs['compiled'].join(archives.pngcrush).s
+        archives.exe7z = dirs[u'compiled'].join(archives.exe7z).s
+        archives.pngcrush = dirs[u'compiled'].join(archives.pngcrush).s
 
 def initSettings(readOnly=False, _dat=u'BashSettings.dat',
                  _bak=u'BashSettings.dat.bak'):
@@ -3270,10 +3270,10 @@ def initSettings(readOnly=False, _dat=u'BashSettings.dat',
     def _load(dat_file=_dat):
     # bolt.PickleDict.load() handles EOFError, ValueError falling back to bak
         return bolt.Settings( # calls PickleDict.load() and copies loaded data
-            bolt.PickleDict(dirs['saveBase'].join(dat_file), readOnly))
+            bolt.PickleDict(dirs[u'saveBase'].join(dat_file), readOnly))
 
-    _dat = dirs['saveBase'].join(_dat)
-    _bak = dirs['saveBase'].join(_bak)
+    _dat = dirs[u'saveBase'].join(_dat)
+    _bak = dirs[u'saveBase'].join(_bak)
     def _loadBakOrEmpty(delBackup=False, ignoreBackup=False):
         _dat.remove()
         if delBackup: _bak.remove()
@@ -3290,30 +3290,30 @@ def initSettings(readOnly=False, _dat=u'BashSettings.dat',
     except pickle.UnpicklingError as err:
         msg = _(
             u"Error reading the Bash Settings database (the error is: '%s'). "
-            u"This is probably not recoverable with the current file. Do you "
-            u"want to try the backup BashSettings.dat? (It will have all your "
-            u"UI choices of the time before last that you used Wrye Bash.")
-        usebck = balt.askYes(None, msg % repr(err), _(u"Settings Load Error"))
+            u'This is probably not recoverable with the current file. Do you '
+            u'want to try the backup BashSettings.dat? (It will have all your '
+            u'UI choices of the time before last that you used Wrye Bash.')
+        usebck = balt.askYes(None, msg % repr(err), _(u'Settings Load Error'))
         if usebck:
             try:
                 bass.settings = _loadBakOrEmpty()
             except pickle.UnpicklingError as err:
                 msg = _(
-                    u"Error reading the BackupBash Settings database (the "
+                    u'Error reading the BackupBash Settings database (the '
                     u"error is: '%s'). This is probably not recoverable with "
-                    u"the current file. Do you want to delete the corrupted "
-                    u"settings and load Wrye Bash without your saved UI "
+                    u'the current file. Do you want to delete the corrupted '
+                    u'settings and load Wrye Bash without your saved UI '
                     u"settings?. (Otherwise Wrye Bash won't start up)")
                 delete = balt.askYes(None, msg % repr(err),
-                                     _(u"Settings Load Error"))
+                                     _(u'Settings Load Error'))
                 if delete: bass.settings = _loadBakOrEmpty(delBackup=True)
                 else:raise
         else:
             msg = _(
-                u"Do you want to delete the corrupted settings and load Wrye "
-                u"Bash without your saved UI settings?. (Otherwise Wrye Bash "
+                u'Do you want to delete the corrupted settings and load Wrye '
+                u'Bash without your saved UI settings?. (Otherwise Wrye Bash '
                 u"won't start up)")
-            delete = balt.askYes(None, msg, _(u"Settings Load Error"))
+            delete = balt.askYes(None, msg, _(u'Settings Load Error'))
             if delete: # ignore bak but don't delete
                 bass.settings = _loadBakOrEmpty(ignoreBackup=True)
             else: raise

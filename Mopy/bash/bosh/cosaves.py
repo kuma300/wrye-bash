@@ -37,7 +37,7 @@ from ..bolt import sio, decode, encode, struct_pack, struct_unpack, \
     unpack_str16, unpack_float, unpack_double, unpack_int_signed, unpack_str32
 from ..exception import AbstractError, FileError, BoltError
 
-__author__ = 'Infernio'
+__author__ = u'Infernio'
 
 #------------------------------------------------------------------------------
 # Utilities

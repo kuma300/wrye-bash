@@ -46,8 +46,8 @@ class ConfigHelpers(object):
         deprint(u'Using LOOT API version:', loot_api.Version.string())
         try:
             gameType = self.getLootApiGameType(bush.game.fsName)
-            loot_api.initialise_locale('')
-            loot_game = loot_api.create_game_handle(gameType, bass.dirs['app'].s)
+            loot_api.initialise_locale(u'')
+            loot_game = loot_api.create_game_handle(gameType, bass.dirs[u'app'].s)
             lootDb = loot_game.get_database()
         except (OSError, AttributeError):
             deprint(u'The LOOT API failed to initialize', traceback=True)
@@ -59,13 +59,13 @@ class ConfigHelpers(object):
             deprint(u'Failed to create a LOOT API database.')
             lootDb = None
         # LOOT stores the masterlist/userlist in a %LOCALAPPDATA% subdirectory.
-        self.lootMasterPath = bass.dirs['userApp'].join(
+        self.lootMasterPath = bass.dirs[u'userApp'].join(
             os.pardir, u'LOOT', bush.game.fsName, u'masterlist.yaml')
-        self.lootUserPath = bass.dirs['userApp'].join(
+        self.lootUserPath = bass.dirs[u'userApp'].join(
             os.pardir, u'LOOT', bush.game.fsName, u'userlist.yaml')
         self.lootMasterTime = None
         self.lootUserTime = None
-        self.tagList = bass.dirs['defaultPatches'].join(u'taglist.yaml')
+        self.tagList = bass.dirs[u'defaultPatches'].join(u'taglist.yaml')
         self.tagListModTime = None
         #--Bash Tags
         self.tagCache = {}
@@ -128,22 +128,22 @@ class ConfigHelpers(object):
 
     @staticmethod
     def getLootApiGameType(fsName):
-        if fsName == 'Oblivion':
+        if fsName == u'Oblivion':
             return loot_api.GameType.tes4
         # TODO See if LOOT adds a new GameType for Enderal
-        elif fsName in ('Enderal', 'Skyrim'):
+        elif fsName in (u'Enderal', u'Skyrim'):
             return loot_api.GameType.tes5
-        elif fsName == 'Skyrim Special Edition':
+        elif fsName == u'Skyrim Special Edition':
             return loot_api.GameType.tes5se
-        elif fsName == 'Skyrim VR':
+        elif fsName == u'Skyrim VR':
             return loot_api.GameType.tes5vr
-        elif fsName == 'Fallout3':
+        elif fsName == u'Fallout3':
             return loot_api.GameType.fo3
-        elif fsName == 'FalloutNV':
+        elif fsName == u'FalloutNV':
             return loot_api.GameType.fonv
-        elif fsName == 'Fallout4':
+        elif fsName == u'Fallout4':
             return loot_api.GameType.fo4
-        elif fsName == 'Fallout4VR':
+        elif fsName == u'Fallout4VR':
             return loot_api.GameType.fo4vr
         else:
             return None
@@ -153,9 +153,9 @@ class ConfigHelpers(object):
         if lootDb is None:
             return False, u''
         if lootDb.get_plugin_cleanliness(modName.s, True) == loot_api.PluginCleanliness.dirty:
-            return True, 'Contains dirty edits, needs cleaning.'
+            return True, u'Contains dirty edits, needs cleaning.'
         else:
-            return False, ''
+            return False, u''
 
     # BashTags dir ------------------------------------------------------------
     def get_tags_from_dir(self, plugin_name):
@@ -166,7 +166,7 @@ class ConfigHelpers(object):
         :param plugin_name: The name of the plugin to check the tag file for.
         :return: A tuple containing two sets of added and deleted tags."""
         # Check if the file even exists first
-        tag_files_dir = bass.dirs['tag_files']
+        tag_files_dir = bass.dirs[u'tag_files']
         tag_file = tag_files_dir.join(plugin_name.body + u'.txt')
         if not tag_file.isfile(): return set(), set()
         removed, added = set(), set()
@@ -196,7 +196,7 @@ class ConfigHelpers(object):
             plugin in question.
         :param plugin_base_tags: A set of all Bash Tags applied to the plugin
             by its description and the LOOT masterlist / userlist."""
-        tag_files_dir = bass.dirs['tag_files']
+        tag_files_dir = bass.dirs[u'tag_files']
         tag_files_dir.makedirs()
         tag_file = tag_files_dir.join(plugin_name.body + u'.txt')
         # Calculate the diff and ignore the minus when sorting the result
@@ -300,7 +300,7 @@ class ConfigHelpers(object):
             if removeEslFlag:
                 log.setHeader(u'=== ' + _(u'Potentially Incorrect ESL Flag'))
                 log(_(u'Following mods have an ESL flag, but may not qualify. '
-                      u'Run \'Check ESL Qualifications\' on them and/or check '
+                      u"Run 'Check ESL Qualifications' on them and/or check "
                       u'them with xEdit to be sure.'))
                 for mod in sorted(removeEslFlag):
                     log(u'* __' + mod.s + u'__')
@@ -332,7 +332,7 @@ class ConfigHelpers(object):
                       u' deleted records (UDR), or other issues that should be'
                       u' fixed with TES4Edit.  Visit the %(cleaning_wiki_url)s'
                       u' for more information.') % {
-                        'cleaning_wiki_url': self._cleaning_wiki_url})
+                        u'cleaning_wiki_url': self._cleaning_wiki_url})
                 for mod in sorted(shouldClean.keys()):
                     log(u'* __'+mod.s+u':__  %s' % shouldClean[mod])
             if shouldCleanMaybe:
@@ -352,9 +352,9 @@ class ConfigHelpers(object):
                 log.setHeader(
                     u'=== ' + _(u'Mods with non standard TES4 versions'))
                 log(_(u"Following mods have a TES4 version that isn't "
-                      u"recognized as (one of) the standard version(s) "
-                      u"(%s).  It is untested what effect this can have on "
-                      u"%s.") % (ver_list, bush.game.displayName))
+                      u'recognized as (one of) the standard version(s) '
+                      u'(%s).  It is untested what effect this can have on '
+                      u'%s.') % (ver_list, bush.game.displayName))
                 for mod in sorted(invalidVersion):
                     log(u'* __'+mod[0].s+u':__  '+mod[1])
             #--Missing/Delinquent Masters
@@ -461,7 +461,7 @@ class ModCleaner(object):
     def scan_Many(modInfos,what=DEFAULT,progress=bolt.Progress(),detailed=False):
         """Scan multiple mods for dirty edits"""
         if len(modInfos) == 0: return []
-        if not bass.settings['bash.CBashEnabled']:
+        if not bass.settings[u'bash.CBashEnabled']:
             return ModCleaner._scan_Python(modInfos,what,progress,detailed)
         else:
             return ModCleaner._scan_CBash(modInfos,what,progress)
@@ -480,7 +480,7 @@ class ModCleaner(object):
         if isinstance(cleaners[0],ModInfos):
             reScan = True
             cleaners = [ModCleaner(x) for x in cleaners]
-        if bass.settings['bash.CBashEnabled']:
+        if bass.settings[u'bash.CBashEnabled']:
             #--CBash
             #--Scan?
             if reScan:
@@ -526,7 +526,7 @@ class ModCleaner(object):
             #--Load
             progress(i,_(u'Loading...'))
             groupModInfos = modInfos[i*ModsPerGroup:(i+1)*ModsPerGroup]
-            with ObCollection(ModsPath=bass.dirs['mods'].s) as Current:
+            with ObCollection(ModsPath=bass.dirs[u'mods'].s) as Current:
                 for mod in groupModInfos:
                     if len(mod.masterNames) == 0: continue
                     path = mod.getPath()
@@ -612,9 +612,9 @@ class ModCleaner(object):
                             header = insUnpackRecHeader()
                             rtype,hsize = header.recType,header.size
                             #(type,size,flags,fid,uint2) = ins.unpackRecHeader()
-                            if rtype == 'GRUP':
+                            if rtype == b'GRUP':
                                 groupType = header.groupType
-                                if groupType == 0 and header.label not in {'CELL','WRLD'}:
+                                if groupType == 0 and header.label not in {b'CELL',b'WRLD'}:
                                     # Skip Tops except for WRLD and CELL groups
                                     insRead(hsize-headerSize)
                                 elif detailed:
@@ -635,9 +635,9 @@ class ModCleaner(object):
                                         pass
                             else:
                                 if doUDR and header.flags1 & 0x20 and rtype in (
-                                    'ACRE',               #--Oblivion only
-                                    'ACHR','REFR',        #--Both
-                                    'NAVM','PHZD','PGRE', #--Skyrim only
+                                    b'ACRE',               #--Oblivion only
+                                    b'ACHR',b'REFR',        #--Both
+                                    b'NAVM',b'PHZD',b'PGRE', #--Skyrim only
                                     ):
                                     if not detailed:
                                         udr[header.fid] = ModCleaner.UdrInfo(header.fid)
@@ -649,14 +649,14 @@ class ModCleaner(object):
                                         if parentParentFid:
                                             parents_to_scan.setdefault(parentParentFid,set())
                                             parents_to_scan[parentParentFid].add(fid)
-                                if doFog and rtype == 'CELL':
+                                if doFog and rtype == b'CELL':
                                     nextRecord = insTell() + hsize
                                     while insTell() < nextRecord:
                                         (nextType,nextSize) = insUnpackSubHeader()
-                                        if nextType != 'XCLL':
+                                        if nextType != b'XCLL':
                                             insRead(nextSize)
                                         else:
-                                            color,near,far,rotXY,rotZ,fade,clip = insUnpack('=12s2f2l2f',nextSize,'CELL.XCLL')
+                                            color,near,far,rotXY,rotZ,fade,clip = insUnpack('=12s2f2l2f',nextSize,b'CELL.XCLL')
                                             if not (near or far or clip):
                                                 fog.add(header.fid)
                                 else:
@@ -669,8 +669,8 @@ class ModCleaner(object):
                                 subprogress(baseSize+insTell())
                                 header = insUnpackRecHeader()
                                 rtype,hsize = header.recType,header.size
-                                if rtype == 'GRUP':
-                                    if header.groupType == 0 and header.label not in {'CELL','WRLD'}:
+                                if rtype == b'GRUP':
+                                    if header.groupType == 0 and header.label not in {b'CELL',b'WRLD'}:
                                         insRead(hsize-headerSize)
                                 else:
                                     fid = header.fid
@@ -679,18 +679,18 @@ class ModCleaner(object):
                                         record.loadSubrecords()
                                         eid = u''
                                         for subrec in record.subrecords:
-                                            if subrec.subType == 'EDID':
+                                            if subrec.subType == b'EDID':
                                                 eid = bolt.decode(subrec.data)
-                                            elif subrec.subType == 'XCLC':
+                                            elif subrec.subType == b'XCLC':
                                                 pos = struct_unpack(
                                                     '=2i', subrec.data[:8])
                                         for udrFid in parents_to_scan[fid]:
-                                            if rtype == 'CELL':
+                                            if rtype == b'CELL':
                                                 udr[udrFid].parentEid = eid
                                                 if udr[udrFid].parentType == 1:
                                                     # Exterior Cell, calculate position
                                                     udr[udrFid].pos = pos
-                                            elif rtype == 'WRLD':
+                                            elif rtype == b'WRLD':
                                                 udr[udrFid].parentParentEid = eid
                                     else:
                                         insRead(hsize)
@@ -727,7 +727,7 @@ class ModCleaner(object):
             #--Load
             progress(i,_(u'Loading...'))
             groupCleaners = cleaners[i*ModsPerGroup:(i+1)*ModsPerGroup]
-            with ObCollection(ModsPath=bass.dirs['mods'].s) as Current:
+            with ObCollection(ModsPath=bass.dirs[u'mods'].s) as Current:
                 for cleaner in groupCleaners:
                     if len(cleaner.modInfo.masterNames) == 0: continue
                     path = cleaner.modInfo.getPath()
@@ -750,7 +750,7 @@ class ModCleaner(object):
                                 fid = udr.fid
                                 subprogress2.plus()
                                 record = modFile.LookupRecord(fid)
-                                if record and record._Type in ('ACRE','ACHR','REFR') and record.IsDeleted:
+                                if record and record._Type in (b'ACRE',b'ACHR',b'REFR') and record.IsDeleted:
                                     changed = True
                                     record.IsDeleted = False
                                     record.IsIgnored = True
@@ -758,7 +758,7 @@ class ModCleaner(object):
                             for fid in cleaner.fog:
                                 subprogress2.plus()
                                 record = modFile.LookupRecord(fid)
-                                if record and record._Type == 'CELL':
+                                if record and record._Type == b'CELL':
                                     if not (record.fogNear or record.fogFar or record.fogClip):
                                         record.fogNear = 0.0001
                                         changed = True
@@ -800,31 +800,31 @@ class ModCleaner(object):
                         header = ins.unpackRecHeader()
                         rec_type,rec_size = header.recType,header.size
                         #(rec_type,rec_size,flags,fid,uint2) = ins.unpackRecHeader()
-                        if rec_type == 'GRUP':
+                        if rec_type == b'GRUP':
                             if header.groupType != 0:
                                 pass
-                            elif header.label not in ('CELL','WRLD'):
+                            elif header.label not in (b'CELL',b'WRLD'):
                                 copy(rec_size-header.__class__.rec_header_size)
                         else:
                             if doUDR and header.flags1 & 0x20 and rec_type in {
-                                'ACRE',               #--Oblivion only
-                                'ACHR','REFR',        #--Both
-                                'NAVM','PGRE','PHZD', #--Skyrim only
+                                b'ACRE',               #--Oblivion only
+                                b'ACHR',b'REFR',        #--Both
+                                b'NAVM',b'PGRE',b'PHZD', #--Skyrim only
                                 }:
                                 header.flags1 = (header.flags1 & ~0x20) | 0x1000
                                 out.seek(-header.__class__.rec_header_size,1)
                                 out.write(header.pack())
                                 changed = True
-                            if doFog and rec_type == 'CELL':
+                            if doFog and rec_type == b'CELL':
                                 nextRecord = ins.tell() + rec_size
                                 while ins.tell() < nextRecord:
                                     subprogress(ins.tell())
                                     (nextType,nextSize) = ins.unpackSubHeader()
                                     copyPrev(6)
-                                    if nextType != 'XCLL':
+                                    if nextType != b'XCLL':
                                         copy(nextSize)
                                     else:
-                                        color,near,far,rotXY,rotZ,fade,clip = ins.unpack('=12s2f2l2f',rec_size,'CELL.XCLL')
+                                        color,near,far,rotXY,rotZ,fade,clip = ins.unpack('=12s2f2l2f',rec_size,b'CELL.XCLL')
                                         if not (near or far or clip):
                                             near = 0.0001
                                             changed = True
@@ -885,21 +885,21 @@ class NvidiaFogFixer(object):
                     type,size = header.recType,header.size
                     #(type,size,str0,fid,uint2) = ins.unpackRecHeader()
                     copyPrev(header.__class__.rec_header_size)
-                    if type == 'GRUP':
+                    if type == b'GRUP':
                         if header.groupType != 0: #--Ignore sub-groups
                             pass
-                        elif header.label not in ('CELL','WRLD'):
+                        elif header.label not in (b'CELL',b'WRLD'):
                             copy(size-header.__class__.rec_header_size)
                     #--Handle cells
-                    elif type == 'CELL':
+                    elif type == b'CELL':
                         nextRecord = ins.tell() + size
                         while ins.tell() < nextRecord:
                             (type,size) = ins.unpackSubHeader()
                             copyPrev(6)
-                            if type != 'XCLL':
+                            if type != b'XCLL':
                                 copy(size)
                             else:
-                                color,near,far,rotXY,rotZ,fade,clip = ins.unpack('=12s2f2l2f',size,'CELL.XCLL')
+                                color,near,far,rotXY,rotZ,fade,clip = ins.unpack('=12s2f2l2f',size,b'CELL.XCLL')
                                 if not (near or far or clip):
                                     near = 0.0001
                                     fixedCells.add(header.fid)
@@ -943,24 +943,24 @@ class ModDetails(object):
             while not ins.atEnd():
                 header = ins.unpackRecHeader()
                 recType, rec_siz = header.recType, header.size
-                if recType == 'GRUP':
+                if recType == b'GRUP':
                     # FIXME(ut): monkey patch for fallout QUST GRUP
                     if bush.game.fsName in (u'Fallout4', u'Fallout4VR') and \
                             header.groupType == 10:
                         ins.seek(rec_siz - header.__class__.rec_header_size, 1)
                         continue
                     label = header.label
-                    progress(1.0*ins.tell()/modInfo.size,_(u"Scanning: ")+label)
+                    progress(1.0*ins.tell()/modInfo.size,_(u'Scanning: ')+label)
                     records = group_records.setdefault(label,[])
-                    if label in ('CELL', 'WRLD', 'DIAL'): # skip these groups
+                    if label in (b'CELL', b'WRLD', b'DIAL'): # skip these groups
                         ins.seek(rec_siz - header.__class__.rec_header_size, 1)
-                elif recType != 'GRUP':
+                elif recType != b'GRUP':
                     eid = u''
                     nextRecord = ins.tell() + rec_siz
                     recs, endRecs = getRecordReader(header.flags1, rec_siz)
                     while recs.tell() < endRecs:
                         (recType, rec_siz) = recs.unpackSubHeader()
-                        if recType == 'EDID':
+                        if recType == b'EDID':
                             eid = recs.readString(rec_siz)
                             break
                         recs.seek(rec_siz, 1)

@@ -55,7 +55,7 @@ def _is_mergeable_no_load(modInfo, reasons):
                     dir_list += u'\n  - ' + blocking_dir
             reasons.append(_(u'Has plugin-specific directory - one of the '
                              u'following:' + dir_list) %
-                           ({'plugin_name': modInfo.name.s}))
+                           ({u'plugin_name': modInfo.name.s}))
     # Client must make sure NoMerge tag not in tags - if in tags
     # don't show up as mergeable.
     return False if reasons else True
@@ -176,7 +176,7 @@ def _modIsMergeableLoad(modInfo, minfos, reasons):
     allowMissingMasters = {u'Filter', u'IIM', u'InventOnly'}
     tags = modInfo.getBashTags()
     #--Load test
-    with ObCollection(ModsPath=bass.dirs['mods'].s) as Current:
+    with ObCollection(ModsPath=bass.dirs[u'mods'].s) as Current:
         #MinLoad, InLoadOrder, AddMasters, TrackNewTypes, SkipAllRecords
         modFile = Current.addMod(modInfo.getPath().stail, Flags=0x00002129)
         Current.load()
