@@ -44,7 +44,7 @@ class _Abstract_Patcher(object):
     editOrder = 10
     group = u'UNDEFINED'
     name = u'UNDEFINED'
-    text = u"UNDEFINED."
+    text = u'UNDEFINED.'
     tip = None
     iiMode = False
 
@@ -100,7 +100,7 @@ class CBash_Patcher(_Abstract_Patcher):
     """Abstract base class for patcher elements performing a CBash patch - must
     be just before Abstract_Patcher in MRO.""" ##: "performing" ? how ?
     # would it make any sense to make getTypes into classmethod ?
-    unloadedText = u""
+    unloadedText = u''
     allowUnloaded = True
     scanRequiresChecked = False # if True patcher needs a srcs attribute
     applyRequiresChecked = False # if True patcher needs a srcs attribute
@@ -162,10 +162,10 @@ class AListPatcher(_Abstract_Patcher):
         attribute otherwise an AttributeError will be raised."""
         log(self.__class__.srcsHeader)
         if not self.srcs:
-            log(u". ~~%s~~" % _(u'None'))
+            log(u'. ~~%s~~' % _(u'None'))
         else:
             for srcFile in self.srcs:
-                log(u"* " +srcFile.s)
+                log(u'* ' +srcFile.s)
 
     #--Patch Phase ------------------------------------------------------------
     def getConfigChecked(self):
@@ -184,8 +184,8 @@ class AAliasesPatcher(_Abstract_Patcher):
     scanOrder = 10
     editOrder = 10
     group = _(u'General')
-    name = _(u"Alias Mod Names")
-    text = _(u"Specify mod aliases for reading CSV source files.")
+    name = _(u'Alias Mod Names')
+    text = _(u'Specify mod aliases for reading CSV source files.')
     tip = None
 
     #--Patch Phase ------------------------------------------------------------
@@ -218,7 +218,7 @@ class AMultiTweakItem(object):
             self.choiceValues.append(choice_tuple[1:])
         #--Config
         self.isEnabled = False
-        self.defaultEnabled = kwargs.get('defaultEnabled', False)
+        self.defaultEnabled = kwargs.get(u'defaultEnabled', False)
         self.chosen = 0
         #--Log
         self.logHeader = u'=== '+ label
@@ -259,7 +259,7 @@ class AMultiTweakItem(object):
     def isNew(self):
         """returns whether this tweak is new (i.e. whether the value was not
         loaded from a saved config"""
-        return getattr(self, "_isNew", False)
+        return getattr(self, '_isNew', False)
 
     def getListLabel(self):
         """Returns label to be used in list"""
@@ -284,7 +284,7 @@ class APatchMerger(AListPatcher):
     editOrder = 10
     group = _(u'General')
     name = _(u'Merge Patches')
-    text = _(u"Merge patch mods into Bashed Patch.")
+    text = _(u'Merge patch mods into Bashed Patch.')
     autoKey = {u'Merge'}
 
     #--Patch Phase ------------------------------------------------------------
@@ -304,5 +304,5 @@ class AUpdateReferences(AListPatcher):
     editOrder = 15
     group = _(u'General')
     name = _(u'Replace Form IDs')
-    text = _(u"Imports Form Id replacers from csv files into the Bashed Patch.")
+    text = _(u'Imports Form Id replacers from csv files into the Bashed Patch.')
     autoKey = {u'Formids'}

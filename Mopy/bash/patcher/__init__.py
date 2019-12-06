@@ -28,7 +28,7 @@ PatcherInfo = namedtuple('PatcherInfo', ['clazz', 'twinPatcher'])
 
 def configIsCBash(patchConfigs): ##: belongs to basher but used also in bosh
     for key in patchConfigs:
-        if 'CBash' in key:
+        if u'CBash' in key:
             return True
     return False
 
@@ -43,17 +43,17 @@ def exportConfig(patch_name, config, isCBash, win, outDir):
     if outPath:
         table = bolt.Table(bolt.PickleDict(outPath))
         table.setItem(bolt.GPath(u'Saved Bashed Patch Configuration (%s)' % (
-            [u'Python', u'CBash'][isCBash])), 'bash.patch.configs', config)
+            [u'Python', u'CBash'][isCBash])), u'bash.patch.configs', config)
         table.save()
 
 def getPatchesPath(fileName):
     """Choose the correct Bash Patches path for the file."""
-    if bass.dirs['patches'].join(fileName).isfile():
-        return bass.dirs['patches'].join(fileName)
+    if bass.dirs[u'patches'].join(fileName).isfile():
+        return bass.dirs[u'patches'].join(fileName)
     else:
-        return bass.dirs['defaultPatches'].join(fileName)
+        return bass.dirs[u'defaultPatches'].join(fileName)
 
 def getPatchesList():
     """Get a basic list of potential Bash Patches."""
-    return set(bass.dirs['patches'].list()) | set(
-        bass.dirs['defaultPatches'].list())
+    return set(bass.dirs[u'patches'].list()) | set(
+        bass.dirs[u'defaultPatches'].list())
