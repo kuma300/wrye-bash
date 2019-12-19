@@ -1026,6 +1026,7 @@ class ActorImporter(_AActorImporter):
     patcher_type = importers.ActorImporter
 class CBash_ActorImporter(_AActorImporter):
     patcher_type = importers.CBash_ActorImporter
+    patcher_type.autoKey = _AActorImporter.autoKey ##: autoKey hack
 
 # -----------------------------------------------------------------------------
 class _ADeathItemPatcher(_ImporterPatcherPanel):
@@ -1049,7 +1050,6 @@ class _ACellImporter(_ImporterPatcherPanel):
 class CellImporter(_ACellImporter):
     patcher_type = importers.CellImporter
     autoKey = bush.game.cellAutoKeys
-    patcher_type.autoKey = autoKey ##: autoKey hack - needed in Pbash??
 class CBash_CellImporter(_ACellImporter):
     autoKey = {u'C.Climate', u'C.Light', u'C.Water', u'C.Owner', u'C.Name',
                u'C.RecordFlags', u'C.Music'}  #,u'C.Maps'

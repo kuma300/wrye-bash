@@ -677,7 +677,6 @@ class CBash_GraphicsPatcher(_RecTypeModLogging):
 class ActorImporter(_SimpleImporter):
     # note peculiar mapping of record type to dictionaries[tag, attributes]
     rec_attrs = bush.game.actor_importer_attrs
-    autoKey = bush.game.actor_importer_auto_key
 
     def initData(self,progress):
         """Get actors from source files."""
@@ -777,7 +776,6 @@ class ActorImporter(_SimpleImporter):
             type_count[top_mod_rec] += 1
 
 class CBash_ActorImporter(_RecTypeModLogging):
-    autoKey = bush.game.actor_importer_auto_key
     _read_write_records = ('CREA', 'NPC_')
     class_tag_attrs = {
       'NPC_': {
