@@ -131,12 +131,13 @@ class CBash_MultiTweaker(AMultiTweaker,CBash_Patcher):
         for tweak in self.enabled_tweaks:
             tweak.patchFile = p_file
 
-    def initData(self,group_patchers,progress):
-        """Compiles material, i.e. reads source text, esp's, etc. as necessary."""
+    def initData(self, progress):
+        """Compiles material, i.e. reads source text, esp's, etc. as
+        necessary."""
         if not self.isActive: return
         for tweak in self.enabled_tweaks: ##: FIXME allowUnloaded (use or not base class method)
             for type_ in tweak.getTypes():
-                group_patchers.setdefault(type_,[]).append(tweak)
+                self.patchFile.group_patchers[type_].append(tweak)
 
     def buildPatchLog(self,log):
         """Will write to log."""
@@ -361,7 +362,7 @@ class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
         self.new_eid = {} #--Maps new fid to new editor id
         self.mod_count_old_new = {}
 
-    def initData(self,group_patchers,progress):
+    def initData(self, progress):
         """Compiles material, i.e. reads source text, esp's, etc. as necessary."""
         if not self.isActive: return
         fidReplacer = CBash_FidReplacer(aliases=self.patchFile.aliases)
@@ -380,7 +381,7 @@ class CBash_UpdateReferences(AUpdateReferences, CBash_ListPatcher):
         if not self.isActive: return
         # resets isActive !!
         for type_ in self.getTypes():
-            group_patchers.setdefault(type_,[]).append(self)
+            self.patchFile.group_patchers[type_].append(self)
 
     def mod_apply(self, modFile):
         """Changes the mod in place without copying any records."""

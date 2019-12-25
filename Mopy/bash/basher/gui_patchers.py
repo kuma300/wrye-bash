@@ -33,7 +33,7 @@ from ..balt import text_wrap, Links, SeparatorLink, CheckLink, Link
 from ..bolt import GPath
 from ..gui import Button, CheckBox, HBoxedLayout, Label, LayoutOptions, \
     Spacer, TextArea, TOP, VLayout
-from ..patcher import patch_files, patches_set
+from ..patcher import patch_files, patches_set, base
 
 reCsvExt = re.compile(u'' r'\.csv$', re.I | re.U)
 
@@ -43,7 +43,7 @@ class _PatcherPanel(object):
     style = wx.TAB_TRAVERSAL
     # CONFIG DEFAULTS
     default_isEnabled = False # is the patcher enabled on a new bashed patch ?
-    patcher_type = None # type: patcher.base._Abstract_Patcher
+    patcher_type = None # type: base.Abstract_Patcher
     _patcher_txt = u'UNDEFINED'
     patcher_name = u'UNDEFINED'
 
