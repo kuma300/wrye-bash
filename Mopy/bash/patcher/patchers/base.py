@@ -24,6 +24,7 @@
 
 """This module contains base patcher classes."""
 from collections import Counter
+from itertools import chain
 from operator import itemgetter
 # Internal
 from .. import getPatchesPath
@@ -103,13 +104,13 @@ class MultiTweaker(AMultiTweaker,Patcher):
         """Returns load factory classes needed for reading."""
         if not self.isActive: return tuple()
         classTuples = [tweak.getReadClasses() for tweak in self.enabled_tweaks]
-        return sum(classTuples,tuple())
+        return chain.from_iterable(classTuples)
 
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""
         if not self.isActive: return tuple()
         classTuples = [tweak.getWriteClasses() for tweak in self.enabled_tweaks]
-        return sum(classTuples,tuple())
+        return chain.from_iterable(classTuples)
 
     def scanModFile(self,modFile,progress):
         for tweak in self.enabled_tweaks:

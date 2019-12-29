@@ -29,6 +29,8 @@ import errno
 import re
 import time
 from datetime import timedelta
+from itertools import count
+# Internal
 from . import BashFrame ##: drop this - decouple !
 from .. import balt, bass, bolt, bosh, bush, env, load_order
 from ..balt import Link, Resources, set_event_hook, Events, HorizontalLine
@@ -67,8 +69,8 @@ class PatchDialog(balt.Dialog):
         self.SetSizeHints(400,300)
         #--Data
         list_patches_dir() # refresh cached dir
-        groupOrder = dict([(group,index) for index,group in
-            enumerate((_(u'General'),_(u'Importers'),_(u'Tweakers'),_(u'Special')))])
+        groupOrder = dict(zip((_(u'General'), _(u'Importers'), _(u'Tweakers'),
+                               _(u'Special')), count()))
         patchConfigs = bosh.modInfos.table.getItem(patchInfo.name,'bash.patch.configs',{})
         # If the patch config isn't from the same mode (CBash/Python), try converting
         # it over to the current mode
@@ -117,7 +119,8 @@ class PatchDialog(balt.Dialog):
         self.gRevertToDefault.on_clicked.subscribe(self.DefaultConfig)
         for index,patcher in enumerate(self._gui_patchers):
             self.gPatchers.Check(index,patcher.isEnabled)
-        self.defaultTipText = _(u'Items that are new since the last time this patch was built are displayed in bold')
+        self.defaultTipText = _(u'Items that are new since the last time this '
+                                u'patch was built are displayed in bold')
         self.gTipText = Label(self,self.defaultTipText)
         #--Events
         set_event_hook(self, Events.RESIZE, self.OnSize) # save dialog size
