@@ -174,7 +174,7 @@ class _ALineLayout(_ALayout):
             weight = (options.weight if options and options.weight is not None
                       else self.default_weight)
             if self.spacing > 0 and not self._sizer.IsEmpty():
-                self._sizer.AddSpacer(self.spacing)
+                self._add_spacer(self.spacing)
             self._sizer.Add(item, proportion=weight, flag=flags, border=border)
             self._sizer.SetItemMinSize(item, -1, -1)
 
