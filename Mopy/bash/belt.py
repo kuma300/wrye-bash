@@ -208,7 +208,7 @@ class PageError(PageInstaller):
             Label(self, title),
             (TextArea(self, editable=False, init_text=errorMsg,
                       auto_tooltip=False),
-             LayoutOptions(weight=1, fill=True))
+             LayoutOptions(weight=1, expand=True))
         ]).apply_to(self)
         self.Layout()
 
@@ -507,7 +507,7 @@ class PageVersions(PageInstaller):
             Stretch(1),
             (text_warning, LayoutOptions(h_align=CENTER)),
             Stretch(1),
-            (versions_box, LayoutOptions(fill=True, weight=1)),
+            (versions_box, LayoutOptions(expand=True, weight=1)),
             Stretch(2),
             (self.checkOk, LayoutOptions(h_align=RIGHT, v_align=BOTTOM,
                                          border=5))

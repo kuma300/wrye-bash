@@ -453,7 +453,7 @@ class InstallerProject_OmodConfigDialog(BaltFrame):
                                   max_length=4 * 1024)
         #--Layout
         def _no_fill_text(txt):
-            return Label(self, txt), LayoutOptions(fill=False)
+            return Label(self, txt), LayoutOptions(expand=False)
         save_button = SaveButton(self, default=True)
         save_button.on_clicked.subscribe(self.DoSave)
         cancel_button = CancelButton(self)

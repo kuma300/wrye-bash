@@ -2057,14 +2057,14 @@ class Mod_Scripts_Export(_Mod_Export_Link):
         VLayout(border=6, spacing=4, items=[
             Label(dialog, _(u'Skip prefix (leave blank to not skip any), '
                             u'non-case sensitive):')),
-            (gskip, LayoutOptions(fill=True)),
+            (gskip, LayoutOptions(expand=True)),
             Spacer(10),
             Label(dialog, _(u'Remove prefix from file names i.e. enter cob '
                             u'to save script cobDenockInit\nas '
                             u'DenockInit.ext rather than as '
                             u'cobDenockInit.ext\n(Leave blank to not cut any '
                             u'prefix, non-case sensitive):')),
-            (gdeprefix, LayoutOptions(fill=True)),
+            (gdeprefix, LayoutOptions(expand=True)),
             Spacer(10),
             gskipcomments,
             Stretch(),
