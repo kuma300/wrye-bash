@@ -25,7 +25,7 @@
 """This module defines buttons, offering several predefined templates (e.g. OK
 buttons, Cancel buttons, Save As... buttons, etc.)."""
 
-__author__ = 'nycz, Infernio'
+__author__ = u'nycz, Infernio'
 
 import wx as _wx
 
@@ -256,7 +256,7 @@ class ReloadButton(ImageButton):
                        object or a component."""
         # TODO(inf) Image API! This is really, really ugly
         from .. import bass
-        reload_icon = _wx.Bitmap(bass.dirs['images'].join(u'reload16.png').s,
+        reload_icon = _wx.Bitmap(bass.dirs[u'images'].join(u'reload16.png').s,
                                  _wx.BITMAP_TYPE_PNG)
         super(ReloadButton, self).__init__(parent, reload_icon,
                                            tooltip=_(u'Reload'),

@@ -41,6 +41,8 @@ from .base_components import _AComponent
 from .buttons import BackwardButton, ForwardButton, ReloadButton
 from .events import EventHandler
 
+__author__ = u'Infernio'
+
 def web_viewer_available():
     """Checks if WebViewer and its wx backing are available, meaning that we
     can render HTML.

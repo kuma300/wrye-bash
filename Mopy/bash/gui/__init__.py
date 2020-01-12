@@ -26,7 +26,7 @@
 outside the gui package should import from here, so that classes may be moved
 around without breaking third-party code."""
 
-__author__ = 'Infernio'
+__author__ = u'Infernio'
 
 from .base_components import *
 from .buttons import *

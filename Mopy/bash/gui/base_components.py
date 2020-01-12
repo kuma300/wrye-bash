@@ -25,7 +25,7 @@
 """This module houses parts of the GUI code that form the basis for the the
 more specialized parts (e.g. _AComponent)."""
 
-__author__ = 'nycz, Infernio'
+__author__ = u'nycz, Infernio'
 
 import wx as _wx
 

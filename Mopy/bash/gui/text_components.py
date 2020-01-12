@@ -26,7 +26,7 @@
 input components like TextArea and TextField, but also static components like
 Label reside here."""
 
-__author__ = 'nycz, Infernio'
+__author__ = u'nycz, Infernio'
 
 import wx as _wx
 

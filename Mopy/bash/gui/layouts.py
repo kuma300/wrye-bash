@@ -27,7 +27,7 @@ together to create a GUI. In doing so, it is also responsible for making the
 rest of the gui modules work by chaining the _AComponent-based high-level
 components into actual wx calls."""
 
-__author__ = 'nycz'
+__author__ = u'nycz'
 
 import wx as _wx
 
@@ -314,4 +314,3 @@ class GridLayout(_ALayout):
             except _wx.PyAssertionError:
                 self._sizer.Add((0, 0), (0, col))
                 self._sizer.AddGrowableCol(col, proportion=weight)
-

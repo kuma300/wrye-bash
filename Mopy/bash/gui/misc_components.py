@@ -25,7 +25,7 @@
 """This module houses GUI classes that did not fit anywhere else. Once similar
 classes accumulate in here, feel free to break them out into a module."""
 
-__author__ = 'nycz, Infernio'
+__author__ = u'nycz, Infernio'
 
 import wx as _wx
 
