@@ -33,7 +33,8 @@ import wx as _wx
 
 from .base_components import _AComponent
 
-CENTER, LEFT, RIGHT, TOP, BOTTOM = 'center', 'left', 'right', 'top', 'bottom'
+CENTER, LEFT, RIGHT, TOP, BOTTOM = (u'center', u'left', u'right', u'top',
+                                    u'bottom')
 _H_ALIGNS = {None: _wx.ALIGN_LEFT,
              CENTER: _wx.ALIGN_CENTER_HORIZONTAL,
              LEFT: _wx.ALIGN_LEFT,
@@ -83,6 +84,7 @@ class LayoutOptions(object):
 
     def __init__(self, border=None, expand=None, weight=None,
                  h_align=None, v_align=None, col_span=None, row_span=None):
+        # type: (int, bool, int, unicode, unicode, int, int) -> None
         self.border = border
         self.expand = expand
         self.weight = weight
@@ -92,8 +94,9 @@ class LayoutOptions(object):
         self.row_span = row_span
 
     def layout_flags(self):
-        flags = _wx.ALL | _H_ALIGNS[self.h_align] | _V_ALIGNS[self.v_align]
-        if self.expand: flags |= _wx.EXPAND
+        l_flags = _wx.ALL | _H_ALIGNS[self.h_align] | _V_ALIGNS[self.v_align]
+        if self.expand: l_flags |= _wx.EXPAND
+        return l_flags
 
     def from_other(self, other):
         """Use only in this module - return a copy of self, updated from other.
