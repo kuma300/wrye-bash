@@ -142,7 +142,7 @@ class _ALayout(object):
         options = None
         if isinstance(item, tuple):
             item, options = item
-        if item is None: return None, None, None, None
+        if item is None: return None, None
         elif isinstance(item, _ALayout):
             item = item._sizer
         else:
