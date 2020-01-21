@@ -214,25 +214,14 @@ class BSAFileRecord(_BsaHashedRecord):
             return self.file_size_flags & (~0xC0000000) # negate all flags
         return self.file_size_flags
 
-class BSAOblivionFileRecord(_BsaHashedRecord):
-    # Note: Here, we (ab)use the usage of zip() in _BsaHashedRecord.load_record
-    # to make sure that the last slot, file_pos, is not read from the BSA - we
-    # fill it manually in our load_record override. This is necessary to find
-    # the positions of hashes for undo_alterations().
-    __slots__ = ('file_size_flags', 'raw_file_data_offset', 'file_pos')
-    formats = ['I', 'I']
-    formats = list((f, struct.calcsize(f)) for f in formats)
+class BSAOblivionFileRecord(BSAFileRecord):
+    # Note: we need to remember the file positions of each file record so we
+    # can recalculate their hashes in undo_alterations
+    __slots__ = ('file_pos',)
 
     def load_record(self, ins):
         self.file_pos = ins.tell()
         super(BSAOblivionFileRecord, self).load_record(ins)
-
-    def compression_toggle(self): return self.file_size_flags & 0x40000000
-
-    def raw_data_size(self):
-        if self.compression_toggle():
-            return self.file_size_flags & (~0xC0000000)  # negate all flags
-        return self.file_size_flags
 
 # BA2s
 class _B2aFileRecordCommon(_HashedRecord):
@@ -367,7 +356,7 @@ class ABsa(AFile):
                     bsa_file.seek(record.raw_file_data_offset)
                     if self.bsa_header.embed_filenames(): # use len(filename) ?
                         filename_len = unpack_byte(bsa_file)
-                        bsa_file.read(filename_len) # discard filename
+                        bsa_file.seek(filename_len, 1) # discard filename
                         data_size -= filename_len + 1
                     # get the data!
                     raw_data = bsa_file.read(data_size)
@@ -473,7 +462,7 @@ class BSA(ABsa):
                     folder_path = _decode_path(
                         unpack_string(bsa_file, name_size - 1))
                     total_names_length += name_size
-                    bsa_file.read(1) # discard null terminator
+                    bsa_file.seek(1, 1) # discard null terminator
                 read_file_records(bsa_file, folder_path, folder_record)
             if total_names_length != self.bsa_header.total_folder_name_length:
                 deprint(u'%s reports wrong folder names length %d'
@@ -488,8 +477,8 @@ class BSA(ABsa):
 
     def _discard_file_records(self, bsa_file, folder_path, folder_record,
                               folders=None):
-        bsa_file.read(folder_record.files_count *
-            self.file_record_type.total_record_size())
+        bsa_file.seek(self.file_record_type.total_record_size() *
+                      folder_record.files_count, 1)
         folders[folder_path] = folder_record
 
 class BA2(ABsa):
@@ -631,7 +620,8 @@ class OblivionBsa(BSA):
                     rebuilt_hash = self.calculate_hash(file_name)
                     if file_info.record_hash != rebuilt_hash:
                         bsa_file.seek(file_info.file_pos)
-                        bsa_file.write(struct_pack('Q', rebuilt_hash))
+                        bsa_file.write(struct_pack(_HashedRecord.formats[0][0],
+                                                   rebuilt_hash))
                         reset_count += 1
                 progress(progress.state + 1, u'Rebuilding Hashes...\n' +
                          folder_name)
@@ -644,8 +634,6 @@ class SkyrimSeBsa(BSA):
     header_type = SkyrimSeBsaHeader
     folder_record_type = BSASkyrimSEFolderRecord
 
-class Fallout4Ba2(BA2): pass
-
 # Factory
 def get_bsa_type(game_fsName):
     """:rtype: type"""
@@ -656,4 +644,4 @@ def get_bsa_type(game_fsName):
     elif game_fsName == u'Skyrim Special Edition':
         return SkyrimSeBsa
     elif game_fsName == u'Fallout4':
-        return Fallout4Ba2
+        return BA2
