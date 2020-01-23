@@ -1322,17 +1322,9 @@ class MelStrings(MelString):
 class MelStruct(MelBase):
     """Represents a structure record."""
 
-    def __init__(self, subType, format, *elements, **kwdargs):
-        dumpExtra = kwdargs.get('dumpExtra', None)
+    def __init__(self, subType, format, *elements):
         self.subType, self.format = subType, format
         self.attrs,self.defaults,self.actions,self.formAttrs = MelBase.parseElements(*elements)
-        if dumpExtra:
-            self.attrs += (dumpExtra,)
-            self.defaults += ('',)
-            self.actions += (None,)
-            self.formatLen = struct.calcsize(format)
-        else:
-            self.formatLen = -1
 
     def getSlotsUsed(self):
         return self.attrs
@@ -1347,15 +1339,11 @@ class MelStruct(MelBase):
             setter(attr,value)
 
     def loadData(self, record, ins, sub_type, size_, readId):
-        readsize = self.formatLen if self.formatLen >= 0 else size_
-        unpacked = ins.unpack(self.format,readsize,readId)
+        unpacked = ins.unpack(self.format,size_,readId)
         setter = record.__setattr__
         for attr,value,action in zip(self.attrs,unpacked,self.actions):
             if action: value = action(value)
             setter(attr, value)
-        if self.formatLen >= 0:
-            # Dump remaining subrecord data into an attribute
-            setter(self.attrs[-1], ins.read(size_ - self.formatLen))
 
     def dumpData(self,record,out):
         values = []
@@ -1365,11 +1353,9 @@ class MelStruct(MelBase):
             value = getter(attr)
             if action: value = value.dump()
             valuesAppend(value)
-        if self.formatLen >= 0:
-            extraLen = len(values[-1])
-            format = self.format + `extraLen` + 's'
-        else:
-            format = self.format
+        self._pack_struct(self.format, out, values)
+
+    def _pack_struct(self, format, out, values): # YAK! just needed for MelStructExtra.dumpData
         try:
             out.packSub(self.subType,format,*values)
         except struct.error:
@@ -1386,9 +1372,45 @@ class MelStruct(MelBase):
 
     @property
     def static_size(self):
+        return struct.calcsize(self.format)
+
+class MelStructExtra(MelStruct):
+    """Represents a MelStruct that has some unknown size of `extra` bytes,
+    usually noise. Hacky class to cater for the few uses of dumpExtra."""
+
+    def __init__(self, subType, format, *elements, **kwdargs):
+        try:
+            dumpExtra = kwdargs['dumpExtra']
+        except KeyError:
+            raise exception.ArgumentError(u'Missing dumpExtra keyword argument')
+        MelStruct.__init__(subType, format, *elements)
+        self.attrs += (dumpExtra,)
+        self.defaults += ('',)
+        self.actions += (None,)
+        self.formatLen = struct.calcsize(format)
+
+    def loadData(self, record, ins, sub_type, size_, readId):
+        MelStruct.loadData(self, record, ins, sub_type, self.formatLen, readId)
+        # Dump remaining subrecord data into an attribute
+        extraLen = size_ - self.formatLen
+        record.__setattr__(self.attrs[-1], ins.read(extraLen))
+        # could we do self.format = '%s%ss' % (self.format, extraLen) dropping dumpData override ??
+
+    def dumpData(self,record,out):
+        values = []
+        valuesAppend = values.append
+        getter = record.__getattribute__
+        for attr,action in zip(self.attrs,self.actions):
+            value = getter(attr)
+            if action: value = value.dump()
+            valuesAppend(value)
+        extraLen = len(values[-1])
+        format = self.format + `extraLen` + 's'
+        self._pack_struct(format, out, values)
+
+    @property
+    def static_size(self):
         # dumpExtra means we can't know the size
-        if self.formatLen == -1:
-            return struct.calcsize(self.format)
         raise exception.AbstractError()
 
 #------------------------------------------------------------------------------

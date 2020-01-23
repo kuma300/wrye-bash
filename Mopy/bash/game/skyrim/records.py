@@ -37,7 +37,8 @@ from ...brec import MelRecord, MelObject, MelGroups, MelStruct, FID, \
     MelOptSInt16, MelOptSInt32, MelOptUInt8, MelOptUInt16, MelOptUInt32, \
     MelOptFid, MelCounter, MelPartialCounter, MelBounds, null1, null2, null3, \
     null4, MelSequential, MelTruncatedStruct, MelIcons, MelIcons2, MelIcon, \
-    MelIco2, MelEdid, MelFull, MelArray, MelWthrColors, GameDecider
+    MelIco2, MelEdid, MelFull, MelArray, MelWthrColors, GameDecider, \
+    MelStructExtra
 from ...exception import BoltError, ModError, ModSizeError, StateError
 # Set MelModel in brec but only if unset, otherwise we are being imported from
 # fallout4.records
@@ -1825,6 +1826,9 @@ class MreCell(MelRecord):
             if not record.flags.isInterior:
                 MelOptFloat.dumpData(self, record, out)
 
+    class MelOptStructXtr(MelOptStruct, MelStructExtra):
+        """Hack for the single MelOptStruct with 'dumpExtra'."""
+
     melSet = MelSet(
         MelEdid(),
         MelFull(),
@@ -1864,9 +1868,10 @@ class MreCell(MelRecord):
         MelFid('XLCN','location',),
         MelBase('XWCN','unknown_XWCN'), # leftover
         MelBase('XWCS','unknown_XWCS'), # leftover
-        MelOptStruct('XWCU', '3f4s3f', ('xOffset', 0.0), ('yOffset', 0.0),
-                     ('zOffset', 0.0), ('unk1XWCU', null4), ('xAngle', 0.0),
-                     ('yAngle', 0.0), ('zAngle', 0.0), dumpExtra='unk2XWCU',),
+        MelOptStructXtr('XWCU', '3f4s3f', ('xOffset', 0.0), ('yOffset', 0.0),
+                        ('zOffset', 0.0), ('unk1XWCU', null4), ('xAngle', 0.0),
+                        ('yAngle', 0.0), ('zAngle', 0.0),
+                        dumpExtra='unk2XWCU'),
         MelFid('XCWT','water'),
         MelOwnership(),
         MelFid('XILL','lockList',),
@@ -3177,13 +3182,13 @@ class MreLctn(MelRecord):
         ),
         MelFidList('RCSR','referenceCellStaticReference',),
         MelGroups('actorCellEncounterCell',
-            MelStruct('ACEC', 'I', (FID,'actor'), dumpExtra='gridsXY'),
+            MelStructExtra('ACEC', 'I', (FID,'actor'), dumpExtra='gridsXY'),
         ),
         MelGroups('locationCellEncounterCell',
-            MelStruct('LCEC', 'I', (FID,'actor'), dumpExtra='gridsXY'),
+            MelStructExtra('LCEC', 'I', (FID,'actor'), dumpExtra='gridsXY'),
         ),
         MelGroups('referenceCellEncounterCell',
-            MelStruct('RCEC', 'I', (FID,'actor'), dumpExtra='gridsXY'),
+            MelStructExtra('RCEC', 'I', (FID,'actor'), dumpExtra='gridsXY'),
         ),
         MelFidList('ACID','actorCellMarkerReference',),
         MelFidList('LCID','locationCellMarkerReference',),
@@ -5042,9 +5047,9 @@ class MreSopm(MelRecord):
                   'ch1_c', 'ch1_lFE', 'ch1_rL', 'ch1_rR', 'ch1_bL', 'ch1_bR',
                   'ch2_l', 'ch2_r', 'ch2_c', 'ch2_lFE', 'ch2_rL', 'ch2_rR',
                   'ch2_bL', 'ch2_bR'),
-        MelStruct('ANAM','4s2f5B','unknown2','minDistance','maxDistance',
-                  'curve1','curve2','curve3','curve4','curve5',
-                   dumpExtra='extraData',),
+        MelStructExtra('ANAM','4s2f5B','unknown2','minDistance','maxDistance',
+                       'curve1', 'curve2', 'curve3', 'curve4', 'curve5',
+                       dumpExtra='extraData',),
     )
     __slots__ = melSet.getSlotsUsed()
 
