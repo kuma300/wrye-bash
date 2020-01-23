@@ -1353,11 +1353,8 @@ class MelStruct(MelBase):
             value = getter(attr)
             if action: value = value.dump()
             valuesAppend(value)
-        self._pack_struct(self.format, out, values)
-
-    def _pack_struct(self, format, out, values): # YAK! just needed for MelStructExtra.dumpData
         try:
-            out.packSub(self.subType,format,*values)
+            out.packSub(self.subType,self.format,*values)
         except struct.error:
             bolt.deprint(u'Failed to dump struct: %s (%r)' % (
                 self.subType, self))
@@ -1394,19 +1391,7 @@ class MelStructExtra(MelStruct):
         # Dump remaining subrecord data into an attribute
         extraLen = size_ - self.formatLen
         record.__setattr__(self.attrs[-1], ins.read(extraLen))
-        # could we do self.format = '%s%ss' % (self.format, extraLen) dropping dumpData override ??
-
-    def dumpData(self,record,out):
-        values = []
-        valuesAppend = values.append
-        getter = record.__getattribute__
-        for attr,action in zip(self.attrs,self.actions):
-            value = getter(attr)
-            if action: value = value.dump()
-            valuesAppend(value)
-        extraLen = len(values[-1])
-        format = self.format + `extraLen` + 's'
-        self._pack_struct(format, out, values)
+        self.format = '%s%ss' % (self.format, extraLen) # FIXME TTT
 
     @property
     def static_size(self):
