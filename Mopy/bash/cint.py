@@ -40,7 +40,7 @@
 from __future__ import division
 from ctypes import byref, cast, c_bool, c_byte, c_char, c_char_p, c_float, \
     CFUNCTYPE, c_long, c_short, c_ubyte, c_uint32, c_ushort, c_ulong, CDLL, \
-    POINTER, string_at, windll, Structure, c_int, c_void_p
+    POINTER, string_at, Structure, c_int, c_void_p
 import math
 import os
 from os.path import exists, join
@@ -14302,7 +14302,7 @@ class ObModFile(object):
         numRecords = _CGetNumIdenticalToMasterRecords(self._ModID)
         if(numRecords > 0):
             cRecords = (c_record_p * numRecords)()
-            _CGetIdenticalToMasterRecords(self._ModID, byref(cRecords))
+            _CGetIdenticalToMasterRecords(self._ModID, cRecords)
             _CGetFieldAttribute.restype = (c_char * 4)
             values = [type_record[_CGetFieldAttribute(x, 0, 0, 0, 0, 0, 0, 0, 0).value](x) for x in cRecords]
             _CGetFieldAttribute.restype = c_ulong
@@ -14733,7 +14733,7 @@ class FnvModFile(object):
         numRecords = _CGetNumIdenticalToMasterRecords(self._ModID)
         if(numRecords > 0):
             cRecords = (c_record_p * numRecords)()
-            _CGetIdenticalToMasterRecords(self._ModID, byref(cRecords))
+            _CGetIdenticalToMasterRecords(self._ModID, cRecords)
             _CGetFieldAttribute.restype = (c_char * 4)
             values = [fnv_type_record[_CGetFieldAttribute(x, 0, 0, 0, 0, 0, 0, 0, 0).value](x) for x in cRecords]
             _CGetFieldAttribute.restype = c_ulong
