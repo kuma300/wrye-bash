@@ -93,6 +93,8 @@ dll_excludes = [
     "api-ms-win-crt-time-l1-1-0.dll",
     "MSVCP140.dll",
     "VCRUNTIME140.dll",
+    "mfc90.dll",
+    "MSVCR100.dll",
 ]
 
 package_excludes = [
