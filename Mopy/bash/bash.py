@@ -283,7 +283,7 @@ def _main(opts, wx_locale):
                 bashIni, bush_game, game_ini_path = _detect_game(opts, u'bash.ini')
         from . import bosh # this imports balt (DUH) which imports wx
         bosh.initBosh(bashIni, game_ini_path)
-        env.isUAC = env.testUAC(bush_game.gamePath.join(u'Data'))
+        env.isUAC = env.testUAC(bush_game.gamePath.join(bush_game.mods_dir))
         global basher, balt
         from . import basher, balt
     except (exception.BoltError, ImportError, OSError, IOError) as e:
@@ -350,8 +350,8 @@ def _main(opts, wx_locale):
                                          backup_filename(bush_game.fsName))
         if settings_file:
             with balt.BusyCursor():
-                backup = barb.BackupSettings(settings_file,
-                                             bush_game.fsName)
+                backup = barb.BackupSettings(settings_file, bush_game.fsName,
+                                             bush_game.mods_dir)
             try:
                 with balt.BusyCursor():
                     backup.backup_settings(balt)
