@@ -284,7 +284,7 @@ class GameInfo(object):
             ((u'Strings',), u'%(body)s_%(language)s.DLSTRINGS'),
             ((u'Strings',), u'%(body)s_%(language)s.ILSTRINGS'),
         ]
-
+    plugin_header_sig = b'TES4'
     # Bash Tags supported by this game
     allTags = set()
 
@@ -519,6 +519,10 @@ class GameInfo(object):
     # and would make editing the constants a miserable experience if included
     # (see e.g. skyrim/vanilla_files.py).
     vanilla_files = set()
+
+    @property
+    def plugin_header_class(self):
+        return brec.MreRecord.type_class[self.plugin_header_sig]
 
     @classmethod
     def init(cls):
